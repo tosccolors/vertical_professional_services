@@ -66,7 +66,7 @@ class AccountMove(models.Model):
     @api.model
     def invoice_line_move_line_get(self):
         """Copy user_id and trading_partner_code from invoice line to move lines"""
-        res = super(AccountInvoice, self).invoice_line_move_line_get()
+        res = super(AccountMove, self).invoice_line_move_line_get()
         ailo = self.env['account.move.line']
         for move_line_dict in res:
             iline = ailo.browse(move_line_dict['invl_id'])
@@ -78,7 +78,7 @@ class AccountMove(models.Model):
 
     @api.model
     def line_get_convert(self, line, part):
-        res = super(AccountInvoice, self).line_get_convert(line, part)
+        res = super(AccountMove, self).line_get_convert(line, part)
         res['user_id'] = line.get('user_id', False)
         res['trading_partner_code'] = line.get('trading_partner_code', False)
         if self.partner_id.trading_partner_code \
@@ -92,7 +92,7 @@ class AccountMove(models.Model):
         will be grouped together if the journal has the 'group line' option. Of course a module
         can add fields to invoice lines that would need to be tested too before merging lines
         or not."""
-        res = super(AccountInvoice, self).inv_line_characteristic_hashcode(invoice_line)
+        res = super(AccountMove, self).inv_line_characteristic_hashcode(invoice_line)
         return res + "%s" % (
             invoice_line['user_id']
         )
@@ -122,7 +122,7 @@ class AccountMove(models.Model):
             to_process_invoices.action_create_ic_lines()
         if supplier_invoices:
             supplier_invoices.fill_trading_partner_code_supplier_invoice()
-        res = super(AccountInvoice, self).action_invoice_open()
+        res = super(AccountMove, self).action_invoice_open()
         for invoice in to_process_invoices:
             analytic_invoice_id = invoice.invoice_line_ids.mapped('analytic_invoice_id')
             if analytic_invoice_id and invoice.type != 'out_refund':
@@ -294,7 +294,7 @@ class AccountMove(models.Model):
         return True
 
     def action_cancel(self):
-        res = super(AccountInvoice, self).action_cancel()
+        res = super(AccountMove, self).action_cancel()
         wip_moves = self.env['account.move']
         for inv in self:
             if inv.wip_move_id:

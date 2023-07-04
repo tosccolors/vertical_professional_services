@@ -5,8 +5,9 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
 
-class TimesheetAnalyticLine(models.Model):
-    _name = 'timesheet.analytic.line'
+class PlanningLine(models.Model):
+    _name = 'ps.planning.line'
+    _description = 'Professional Services Planning Line'
 
     
     @api.model
