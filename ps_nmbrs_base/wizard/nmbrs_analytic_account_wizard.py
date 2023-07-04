@@ -20,7 +20,8 @@ class NMBRsAnalyticAccountWizard(models.TransientModel):
         config = self.env['nmbrs.interface.config'].search([])[0]
         user = config.api_user
         token = config.api_key
-        authentication_v3 = {'Username': user, 'Token': token, 'Domain': 'magnus'}
+        domain = config.domain
+        authentication_v3 = {'Username': user, 'Token': token, 'Domain': domain}
         client = Client(config.endpoint_company_service)
         if not self.operating_unit.nmbrs_id:
             raise Warning(_("You need to set the Nmbrs ID for the operating unit in Odoo"))

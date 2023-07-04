@@ -16,7 +16,7 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: ps_timesheet_invoicing
-#: code:addons/ps_timesheet_invoicing/models/magnus_planning.py:354
+#: code:addons/ps_timesheet_invoicing/models/ps_planning.py:354
 #, python-format
 msgid "%s can not have 2 planning that overlaps on same day!"
 msgstr "%s can not have 2 planning that overlaps on same day!"
@@ -155,7 +155,7 @@ msgid "Analytic Cost Lines"
 msgstr "Analytic Cost Lines"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.actions.act_window,name:ps_timesheet_invoicing.account_analytic_line_action_entries_magnus
+#: model:ir.actions.act_window,name:ps_timesheet_invoicing.account_analytic_line_action_entries_ps
 #: model:ir.ui.menu,name:ps_timesheet_invoicing.menu_action_analytic_account_lines
 #: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_account_analytic_line_pivot_forecate
 #: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_account_analytic_line_pivot_planned_vs_actual
@@ -268,7 +268,7 @@ msgid "Change Chargecode"
 msgstr "Change Chargecode"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_planning_form
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_planning_form
 msgid "Change Planning Period"
 msgstr "Change Planning Period"
 
@@ -348,7 +348,7 @@ msgstr "Commerciële entiteit"
 #. module: ps_timesheet_invoicing
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_invoice_company_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_user_total_company_id
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_company_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_company_id
 msgid "Company"
 msgstr "Bedrijf"
 
@@ -396,7 +396,7 @@ msgid "Cost/Expense"
 msgstr "Cost/Expense"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.actions.act_window,help:ps_timesheet_invoicing.account_analytic_line_action_entries_magnus
+#: model:ir.actions.act_window,help:ps_timesheet_invoicing.account_analytic_line_action_entries_ps
 msgid "Costs will be created automatically when you register supplier\n"
 "                invoices, expenses or timesheets."
 msgstr "Kosten worden automatisch aangemaakt wanneer u leveranciersfacturen,\n"
@@ -414,8 +414,8 @@ msgstr "Create invoices"
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_user_total_create_uid
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_change_chargecode_create_uid
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_invoice_schedule_lines_create_uid
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_create_uid
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_create_uid
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_create_uid
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_create_uid
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_my_wizard_create_uid
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_planning_wizard_create_uid
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_task_user_create_uid
@@ -428,8 +428,8 @@ msgstr "Aangemaakt door"
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_user_total_create_date
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_change_chargecode_create_date
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_invoice_schedule_lines_create_date
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_create_date
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_create_date
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_create_date
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_create_date
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_my_wizard_create_date
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_planning_wizard_create_date
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_task_user_create_date
@@ -462,8 +462,8 @@ msgstr "Datum"
 
 #. module: ps_timesheet_invoicing
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_invoice_date_start
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_date_start
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_date_start
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_date_start
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_date_start
 msgid "Date From"
 msgstr "Datum vanaf"
 
@@ -489,8 +489,8 @@ msgstr "Date Range Generator"
 
 #. module: ps_timesheet_invoicing
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_invoice_date_to
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_date_to
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_date_to
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_date_to
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_date_to
 msgid "Date To"
 msgstr "Datum tot"
 
@@ -530,7 +530,7 @@ msgstr "Afleveradres voor de huidige factuur."
 #. module: ps_timesheet_invoicing
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_user_total_department_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_hr_chargeability_report_department_id
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_department_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_department_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_status_time_report_department_id
 #: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_hr_chargeability_report_search
 #: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_status_time_report_search
@@ -556,7 +556,7 @@ msgid "Detail Time Lines"
 msgstr "Detail Time Lines"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_planning_form
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_planning_form
 msgid "Details"
 msgstr "Details"
 
@@ -568,8 +568,8 @@ msgstr "Details"
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_crm_pipeline_actuals_report_display_name
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_hr_chargeability_report_display_name
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_invoice_schedule_lines_display_name
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_display_name
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_display_name
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_display_name
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_display_name
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_my_wizard_display_name
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_overtime_balance_report_display_name
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_planning_wizard_display_name
@@ -614,23 +614,23 @@ msgid "Each day from Monday to Friday needs to have at least 8 logged hours."
 msgstr "Each day from Monday to Friday needs to have at least 8 logged hours."
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_emp_domain_compute
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_emp_domain_compute
 msgid "Emp domain compute"
 msgstr "Emp domain compute"
 
 #. module: ps_timesheet_invoicing
 #: model:ir.model,name:ps_timesheet_invoicing.model_hr_employee
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_account_analytic_line_employee_id
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_employee_id
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_employee_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_employee_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_employee_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_status_time_report_employee_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_status_time_report_sheet_id
-#: model:res.groups,name:ps_timesheet_invoicing.group_magnus_planning_user
+#: model:res.groups,name:ps_timesheet_invoicing.group_ps_planning_user
 msgid "Employee"
 msgstr "Werknemer"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_planning_form
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_planning_form
 msgid "Employee's Name"
 msgstr "Naam werknemer"
 
@@ -646,7 +646,7 @@ msgid "End Mileage cannot be lower than the Starting Mileage + Business Mileage.
 msgstr "End Mileage cannot be lower than the Starting Mileage + Business Mileage."
 
 #. module: ps_timesheet_invoicing
-#: code:addons/ps_timesheet_invoicing/models/magnus_planning.py:26
+#: code:addons/ps_timesheet_invoicing/models/ps_planning.py:26
 #, python-format
 msgid "End week should be greater than start week."
 msgstr "End week should be greater than start week."
@@ -829,13 +829,13 @@ msgid "Has outstanding"
 msgstr "Heeft openstaande"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.module.category,description:ps_timesheet_invoicing.module_category_magnus_planning
+#: model:ir.module.category,description:ps_timesheet_invoicing.module_category_ps_planning
 msgid "Helps you manage planning."
 msgstr "Helps you manage planning."
 
 #. module: ps_timesheet_invoicing
 #: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_account_analytic_line_filter_inherit_account
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_planning_form
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_planning_form
 msgid "Hours"
 msgstr "Uren"
 
@@ -857,8 +857,8 @@ msgstr "HR afdeling"
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_crm_pipeline_actuals_report_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_hr_chargeability_report_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_invoice_schedule_lines_id
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_id
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_my_wizard_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_overtime_balance_report_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_planning_wizard_id
@@ -893,7 +893,7 @@ msgid "If you use payment terms, the due date will be computed automatically at 
 msgstr "Bij het gebruik van betalingscondities zal de vervaldatum automatisch berekend worden bij het genereren van de posten. De betalingsconditie kan meerdere vervaldata berekenen, bijvoorbeeld 50% nu en 50% over een maand, maar u kunt ook een vervaldatum forceren. Zorg er dan voor dat er geen betalingsconditie is ingesteld op de factuur.  Als u noch een betalingsconditie noch een vervaldatum gebruikt, dan veronderstelt het systeem een onmiddellijke betaling."
 
 #. module: ps_timesheet_invoicing
-#: model:ir.actions.act_window,help:ps_timesheet_invoicing.account_analytic_line_action_entries_magnus
+#: model:ir.actions.act_window,help:ps_timesheet_invoicing.account_analytic_line_action_entries_ps
 msgid "In Odoo, sale orders and projects are implemented using\n"
 "                analytic accounts. You can track costs and revenues to analyse\n"
 "                your margins easily."
@@ -1022,7 +1022,7 @@ msgid "Is Follower"
 msgstr "Is een volger"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_is_planning_officer
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_is_planning_officer
 msgid "Is Planning Officer"
 msgstr "Is Planning Officer"
 
@@ -1086,8 +1086,8 @@ msgstr "Laatste bericht datum"
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_crm_pipeline_actuals_report___last_update
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_hr_chargeability_report___last_update
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_invoice_schedule_lines___last_update
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning___last_update
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning___last_update
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning___last_update
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning___last_update
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_my_wizard___last_update
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_overtime_balance_report___last_update
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_planning_wizard___last_update
@@ -1102,8 +1102,8 @@ msgstr "Laatst gewijzigd op"
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_user_total_write_uid
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_change_chargecode_write_uid
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_invoice_schedule_lines_write_uid
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_write_uid
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_write_uid
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_write_uid
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_write_uid
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_my_wizard_write_uid
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_planning_wizard_write_uid
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_task_user_write_uid
@@ -1116,8 +1116,8 @@ msgstr "Laatst bijgewerkt door"
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_user_total_write_date
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_change_chargecode_write_date
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_invoice_schedule_lines_write_date
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_write_date
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_write_date
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_write_date
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_write_date
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_my_wizard_write_date
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_planning_wizard_write_date
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_task_user_write_date
@@ -1151,9 +1151,9 @@ msgid "Logged hours should be 0 to 24."
 msgstr "Logged hours should be 0 to 24."
 
 #. module: ps_timesheet_invoicing
-#: model:res.groups,name:ps_timesheet_invoicing.group_magnus_reports
-msgid "Magnus Reporting"
-msgstr "Magnus Reporting"
+#: model:res.groups,name:ps_timesheet_invoicing.group_ps_reports
+msgid "Professional Services Reporting"
+msgstr "Professional Services Reporting"
 
 #. module: ps_timesheet_invoicing
 #: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_analytic_line_status
@@ -1208,14 +1208,14 @@ msgstr "Month of Analytic Line or last Wip Posting"
 
 #. module: ps_timesheet_invoicing
 #: model:ir.actions.server,name:ps_timesheet_invoicing.ir_actions_server_timesheet_planning_emp
-#: model:ir.ui.menu,name:ps_timesheet_invoicing.menu_act_magnus_planning
+#: model:ir.ui.menu,name:ps_timesheet_invoicing.menu_act_ps_planning
 msgid "My Employee's Planning"
 msgstr "My Employee's Planning"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.actions.act_window,name:ps_timesheet_invoicing.act_view_magnus_planning
+#: model:ir.actions.act_window,name:ps_timesheet_invoicing.act_view_ps_planning
 #: model:ir.actions.server,name:ps_timesheet_invoicing.ir_actions_server_timesheet_planning_self
-#: model:ir.ui.menu,name:ps_timesheet_invoicing.menu_act_magnus_self_planning
+#: model:ir.ui.menu,name:ps_timesheet_invoicing.menu_act_ps_self_planning
 msgid "My Planning"
 msgstr "Mijn Planning"
 
@@ -1240,7 +1240,7 @@ msgid "No 8 Hours Per Day"
 msgstr "No 8 Hours Per Day"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.actions.act_window,help:ps_timesheet_invoicing.account_analytic_line_action_entries_magnus
+#: model:ir.actions.act_window,help:ps_timesheet_invoicing.account_analytic_line_action_entries_ps
 msgid "No activity yet."
 msgstr "Nog geen activiteit."
 
@@ -1260,7 +1260,7 @@ msgid "Not Submitted/Approved"
 msgstr "Not Submitted/Approved"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_note
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_note
 msgid "Note"
 msgstr "Notitie"
 
@@ -1311,7 +1311,7 @@ msgid "Odometer records have to have a unique date."
 msgstr "Odometer records have to have a unique date."
 
 #. module: ps_timesheet_invoicing
-#: model:res.groups,name:ps_timesheet_invoicing.group_magnus_planning_officer
+#: model:res.groups,name:ps_timesheet_invoicing.group_ps_planning_officer
 msgid "Officer"
 msgstr "Functionaris"
 
@@ -1506,9 +1506,9 @@ msgid "Actual Activity Analysis"
 msgstr "Werkelijke Activiteiten Analyse"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model,name:ps_timesheet_invoicing.model_magnus_planning
-#: model:ir.module.category,name:ps_timesheet_invoicing.module_category_magnus_planning
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_planning_form
+#: model:ir.model,name:ps_timesheet_invoicing.model_ps_planning
+#: model:ir.module.category,name:ps_timesheet_invoicing.module_category_ps_planning
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_planning_form
 msgid "Planning"
 msgstr "Planning"
 
@@ -1518,12 +1518,12 @@ msgid "Planning & Forecasting"
 msgstr "Planning & Forecasting"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_planning_form
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_planning_form
 msgid "Planning Activities"
 msgstr "Planning Activities"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_planning_form
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_planning_form
 msgid "Planning Period"
 msgstr "Planning Period"
 
@@ -1539,18 +1539,18 @@ msgid "Planning by week"
 msgstr "Planning by week"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_planning_ids_compute
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_planning_ids_compute
 msgid "Planning ids compute"
 msgstr "Planning ids compute"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_planning_ids
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_planning_ids
 msgid "Planning lines"
 msgstr "Planning lines"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_planning_tree
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_standby_planning_tree
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_planning_tree
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_standby_planning_tree
 msgid "Plannings"
 msgstr "Plannings"
 
@@ -1709,8 +1709,8 @@ msgid "Reference/Description"
 msgstr "Referentie/Omschrijving"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,help:ps_timesheet_invoicing.field_magnus_planning_user_id
-#: model:ir.model.fields,help:ps_timesheet_invoicing.field_magnus_standby_planning_user_id
+#: model:ir.model.fields,help:ps_timesheet_invoicing.field_ps_planning_user_id
+#: model:ir.model.fields,help:ps_timesheet_invoicing.field_ps_standby_planning_user_id
 msgid "Related user name for the resource to manage its access."
 msgstr "Gekoppelde gebruikersnaam voor de resource om zijn toegang te beheren."
 
@@ -1745,7 +1745,7 @@ msgid "Revenue Split"
 msgstr "Revenue Split"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.actions.act_window,help:ps_timesheet_invoicing.account_analytic_line_action_entries_magnus
+#: model:ir.actions.act_window,help:ps_timesheet_invoicing.account_analytic_line_action_entries_ps
 msgid "Revenues will be created automatically when you create customer\n"
 "                invoices. Customer invoices can be created based on sale orders\n"
 "                (fixed price invoices), on timesheets (based on the work done) or\n"
@@ -1773,7 +1773,7 @@ msgid "Select Planning Period."
 msgstr "Select Planning Period."
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_planning_quarter
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_planning_quarter
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_planning_wizard_name
 msgid "Select Quarter"
 msgstr "Select Quarter"
@@ -1800,7 +1800,7 @@ msgstr "Staffing & Forecast"
 
 #. module: ps_timesheet_invoicing
 #: model:ir.actions.act_window,name:ps_timesheet_invoicing.action_standby_planning
-#: model:ir.model,name:ps_timesheet_invoicing.model_magnus_standby_planning
+#: model:ir.model,name:ps_timesheet_invoicing.model_ps_standby_planning
 #: model:ir.ui.menu,name:ps_timesheet_invoicing.stand_by_planing_menu
 msgid "Stand-By Planning"
 msgstr "Stand-By Planning"
@@ -1862,7 +1862,7 @@ msgstr "Status Time Reports"
 
 #. module: ps_timesheet_invoicing
 #: model:ir.ui.view,arch_db:ps_timesheet_invoicing.standby_planning_form_calender
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_planning_form
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_planning_form
 msgid "Summary"
 msgstr "Samenvatting"
 
@@ -2018,7 +2018,7 @@ msgid "Timesheet"
 msgstr "Urenstaat"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_planning_form
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_planning_form
 msgid "Timesheet Activities"
 msgstr "Urenstaten activiteiten"
 
@@ -2070,7 +2070,7 @@ msgid "Timesheet optional"
 msgstr "Timesheet optional"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.actions.act_window,help:ps_timesheet_invoicing.act_view_magnus_planning
+#: model:ir.actions.act_window,help:ps_timesheet_invoicing.act_view_ps_planning
 msgid "Timesheets can also be invoiced to customers, depending on the\n"
 "                configuration of each project's related contract."
 msgstr "Urenstaten kunnen ook aan klanten gefactureerd worden, afhankelijk van\n"
@@ -2193,15 +2193,15 @@ msgid "Update Entries"
 msgstr "Update Entries"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_magnus_planning_form
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_planning_form
 msgid "Update Planning"
 msgstr "Update Planning"
 
 #. module: ps_timesheet_invoicing
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_user_total_user_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_hr_chargeability_report_user_id
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_user_id
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_standby_planning_user_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_user_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_standby_planning_user_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_overtime_balance_report_user_id
 #: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_overtime_balance_report_search
 msgid "User"
@@ -2280,7 +2280,7 @@ msgid "Week"
 msgstr "Week"
 
 #. module: ps_timesheet_invoicing
-#: code:addons/ps_timesheet_invoicing/models/magnus_planning.py:30
+#: code:addons/ps_timesheet_invoicing/models/ps_planning.py:30
 #, python-format
 msgid "Week range already exists."
 msgstr "Week range already exists."
@@ -2359,7 +2359,7 @@ msgid "You have no timesheet logged for last week. Duration: %s to %s"
 msgstr "You have no timesheet logged for last week. Duration: %s to %s"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.actions.act_window,help:ps_timesheet_invoicing.act_view_magnus_planning
+#: model:ir.actions.act_window,help:ps_timesheet_invoicing.act_view_ps_planning
 msgid "You must record timesheets every day and confirm at the end\n"
 "                of the week. Once the timesheet is confirmed, it should be\n"
 "                validated by a manager."
@@ -2390,7 +2390,7 @@ msgid "my.wizard"
 msgstr "my.wizard"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.actions.act_window,help:ps_timesheet_invoicing.act_view_magnus_planning
+#: model:ir.actions.act_window,help:ps_timesheet_invoicing.act_view_ps_planning
 msgid "new timesheet."
 msgstr "nieuwe urenstaat."
 
@@ -2405,12 +2405,12 @@ msgid "task.user"
 msgstr "task.user"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_week_from
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_week_from
 msgid "week from"
 msgstr "week from"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_magnus_planning_week_to
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_planning_week_to
 msgid "week to"
 msgstr "week to"
 

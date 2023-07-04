@@ -8,7 +8,7 @@ from odoo import _, api, fields, models
 import odoo.addons.decimal_precision as dp
 
 # Register relations
-RELATIONS_SQL_MAGNUS = """\
+RELATIONS_SQL_PS = """\
 SELECT
     (rel.id * %%(padding)s) + %(key_offset)s AS id,
     'res.partner.relation' AS res_model,
@@ -24,7 +24,7 @@ SELECT
 FROM res_partner_relation rel"""
 
 # Register inverse relations
-RELATIONS_SQL_INVERSE_MAGNUS = """\
+RELATIONS_SQL_INVERSE_PS = """\
 SELECT
     (rel.id * %%(padding)s) + %(key_offset)s AS id,
     'res.partner.relation',
@@ -56,7 +56,7 @@ class ResPartnerRelationAll(models.AbstractModel):
         register = collections.OrderedDict()
         register['_lastkey'] = -1
         self.register_specification(
-            register, 'relation', False, RELATIONS_SQL_MAGNUS)
+            register, 'relation', False, RELATIONS_SQL_PS)
         self.register_specification(
-            register, 'relation', True, RELATIONS_SQL_INVERSE_MAGNUS)
+            register, 'relation', True, RELATIONS_SQL_INVERSE_PS)
         return register

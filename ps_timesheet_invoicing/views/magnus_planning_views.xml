@@ -1,9 +1,9 @@
 <odoo>
     <data>
 
-        <record id="magnus_planning_tree" model="ir.ui.view">
-            <field name="name">magnus.planning.tree</field>
-            <field name="model">magnus.planning</field>
+        <record id="ps_planning_tree" model="ir.ui.view">
+            <field name="name">ps.planning.tree</field>
+            <field name="model">ps.planning</field>
             <field name="arch" type="xml">
                 <tree
                     string="Planning Sheets"
@@ -19,10 +19,10 @@
             </field>
         </record>
 
-        <record id="magnus_planning_tree_my" model="ir.ui.view">
-            <field name="name">magnus.planning.tree.my</field>
-            <field name="model">magnus.planning</field>
-            <field name="inherit_id" ref="magnus_planning_tree"/>
+        <record id="ps_planning_tree_my" model="ir.ui.view">
+            <field name="name">ps.planning.tree.my</field>
+            <field name="model">ps.planning</field>
+            <field name="inherit_id" ref="ps_planning_tree"/>
             <field name="mode">primary</field>
             <field name="priority">1000</field>
             <field name="arch" type="xml">
@@ -32,9 +32,9 @@
             </field>
         </record>
 
-        <record id="magnus_planning_form" model="ir.ui.view">
-            <field name="name">magnus.planning.form</field>
-            <field name="model">magnus.planning</field>
+        <record id="ps_planning_form" model="ir.ui.view">
+            <field name="name">ps.planning.form</field>
+            <field name="model">ps.planning</field>
             <field name="arch" type="xml">
                 <form string="planning">
                     <field name="user_id" invisible="1"/>
@@ -67,7 +67,7 @@
                         </group>
                         <notebook>
                             <page string="Summary">
-                                <group name="Sheet" class="magnus_planning_summary">
+                                <group name="Sheet" class="ps_planning_summary">
                                     <field name="line_ids" nolabel="1"
                                            widget="x2many_2d_matrix"
                                            field_x_axis="value_x"
@@ -142,9 +142,9 @@
                 </form>
             </field>
         </record>
-        <record id="act_view_magnus_planning" model="ir.actions.act_window">
+        <record id="act_view_ps_planning" model="ir.actions.act_window">
             <field name="name">My Planning</field>
-            <field name="res_model">magnus.planning</field>
+            <field name="res_model">ps.planning</field>
             <field name="view_mode">form</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
@@ -161,16 +161,16 @@
             </field>
         </record>
 
-        <menuitem action="ir_actions_server_timesheet_planning_employee" id="menu_act_magnus_planning" parent="hr_timesheet.menu_hr_time_tracking"
-             sequence="4" groups="ps_timesheet_invoicing.group_magnus_planning_officer"/>
+        <menuitem action="ir_actions_server_timesheet_planning_employee" id="menu_act_ps_planning" parent="hr_timesheet.menu_hr_time_tracking"
+             sequence="4" groups="ps_timesheet_invoicing.group_ps_planning_officer"/>
 
-        <menuitem action="ir_actions_server_timesheet_planning_self" id="menu_act_magnus_self_planning" parent="hr_timesheet.menu_hr_time_tracking"
-             sequence="3" groups="ps_timesheet_invoicing.group_magnus_planning_user"/>
+        <menuitem action="ir_actions_server_timesheet_planning_self" id="menu_act_ps_self_planning" parent="hr_timesheet.menu_hr_time_tracking"
+             sequence="3" groups="ps_timesheet_invoicing.group_ps_planning_user"/>
 
-        <record id="magnus_planning_form_my" model="ir.ui.view">
-            <field name="name">magnus.planning.form.my</field>
-            <field name="model">magnus.planning</field>
-            <field name="inherit_id" ref="magnus_planning_form"/>
+        <record id="ps_planning_form_my" model="ir.ui.view">
+            <field name="name">ps.planning.form.my</field>
+            <field name="model">ps.planning</field>
+            <field name="inherit_id" ref="ps_planning_form"/>
             <field name="mode">primary</field>
             <field name="priority">1000</field>
             <field name="arch" type="xml">
@@ -180,9 +180,9 @@
             </field>
         </record>
 
-        <record id="view_magnus_planning_kanban" model="ir.ui.view">
-            <field name="name">magnus.planning.kanban</field>
-            <field name="model">magnus.planning</field>
+        <record id="view_ps_planning_kanban" model="ir.ui.view">
+            <field name="name">ps.planning.kanban</field>
+            <field name="model">ps.planning</field>
             <field name="arch" type="xml">
                 <kanban class="o_kanban_mobile" create="0">
                     <field name="employee_id"/>
@@ -234,9 +234,9 @@
 
 
 
-        <record id="act_magnus_planning_my_planning" model="ir.actions.act_window">
+        <record id="act_ps_planning_my_planning" model="ir.actions.act_window">
             <field name="name">My Planning Sheets</field>
-            <field name="res_model">magnus.planning</field>
+            <field name="res_model">ps.planning</field>
             <field name="view_mode">form</field>
             <field name="view_mode">tree,kanban,form</field>
             <field name="domain">[('employee_id.user_id', '=', uid)]</field>
@@ -255,26 +255,26 @@
             </field>
         </record>
 
-        <record id="act_magnus_planning_my_planning_tree" model="ir.actions.act_window.view">
+        <record id="act_ps_planning_my_planning_tree" model="ir.actions.act_window.view">
             <field name="view_mode">tree</field>
             <field name="sequence" eval="4"/>
-            <field name="view_id" ref="magnus_planning_tree_my"/>
-            <field name="act_window_id" ref="act_magnus_planning_my_planning"/>
+            <field name="view_id" ref="ps_planning_tree_my"/>
+            <field name="act_window_id" ref="act_ps_planning_my_planning"/>
         </record>
 
-        <record id="act_magnus_planning_my_planning_form" model="ir.actions.act_window.view">
+        <record id="act_ps_planning_my_planning_form" model="ir.actions.act_window.view">
             <field name="view_mode">form</field>
             <field name="sequence" eval="5"/>
-            <field name="view_id" ref="magnus_planning_form_my"/>
-            <field name="act_window_id" ref="act_magnus_planning_my_planning"/>
+            <field name="view_id" ref="ps_planning_form_my"/>
+            <field name="act_window_id" ref="act_ps_planning_my_planning"/>
         </record>
 
-        <record id="act_magnus_planning_all_plannings" model="ir.actions.act_window">
+        <record id="act_ps_planning_all_plannings" model="ir.actions.act_window">
             <field name="name">My Employee's Planning Sheets</field>
-            <field name="res_model">magnus.planning</field>
+            <field name="res_model">ps.planning</field>
             <field name="view_mode">form</field>
             <field name="view_mode">tree,kanban,form</field>
-            <!--<field name="search_view_id" ref="view_magnus_planning_filter"/>-->
+            <!--<field name="search_view_id" ref="view_ps_planning_filter"/>-->
             <!-- <field name="domain">['|',('employee_id.user_id', '=', uid),('employee_id.parent_id.user_id', '=', uid)]</field> -->
             <field name="context">{'all_planning': 1}</field>
             <field name="help" type="html">
@@ -292,30 +292,30 @@
         </record>
 
         <menuitem
-            action="act_magnus_planning_my_planning"
-            id="menu_act_magnus_planning_my_planning"
+            action="act_ps_planning_my_planning"
+            id="menu_act_ps_planning_my_planning"
             parent="hr_timesheet.menu_hr_time_tracking"
             sequence="3"
         />
 
         <menuitem
-            action="act_magnus_planning_all_plannings"
-            id="menu_act_magnus_planning_all_plannings"
+            action="act_ps_planning_all_plannings"
+            id="menu_act_ps_planning_all_plannings"
             parent="hr_timesheet.menu_hr_time_tracking"
             sequence="4"
             groups="hr_timesheet.group_timesheet_manager"
         />
 
-        <record id="act_magnus_planning_to_review" model="ir.actions.act_window">
+        <record id="act_ps_planning_to_review" model="ir.actions.act_window">
             <field name="name">Planning Sheets to Review</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">magnus.planning</field>
+            <field name="res_model">ps.planning</field>
             <field name="view_mode">form</field>
             <field name="view_mode">tree,kanban,form</field>
             <field name="view_id" eval="False"/>
             <field name="context">{'search_default_to_review':1}</field>
             <!--<field name="domain">[('can_review','=',True)]</field>-->
-            <!--<field name="search_view_id" ref="view_magnus_planning_filter"/>-->
+            <!--<field name="search_view_id" ref="view_ps_planning_filter"/>-->
             <field name="help" type="html">
               <p class="oe_view_nocontent_create">
                 Timesheets to review.
@@ -338,8 +338,8 @@
         />
 
         <menuitem
-            action="act_magnus_planning_to_review"
-            id="menu_act_magnus_planning_to_review"
+            action="act_ps_planning_to_review"
+            id="menu_act_ps_planning_to_review"
             parent="menu_hr_to_review"
             sequence="11"
         />
@@ -347,8 +347,8 @@
 
 
         <record id="standby_planning_form_calender" model="ir.ui.view">
-            <field name="name">magnus.standby.planning.form</field>
-            <field name="model">magnus.standby.planning</field>
+            <field name="name">ps.standby.planning.form</field>
+            <field name="model">ps.standby.planning</field>
             <field name="arch" type="xml">
                 <form string="Standby-Planing">
                     <sheet>
@@ -375,8 +375,8 @@
         </record>
 
         <record id="standby_planning_calendar_view" model="ir.ui.view">
-            <field name="name">magnus.standby.planning.calendar</field>
-            <field name="model">magnus.standby.planning</field>
+            <field name="name">ps.standby.planning.calendar</field>
+            <field name="model">ps.standby.planning</field>
             <field name="arch" type="xml">
                 <!-- <calendar string="Standby-Planing" color="employee_id" date_start="date_from" date_stop="date_to" mode="month" quick_add="False" avatar_model="hr.employee" event_open_popup="%(ps_timesheet_invoicing.standby_planning_form_calender)"> -->
                 <calendar string="Standby-Planing" color="employee_id" date_start="date_from" date_stop="date_to" mode="month" quick_add="False" event_open_popup="%(ps_timesheet_invoicing.standby_planning_form_calender)">
@@ -385,9 +385,9 @@
             </field>
         </record>
 
-        <record id="view_magnus_standby_planning_tree" model="ir.ui.view">
-            <field name="name">magnus.standby.planning.tree</field>
-            <field name="model">magnus.standby.planning</field>
+        <record id="view_ps_standby_planning_tree" model="ir.ui.view">
+            <field name="name">ps.standby.planning.tree</field>
+            <field name="model">ps.standby.planning</field>
             <field name="arch" type="xml">
                 <tree string="Plannings">
                     <field name="employee_id"/>
@@ -399,7 +399,7 @@
 
         <record id="action_standby_planning" model="ir.actions.act_window">
             <field name="name">Stand-By Planning</field>
-            <field name="res_model">magnus.standby.planning</field>
+            <field name="res_model">ps.standby.planning</field>
             <field name="view_mode">form</field>
             <field name="view_mode">calendar,tree</field>
             <field name="view_id" ref="standby_planning_calendar_view"/>

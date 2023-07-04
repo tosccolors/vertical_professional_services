@@ -1,6 +1,6 @@
 # Translation of OpenERP Server.
 # This file contains the translation of the following modules:
-#	* magnus_invoice_layout
+#	* ps_invoice_layout
 #
 msgid ""
 msgstr ""
@@ -15,39 +15,39 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#. module: magnus_invoice_layout
+#. module: ps_invoice_layout
 #: field:account.invoice,invoice_description:0
 msgid "Description"
 msgstr "Omschrijving"
 
-#. module: magnus_invoice_layout
-#: model:ir.model,name:magnus_invoice_layout.model_res_company
+#. module: ps_invoice_layout
+#: model:ir.model,name:ps_invoice_layout.model_res_company
 msgid "Companies"
 msgstr "Bedrijven"
 
-#. module: magnus_invoice_layout
+#. module: ps_invoice_layout
 #: view:res.company:0
 #: field:res.company,report_background_image:0
 msgid "Background Image for Report"
 msgstr "Achtergrond afbeelding voor factuur"
 
-#. module: magnus_invoice_layout
+#. module: ps_invoice_layout
 #: view:account.invoice:0
 msgid "Invoice Description"
 msgstr "Factuur omschrijving"
 
-#. module: magnus_invoice_layout
+#. module: ps_invoice_layout
 #: help:res.company,report_background_image:0
 msgid "Set Background Image for Report"
 msgstr "Stel achtergrond afbeelding in voor factuur"
 
-#. module: magnus_invoice_layout
+#. module: ps_invoice_layout
 #: view:account.invoice:0
 msgid "Add description"
 msgstr "Voeg omschrijving toe..."
 
-#. module: magnus_invoice_layout
-#: model:ir.model,name:magnus_invoice_layout.model_account_invoice
+#. module: ps_invoice_layout
+#: model:ir.model,name:ps_invoice_layout.model_account_invoice
 msgid "Invoice"
 msgstr "Factuur"
 

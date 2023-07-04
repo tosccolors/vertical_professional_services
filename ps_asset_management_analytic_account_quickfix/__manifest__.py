@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "magnus_asset_management_analytic_account_quickfix",
+    'name': "ps_asset_management_analytic_account_quickfix",
 
     'summary': """
         Solves analytic account issue with the asset module""",
@@ -20,7 +20,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['magnus_assets_equipment_link'],
+    'depends': ['ps_assets_equipment_link'],
 
     # always loaded
     'data': [

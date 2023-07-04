@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 from odoo import http
 
-# class MagnusExpense(http.Controller):
-#     @http.route('/magnus_expense/magnus_expense/', auth='public')
+# class PSExpense(http.Controller):
+#     @http.route('/ps_expense/ps_expense/', auth='public')
 #     def index(self, **kw):
 #         return "Hello, world"
 
-#     @http.route('/magnus_expense/magnus_expense/objects/', auth='public')
+#     @http.route('/ps_expense/ps_expense/objects/', auth='public')
 #     def list(self, **kw):
-#         return http.request.render('magnus_expense.listing', {
-#             'root': '/magnus_expense/magnus_expense',
-#             'objects': http.request.env['magnus_expense.magnus_expense'].search([]),
+#         return http.request.render('ps_expense.listing', {
+#             'root': '/ps_expense/ps_expense',
+#             'objects': http.request.env['ps_expense.ps_expense'].search([]),
 #         })
 
-#     @http.route('/magnus_expense/magnus_expense/objects/<model("magnus_expense.magnus_expense"):obj>/', auth='public')
+#     @http.route('/ps_expense/ps_expense/objects/<model("ps_expense.ps_expense"):obj>/', auth='public')
 #     def object(self, obj, **kw):
-#         return http.request.render('magnus_expense.object', {
+#         return http.request.render('ps_expense.object', {
 #             'object': obj
 #         })

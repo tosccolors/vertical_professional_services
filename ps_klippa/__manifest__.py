@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Copyright 2018 Willem Hulshof Magnus (www.magnus.nl).
+# Copyright 2018 Willem Hulshof The Open Source Company (www.tosc.nl).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
-    'name': "magnus_klippa",
+    'name': "ps_klippa",
 
     'summary': "This module creates a cron job to update expenses.",
 
@@ -22,7 +22,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['magnus_expense'],
+    'depends': ['ps_expense'],
 
     # always loaded
     'data': [

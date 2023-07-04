@@ -1,7 +1,7 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
 # 	* account_asset_management
-# 	* magnus_operating_unit_asset_management
+# 	* ps_operating_unit_asset_management
 #
 msgid ""
 msgstr ""
@@ -85,14 +85,14 @@ msgstr "Kostenplaats"
 msgid "Are you sure ?"
 msgstr "Are you sure ?"
 
-#. modules: account_asset_management, magnus_operating_unit_asset_management
+#. modules: account_asset_management, ps_operating_unit_asset_management
 #: model:ir.model,name:account_asset_management.model_account_asset
 #: model:ir.model.fields,field_description:account_asset_management.field_account_asset_line_asset_id
 #: model:ir.model.fields,field_description:account_asset_management.field_account_invoice_line_asset_id
 #: model:ir.model.fields,field_description:account_asset_management.field_account_move_line_asset_id
 #: model:ir.ui.view,arch_db:account_asset_management.account_asset_view_form
 #: model:ir.ui.view,arch_db:account_asset_management.account_asset_view_search
-#: model:ir.model,name:magnus_operating_unit_asset_management.model_account_asset
+#: model:ir.model,name:ps_operating_unit_asset_management.model_account_asset
 msgid "Asset"
 msgstr "Activa"
 
@@ -164,9 +164,9 @@ msgstr "Asset Sale Account"
 msgid "Asset Start Date"
 msgstr "Startdatum activa"
 
-#. modules: account_asset_management, magnus_operating_unit_asset_management
+#. modules: account_asset_management, ps_operating_unit_asset_management
 #: model:ir.model,name:account_asset_management.model_account_asset_line
-#: model:ir.model,name:magnus_operating_unit_asset_management.model_account_asset_line
+#: model:ir.model,name:ps_operating_unit_asset_management.model_account_asset_line
 msgid "Asset depreciation table line"
 msgstr "Asset depreciation table line"
 
@@ -727,8 +727,8 @@ msgstr "Aantal jaar"
 msgid "Open"
 msgstr "Open"
 
-#. module: magnus_operating_unit_asset_management
-#: model:ir.model.fields,field_description:magnus_operating_unit_asset_management.field_account_asset_operating_unit_id
+#. module: ps_operating_unit_asset_management
+#: model:ir.model.fields,field_description:ps_operating_unit_asset_management.field_account_asset_operating_unit_id
 msgid "Operating Unit"
 msgstr "Operating Unit"
 

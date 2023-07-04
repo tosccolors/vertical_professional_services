@@ -19,7 +19,7 @@
 ##############################################################################
 
 {
-    "name": "Magnus Account Invoice Layout",
+    "name": "Professional Services Account Invoice Layout",
     "version": "2.0",
     "author": "BAS Solutions",
     "website": "https://www.bas-solutions.nl",
@@ -28,7 +28,7 @@
         "base",
         "account",
     ],
-    "summary": "Magnus Account Invoice Layout",
+    "summary": "Professional Services Account Invoice Layout",
     "description": """
         NSM Account Invoice Layout
     """,

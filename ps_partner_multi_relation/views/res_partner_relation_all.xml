@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <record id="tree_res_partner_relation_all_magnus" model="ir.ui.view">
+    <record id="tree_res_partner_relation_all_ps" model="ir.ui.view">
         <field name="model">res.partner.relation.all</field>
         <field name="inherit_id"
                ref="partner_multi_relation.tree_res_partner_relation_all"/>

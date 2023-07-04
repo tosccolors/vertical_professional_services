@@ -63,7 +63,7 @@ class HrTimesheetCurrentOpen(models.TransientModel):
              ('type_id.fiscal_month', '=', False), ('date_start', '<=', date), ('date_end', '>=', date)], limit=1)
 
         domain = [('user_id', '=', self._uid), ('planning_quarter', '=', period.id), ('is_planning_officer', '=', is_planning_officer)]
-        planning = self.env['magnus.planning'].search(domain)
+        planning = self.env['ps.planning'].search(domain)
 
         if len(planning) > 1:
             domain = "[('id', 'in', " + str(planning.ids) + "),('user_id', '=', uid)]"
@@ -76,7 +76,7 @@ class HrTimesheetCurrentOpen(models.TransientModel):
             'name': _('Open Planning'),
             'view_type': 'form',
             'view_mode': view_type,
-            'res_model': 'magnus.planning',
+            'res_model': 'ps.planning',
             'view_id': False,
             'type': 'ir.actions.act_window',
             'context':{'default_is_planning_officer':is_planning_officer},
@@ -99,7 +99,7 @@ class HrTimesheetCurrentOpen(models.TransientModel):
 
         domain = [('user_id', '=', self._uid), ('planning_quarter', '=', period.id)]
         print("-----domainsss",domain)
-        planning = self.env['magnus.planning'].search(domain)
+        planning = self.env['ps.planning'].search(domain)
         print("-----planning",planning)
         
         value = {
@@ -107,7 +107,7 @@ class HrTimesheetCurrentOpen(models.TransientModel):
             'name': _('Open Planning'),
             'view_type': 'form',
             'view_mode': view_type,
-            'res_model': 'magnus.planning',
+            'res_model': 'ps.planning',
             'view_id': False,
             'type': 'ir.actions.act_window',
             'context':{'default_self_planning':self_planning},

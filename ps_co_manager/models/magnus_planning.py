@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
 
-class MagnusPlanning(models.Model):
-    _inherit = "magnus.planning"
+class PSPlanning(models.Model):
+    _inherit = "ps.planning"
 
     # @api.one
     def _compute_emp_domain(self):
@@ -19,7 +19,7 @@ class MagnusPlanning(models.Model):
         self.emp_domain_compute = ",".join(map(str, emp_list))
 
     def get_employee_child_ids(self):
-        child_ids = super(MagnusPlanning, self).get_employee_child_ids()
+        child_ids = super(PSPlanning, self).get_employee_child_ids()
         # get co-manager departments employee list
         self.env.cr.execute("""
             WITH RECURSIVE

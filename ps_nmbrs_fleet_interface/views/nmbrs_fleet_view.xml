@@ -61,6 +61,6 @@
         id="nmbrs_fleet_menu"
         action="open_view_nmbrs_fleet"
         groups="nmbrs_fleet_interface"
-        parent="magnus_nmbrs_base.menu_payroll"
+        parent="ps_nmbrs_base.menu_payroll"
         sequence="1"/>
 </odoo>

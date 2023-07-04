@@ -172,7 +172,7 @@ class hr_employee_landing_page(models.TransientModel):
 	def action_view_leaves_dashboard(self):
 		self.ensure_one()
 		ir_model_data = self.env['ir.model.data']
-		tree_res = ir_model_data.get_object_reference('magnus_landing_page', 'view_holiday_landing_page')
+		tree_res = ir_model_data.get_object_reference('ps_landing_page', 'view_holiday_landing_page')
 		tree_id = tree_res and tree_res[1] or False
 		self.env.cr.execute("""SELECT 
 									id
@@ -217,7 +217,7 @@ class hr_employee_landing_page(models.TransientModel):
 	def action_view_analytic_tree(self):
 		self.ensure_one()
 		ir_model_data = self.env['ir.model.data']
-		tree_res = ir_model_data.get_object_reference('magnus_landing_page', 'view_account_analytic_line_landing_page_tree')
+		tree_res = ir_model_data.get_object_reference('ps_landing_page', 'view_account_analytic_line_landing_page_tree')
 		tree_id = tree_res and tree_res[1] or False
 
 		user_id = self.env.user.id

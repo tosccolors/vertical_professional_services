@@ -22,7 +22,7 @@ class TimesheetAnalyticLine(models.Model):
     user_id = fields.Many2one('res.users', string='User', default=_default_user)
 
     # planning_analytic_id = fields.Many2one(
-    #     comodel_name='magnus.planning',
+    #     comodel_name='ps.planning',
     #     string='Planning id',
     # )
     week_id = fields.Many2one('date.range',string="Week",compute='compute_week_id',store=True)

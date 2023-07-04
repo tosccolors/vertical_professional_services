@@ -21,7 +21,7 @@
         <!--     <field name="value">30</field> -->
         <!--   </record> -->
         <!--  -->
-        <!--   <record id="object4" model="ps_calender.magnus_calender"> -->
+        <!--   <record id="object4" model="ps_calender.ps_calender"> -->
         <!--     <field name="name">Object 4</field> -->
         <!--     <field name="value">40</field> -->
         <!--   </record> -->

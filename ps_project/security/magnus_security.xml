@@ -9,8 +9,8 @@
         </record>
 
         <record id="group_ps_invoicing" model="res.groups">
-            <field name="name">Magnus Invoicing</field>
-            <field name="category_id" ref="module_magnus_category"/>
+            <field name="name">Professional Services Invoicing</field>
+            <field name="category_id" ref="module_ps_category"/>
         </record>
 
     </data>

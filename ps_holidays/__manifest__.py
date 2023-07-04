@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2018 Willem Hulshof Magnus (www.magnus.nl).
+# Copyright 2018 Willem Hulshof The Open Source Company (www.tosc.nl).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     'name': "Professional Services Leave Management",

@@ -1,4 +1,4 @@
-odoo.define('magnus_security.sheet', function (require) {
+odoo.define('ps_security.sheet', function (require) {
     'use strict';
 
     var core = require('web.core');

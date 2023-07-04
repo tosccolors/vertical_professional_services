@@ -45,7 +45,7 @@ class account_invoice(report_sxw.rml_parse):
 report_sxw.report_sxw(
     'report.account.invoice.custom',
     'account.invoice',
-    'addons/magnus_invoice_layout/report/report_account_invoice_print.rml',
+    'addons/ps_invoice_layout/report/report_account_invoice_print.rml',
     parser=account_invoice,
 )
 

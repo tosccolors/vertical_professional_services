@@ -4,12 +4,12 @@
 {
     "name": "Partner Professional Services Relations",
     "version": "10.0.1.0.1",
-    "author": "Therp BV,Camptocamp,Magnus,Odoo Community Association (OCA)",
+    "author": "Therp BV,Camptocamp,The Open Source Company,Odoo Community Association (OCA)",
     "complexity": "normal",
     "category": "Customer Relationship Management",
     "license": "AGPL-3",
     "depends": [
-        'partner_multi_relation','magnus_account'
+        'partner_multi_relation','ps_account'
     ],
     "demo": [
 

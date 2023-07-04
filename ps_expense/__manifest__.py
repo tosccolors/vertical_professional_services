@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "magnus_expense",
+    'name': "ps_expense",
 
     'summary': """
         Adjustments to Expense Module

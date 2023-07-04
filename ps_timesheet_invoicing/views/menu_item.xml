@@ -15,7 +15,7 @@
                   parent="menu_analytic_invoicing"
                   sequence="2"/>
         <menuitem id="menu_action_analytic_account_lines"
-                  action="account_analytic_line_action_entries_magnus"
+                  action="account_analytic_line_action_entries_ps"
                   parent="menu_analytic_entries" sequence="1" groups="analytic.group_analytic_accounting"/>
 
 </odoo>

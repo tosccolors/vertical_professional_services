@@ -128,8 +128,8 @@ msgstr "Uren:"
 msgid "Name"
 msgstr "Naam"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "<span>Date</span><br/>\n"
 "                             <span>Invoice</span><br/>\n"
 "                             <span>Reference</span><br/>\n"
@@ -141,42 +141,42 @@ msgstr "<span>Datum</span><br/>\n"
 "                             <span>Uw BTW nr.</span><br/>\n"
 "                             <span>Ons BTW nr.</span><br/>"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Month"
 msgstr "Maand"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Amount"
 msgstr "Bedrag"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Subtotal"
 msgstr "Subtotaal"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Total amount"
 msgstr "Totaal te voldoen"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Payment terms:"
 msgstr "Betaaltermijn:"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Within"
 msgstr "Binnen"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "to"
 msgstr "aan"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "PROFORMA INVOICE"
 msgstr "PROFORMA FACTUUR"

@@ -10,11 +10,11 @@ from odoo import http
 #     def list(self, **kw):
 #         return http.request.render('ps_calender.listing', {
 #             'root': '/ps_calender/ps_calender',
-#             'objects': http.request.env['ps_calender.magnus_calender'].search([]),
+#             'objects': http.request.env['ps_calender.ps_calender'].search([]),
 #         })
 
-#     @http.route('/magnus_calender/magnus_calender/objects/<model("magnus_calender.magnus_calender"):obj>/', auth='public')
+#     @http.route('/ps_calender/ps_calender/objects/<model("ps_calender.ps_calender"):obj>/', auth='public')
 #     def object(self, obj, **kw):
-#         return http.request.render('magnus_calender.object', {
+#         return http.request.render('ps_calender.object', {
 #             'object': obj
 #         })

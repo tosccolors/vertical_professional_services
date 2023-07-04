@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "magnus_security",
+    'name': "ps_security",
 
     'summary': """
-        Magnus Security""",
+        Professional Services Security""",
 
     'description': """
-        Magnus Security
+        Professional Services Security
     """,
 
     'author': "TOSC",

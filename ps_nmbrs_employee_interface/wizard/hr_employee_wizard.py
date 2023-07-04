@@ -3,7 +3,7 @@ import re
 
 
 class HREmployeeWizard(models.TransientModel):
-    """Some additions to the preexisting employee wizard (magnus-addons) to facilitate inserting the employee in NMBRs"""
+    """Some additions to the preexisting employee wizard (vertical-professional-services) to facilitate inserting the employee in NMBRs"""
     _inherit = "hr.employee.wizard"
 
     def _compute_street_number(self):

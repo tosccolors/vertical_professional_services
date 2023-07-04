@@ -121,7 +121,7 @@ class AccountMove(models.Model):
         :return:
         '''
 
-        relation_type = self.env.ref('magnus_partner_multi_relation.rel_type_consortium').id
+        relation_type = self.env.ref('ps_partner_multi_relation.rel_type_consortium').id
         members_data = self.get_members_sharing_key(self.partner_id, relation_type)
         if not members_data:
             return super(AccountMove, self).action_invoice_open()

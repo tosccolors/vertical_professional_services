@@ -134,7 +134,7 @@ class HrExpenseSheet(models.Model):
 
     
     def approve_partner_expense_sheets(self):
-        if not self.env.user.has_group('magnus_expense.group_hr_expense_partner'):
+        if not self.env.user.has_group('ps_expense.group_hr_expense_partner'):
             raise UserError(_("Only Partner can approve expenses"))
         self.write({'state': 'approve_partner', 'user_id': self.env.user.id})
 

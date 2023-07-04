@@ -5,7 +5,7 @@
         <record model="ir.ui.view" id="project_invoicing_Period_form_view">
             <field name="name">Invoicing Properties</field>
             <field name="model">project.invoicing.properties</field>
-            <field name="inherit_id" ref="magnus_account.project_invoicing_Period_form_view"/>
+            <field name="inherit_id" ref="ps_account.project_invoicing_Period_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//group[@name='custom_header_footer']" position="after">
                     <group name="partner_relation" string="Relations">
