@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Magnus NMBRs Fleet Interface",
+    'name': "Professional Services NMBRs Fleet Interface",
 
     'summary': """
         Provides an interface push fleet changes from Odoo to NMBRs """,
@@ -15,7 +15,7 @@
     'version': '1.0',
     'installable': True,
     # any module necessary for this one to work correctly
-    'depends': ['magnus_fleet', 'magnus_fleet_rdw'],
+    'depends': ['ps_fleet', 'ps_fleet_rdw'],
 
     # always loaded
     'data': [

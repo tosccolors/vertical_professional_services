@@ -2,7 +2,7 @@
     <data>
     <!-- explicit form view definition -->
 
-        <record model="ir.ui.view" id="magnus_landing_page_list">
+        <record model="ir.ui.view" id="ps_landing_page_list">
             <field name="name">hr.employee.landing.page.form</field>
             <field name="model">hr.employee.landing_page</field>
             <field name="arch" type="xml">

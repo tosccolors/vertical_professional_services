@@ -15,7 +15,7 @@ class DateRangeType(models.Model):
 
     def unlink(self):
         date_range_type_cw = self.env.ref(
-            'magnus_date_range_week.date_range_calender_week')
+            'ps_date_range_week.date_range_calender_week')
         if date_range_type_cw.id in self.ids:
             raise UserError(_("You can't delete date range type: "
                               "Calender week"))

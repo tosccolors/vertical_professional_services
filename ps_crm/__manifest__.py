@@ -2,7 +2,7 @@
 # Copyright 2018 Willem Hulshof Magnus (www.magnus.nl).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
-    'name': "Magnus CRM",
+    'name': "Professional Services CRM",
 
     'summary': "Opportunities - Extended",
 

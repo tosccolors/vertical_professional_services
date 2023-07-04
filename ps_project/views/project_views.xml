@@ -3,7 +3,7 @@
   <data>
 
         <!-- Task -->
-        <!-- <record id="view_task_form2_inherited_magnus" model="ir.ui.view">
+        <!-- <record id="view_task_form2_inherited_ps" model="ir.ui.view">
             <field name="name">project.task.form</field>
             <field name="model">project.task</field>
             <field name="inherit_id" ref="hr_timesheet.view_task_form2_inherited"/>
@@ -23,7 +23,7 @@
         </record> -->
 
         <!-- Project -->
-        <record id="edit_project_magnus" model="ir.ui.view">
+        <record id="edit_project_ps" model="ir.ui.view">
             <field name="name">project.project.form</field>
             <field name="model">project.project</field>
             <field name="inherit_id" ref="project.edit_project"/>
@@ -67,7 +67,7 @@
                 </xpath>
             </field>
         </record>
-        <record id="view_project_project_filter_magnus" model="ir.ui.view">
+        <record id="view_project_project_filter_ps" model="ir.ui.view">
             <field name="name">project.project.search</field>
             <field name="model">project.project</field>
             <field name="inherit_id" ref="project.view_project_project_filter"/>
@@ -77,7 +77,7 @@
                 </xpath>
             </field>
         </record>
-        <record id="view_project_magnus" model="ir.ui.view">
+        <record id="view_project_ps" model="ir.ui.view">
             <field name="name">project.project.tree</field>
             <field name="model">project.project</field>
             <field name="inherit_id" ref="project.view_project"/>
@@ -92,7 +92,7 @@
                 </field>
             </field>
         </record>
-        <record id="view_project_kanban_magnus" model="ir.ui.view">
+        <record id="view_project_kanban_ps" model="ir.ui.view">
             <field name="name">project.project.Kanban</field>
             <field name="model">project.project</field>
             <field name="inherit_id" ref="project.view_project_kanban"/>
@@ -153,7 +153,7 @@
         </record>
 
       <record id="view_task_tree2" model="ir.ui.view">
-            <field name="name">project.task.magnus.project.tree</field>
+            <field name="name">project.task.ps.project.tree</field>
             <field name="model">project.task</field>
             <field name="inherit_id" ref="project.view_task_tree2"/>
             <field name="arch" type="xml">

@@ -1,17 +1,17 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-# Copyright (c) 2013 - 2018 Magnus - Willem Hulshof - www.magnus.nl
+# Copyright 2013 - 2023 The Open Source Company ((www.tosc.nl).)
 #
 #
 ##############################################################################
 
 {
-    'name' : 'magnus_account_invoice_2step_validation',
+    'name' : 'ps_account_invoice_2step_validation',
     'version' : '0.9',
     'category': 'accounts',
     'description': """
-This module adds authorization steps in workflow in magnus supplier invoices.
+This module adds authorization steps in workflow in professional services supplier invoices.
 =============================================================================
 
 Enchanced to add

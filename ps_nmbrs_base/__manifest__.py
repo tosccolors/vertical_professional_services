@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Magnus NMBRs Base Module",
+    'name': "Professional Services NMBRs Base Module",
 
     'summary': "Provides the base for the NMBRs interfaces. This module is no interface itself.",
     'author': "TOSC - Hayo Bos",

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Magnus NMBRs Payroll Interface",
+    'name': "Professional Services NMBRs Payroll Interface",
 
     'summary': """
         Provides an interface to load journal entries directly from NMBRs into Odoo""",
@@ -15,7 +15,7 @@
     'version': '1.0',
     'installable': True,
     # any module necessary for this one to work correctly
-    'depends': ['magnus_nmbrs_base', 'analytic', 'account'],
+    'depends': ['ps_nmbrs_base', 'analytic', 'account'],
 
     # always loaded
     'data': [

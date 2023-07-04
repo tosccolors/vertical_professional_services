@@ -15,10 +15,10 @@
     'author': "OpenERP SA, "
               "Tecnativa, "
               "LasLabs, "
-              "Magnus,"
+              "The Open Source Company,"
               "Odoo Community Association (OCA)",
-    'website': 'https://github.com/magnuscolors/magnus_contract',
-    'depends': ['contract', 'magnus_timesheet'],
+    'website': 'https://github.com/tosccolors/ps_contract',
+    'depends': ['contract', 'ps_timesheet_invoicing'],
     'data': [
     ],
     'installable': True,

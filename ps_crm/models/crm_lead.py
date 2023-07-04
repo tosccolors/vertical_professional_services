@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2018 Magnus ((www.magnus.nl).)
+# Copyright 2018 - 2023 The Open Source Company ((www.tosc.nl).)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import models, fields, api, _
@@ -98,7 +98,7 @@ class Lead(models.Model):
             red_per = 0.0
             green_per =0.0
             black_per = 0.0
-            magnus_blue_bv_amount = 0.0
+            ps_blue_bv_amount = 0.0
             magnus_red_bv_amount = 0.0
             magnus_green_bv_amount = 0.0
             magnus_black_bv_amount = 0.0

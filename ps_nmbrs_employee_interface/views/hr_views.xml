@@ -29,7 +29,7 @@
         <menuitem
             id="menu_nmbrs_country_code"
             action="open_view_nmbrs_country_settings"
-            parent="magnus_nmbrs_base.menu_nmbrs_mappings"
+            parent="ps_nmbrs_base.menu_nmbrs_mappings"
             sequence="1"/>
 
         </data>

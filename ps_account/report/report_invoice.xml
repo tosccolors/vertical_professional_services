@@ -3,8 +3,8 @@
 <data>
 
 
-<template id="report_invoice_document_magnus_account">
-    <t t-call="magnus_account.external_layout_magnus">
+<template id="report_invoice_document_ps_account">
+    <t t-call="ps_account.external_layout_ps">
      <!--<t t-call="web.external_layout">-->
     <!--<t t-call="report_qweb_operating_unit.external_layout_ou">-->
 

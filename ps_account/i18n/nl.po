@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* magnus_account
+#	* ps_account
 #
 msgid ""
 msgstr ""
@@ -15,116 +15,116 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.view_account_invoice_form_inherits
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.view_account_invoice_form_inherits
 msgid "Add description"
 msgstr "Voeg omschrijving toe..."
 
-#. module: magnus_account
-#: model:ir.model,name:magnus_account.model_account_analytic_line
+#. module: ps_account
+#: model:ir.model,name:ps_account.model_account_analytic_line
 msgid "Analytic Line"
 msgstr ""
 
-#. module: magnus_account
-#: model:ir.model.fields,field_description:magnus_account.field_res_company_report_background_image
-#: model:ir.ui.view,arch_db:magnus_account.view_res_company_form_inherits
+#. module: ps_account
+#: model:ir.model.fields,field_description:ps_account.field_res_company_report_background_image
+#: model:ir.ui.view,arch_db:ps_account.view_res_company_form_inherits
 msgid "Background Image for Report"
 msgstr "Achtergrond afbeelding voor factuur"
 
-#. module: magnus_account
-#: model:ir.model,name:magnus_account.model_res_company
+#. module: ps_account
+#: model:ir.model,name:ps_account.model_res_company
 msgid "Companies"
 msgstr "Bedrijven"
 
-#. module: magnus_account
-#: model:ir.model.fields,field_description:magnus_account.field_account_analytic_line_datum_naar_slam
+#. module: ps_account
+#: model:ir.model.fields,field_description:ps_account.field_account_analytic_line_datum_naar_slam
 msgid "Datum regel naar SLAM"
 msgstr ""
 
-#. module: magnus_account
-#: model:ir.model.fields,field_description:magnus_account.field_account_invoice_invoice_description
+#. module: ps_account
+#: model:ir.model.fields,field_description:ps_account.field_account_invoice_invoice_description
 msgid "Description"
 msgstr "Omschrijving"
 
-#. module: magnus_account
-#: model:ir.model.fields,help:magnus_account.field_account_journal_slam_relevant
+#. module: ps_account
+#: model:ir.model.fields,help:ps_account.field_account_journal_slam_relevant
 msgid "If the journal entries of theis journal should be exported to SLAM"
 msgstr ""
 
-#. module: magnus_account
-#: model:ir.model,name:magnus_account.model_account_invoice
+#. module: ps_account
+#: model:ir.model,name:ps_account.model_account_invoice
 msgid "Invoice"
 msgstr "Factuur"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.view_account_invoice_form_inherits
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.view_account_invoice_form_inherits
 msgid "Invoice Description"
 msgstr "Factuur omschrijving"
 
-#. module: magnus_account
-#: model:ir.model,name:magnus_account.model_account_journal
+#. module: ps_account
+#: model:ir.model,name:ps_account.model_account_journal
 msgid "Journal"
 msgstr ""
 
-#. module: magnus_account
-#: model:ir.model.fields,field_description:magnus_account.field_account_analytic_line_regel_naar_slam
+#. module: ps_account
+#: model:ir.model.fields,field_description:ps_account.field_account_analytic_line_regel_naar_slam
 msgid "Regel is naar SLAM"
 msgstr ""
 
-#. module: magnus_account
-#: model:ir.model.fields,help:magnus_account.field_res_company_report_background_image
+#. module: ps_account
+#: model:ir.model.fields,help:ps_account.field_res_company_report_background_image
 msgid "Set Background Image for Report"
 msgstr "Stel achtergrond afbeelding in voor factuur"
 
-#. module: magnus_account
-#: model:ir.model.fields,field_description:magnus_account.field_account_journal_slam_relevant
+#. module: ps_account
+#: model:ir.model.fields,field_description:ps_account.field_account_journal_slam_relevant
 msgid "Slam Export"
 msgstr ""
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Our VAT"
 msgstr "Ons BTW nr."
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Your VAT"
 msgstr "Uw BTW nr."
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Date"
 msgstr "Datum"
 
-#. module: magnus_account
-#: model:ir.model.fields,field_description:magnus_account.field_account_invoice_invoice_description
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.model.fields,field_description:ps_account.field_account_invoice_invoice_description
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Description"
 msgstr "Omschrijving"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Fee Rate"
 msgstr "Tarief"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Hours"
 msgstr "Uren"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "<strong>Hours Overview</strong>"
 msgstr "<strong>Uren overzicht</strong>"
 
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Hours:"
 msgstr "Uren:"
 
-#. module: magnus_account
-#: model:ir.ui.view,arch_db:magnus_account.report_invoice_document_magnus_account
+#. module: ps_account
+#: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "Name"
 msgstr "Naam"
 

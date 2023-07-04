@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import http
 
-# class MagnusLandingPage(http.Controller):
+# class PSLandingPage(http.Controller):
 #     @http.route('/magnus_landing_page/magnus_landing_page/', auth='public')
 #     def index(self, **kw):
 #         return "Hello, world"

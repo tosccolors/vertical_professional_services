@@ -3,7 +3,7 @@
     <record id="view_nmbrs_fiscal_addition_mapping_inherit" model="ir.ui.view">
         <field name="name">fleet.fiscal.addition.mapping.tree</field>
         <field name="model">fleet.fiscal.addition.mapping</field>
-        <field name="inherit_id" ref="magnus_fleet.view_fiscal_addition_mapping"/>
+        <field name="inherit_id" ref="ps_fleet.view_fiscal_addition_mapping"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='fiscal_addition']" position="after">
                 <field name="fiscal_addition_nmbrs_id"/>

@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 {
-    'name': 'Magnus Fleet',
+    'name': 'Professional Services Fleet',
     'summary': """
         Changes in contract notifications and new fields""",
     'version': '10.0.1.0.0',
@@ -12,7 +12,7 @@
     'website': 'https://www.magnus.nl',
     'depends': [
         'fleet',
-        'magnus_timesheet'
+        'ps_timesheet_invoicing'
     ],
     'data': [
         'views/fleet_view.xml',

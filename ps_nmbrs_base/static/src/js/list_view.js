@@ -1,4 +1,4 @@
-odoo.define('magnus_nmbrs_base.ListView', function (require) {
+odoo.define('ps_nmbrs_base.ListView', function (require) {
 "use strict";
 
 

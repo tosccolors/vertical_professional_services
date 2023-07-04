@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Magnus Calender",
+    'name': "Professional Services Calender",
 
     'summary': """
-        Magnus Calender""",
+        Professional Services Calender""",
 
     'description': """
-        Magnus Calender
+        Professional Services Calender
     """,
 
     'author': "TOSC",

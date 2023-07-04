@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 {
-    'name': 'Magnus - Equipments addon',
+    'name': 'Professional Services - Equipments addon',
     'version': '1.0',
     'author'  : 'TOSC - Willem Hulshof',
     'website' : 'http://www.tosc.nl',

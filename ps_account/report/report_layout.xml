@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="external_layout_magnus_header_ou">
+    <template id="external_layout_ps_header_ou">
         <div class="header">
             <div class="row">
                 <div class="row backgroundimage" style="position:relative;font-size:3em;
@@ -17,7 +17,7 @@
         </div>
     </template>
     
-    <template id="external_layout_magnus">
+    <template id="external_layout_ps">
         <t t-if="not o" t-set="o" t-value="doc"/>
 
         <t t-if="not company">
@@ -33,7 +33,7 @@
             </t>
         </t>
 
-        <t t-call="magnus_account.external_layout_magnus_header_ou"><t t-raw="0"/></t>
+        <t t-call="ps_account.external_layout_ps_header_ou"><t t-raw="0"/></t>
     </template>
 
 

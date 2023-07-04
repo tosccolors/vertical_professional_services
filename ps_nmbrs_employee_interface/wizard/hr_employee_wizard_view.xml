@@ -3,7 +3,7 @@
   	<record id="view_employee_creation_wizard_nmbrs_interface" model="ir.ui.view">
       <field name="name">hr.employee.wizard.form</field>
       <field name="model">hr.employee.wizard</field>
-	  <field name="inherit_id" ref="magnus_hr.view_employee_creation_wizard"/>
+	  <field name="inherit_id" ref="ps_hr.view_employee_creation_wizard"/>
       <field name="arch" type="xml">
       <form>
 		  <sheet>

@@ -54,7 +54,8 @@ class FleetChangesFromOdooToNMBRs(models.TransientModel):
         config = self.env['nmbrs.interface.config'].search([])[0]
         user = config.api_user
         token = config.api_key
-        authentication_v3 = {'Username': user, 'Token': token, 'Domain': 'magnus'}
+        domain = config.domain
+        authentication_v3 = {'Username': user, 'Token': token, 'Domain': domain}
         client = Client(config.endpoint_employee_service)
 
         for change in nmbrs_fleet_object.browse(context.get('active_ids', [])):

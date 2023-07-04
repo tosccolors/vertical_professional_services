@@ -27,15 +27,15 @@
 ##############################################################################
 
 {
-    'name'       : 'Magnus Follow Up',
+    'name'       : 'Professional Services Follow Up',
     'version'    : '0.1',
     'category'   : 'accounts',
     'description': """
-This module adds customization for Magnus, like :\n
+This module adds customization for Professional Services, like :\n
 - custom credit control per company, including invoices in appendix\n
 - open invoice status, showing latest status per open invoice for manual follow up\n
     """,
-    'author'  : 'Magnus - Willem Hulshof, D. Prosee',
+    'author'  : 'The Open Source Company - Willem Hulshof, D. Prosee',
     'website' : 'http://www.tosc.nl',
     'depends' : ['account_credit_control','account'
     ],

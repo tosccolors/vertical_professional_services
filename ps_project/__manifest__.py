@@ -2,7 +2,7 @@
 # Copyright 2018 Willem Hulshof Magnus (www.magnus.nl).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
-    'name': "magnus_project",
+    'name': "ps_project",
 
     'summary': "Projects - extended",
 
@@ -29,7 +29,7 @@
 
     # always loaded
     'data': [
-        'security/magnus_security.xml',
+        'security/ps_security.xml',
         'security/ir.model.access.csv',
         'views/project_views.xml',
         'views/hr_timesheet_views.xml',

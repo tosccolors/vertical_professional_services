@@ -5,7 +5,7 @@
         <record model="ir.ui.view" id="project_invoicing_Period_form_view">
             <field name="name">Invoicing Properties</field>
             <field name="model">project.invoicing.properties</field>
-            <field name="inherit_id" ref="magnus_project.project_invoicing_Period_form_view"/>
+            <field name="inherit_id" ref="ps_project.project_invoicing_Period_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//group" position="after">
                     <group name="custom_header_footer" string="Custom Header/Footer">
@@ -21,8 +21,8 @@
             </field>
         </record>
 
-        <!--<record model="ir.ui.view" id="view_task_form2_magnus_account">
-            <field name="name">project Task Magnus</field>
+        <!--<record model="ir.ui.view" id="view_task_form2_ps_account">
+            <field name="name">project Task ps</field>
             <field name="model">project.task</field>
             <field name="inherit_id" ref="connector_jira.view_task_form2"/>
             <field name="arch" type="xml">

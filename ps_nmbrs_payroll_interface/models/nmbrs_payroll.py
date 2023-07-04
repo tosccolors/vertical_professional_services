@@ -85,7 +85,8 @@ class PayrollEntry(models.Model):
             raise Warning(_("You need to set the Nmbrs ID for the operating unit in Odoo"))
         user = config.api_user
         token = config.api_key
-        authentication_v3 = {'Username': user, 'Token': token, 'Domain': 'magnus'}
+        domain = config.domain
+        authentication_v3 = {'Username': user, 'Token': token, 'Domain': domain}
         client = Client(config.endpoint_company_service)
         api_response = client.service.Journals_GetByRunCostCenter(
             _soapheaders={'AuthHeaderWithDomain': authentication_v3},

@@ -8,7 +8,7 @@ Contracts for recurrent invoicing
 
 This module forward-port to v10 the contracts management with recurring
 invoicing functions. Also you can print and send by email contract report.
-Operating Unit was added by Magnus.
+Operating Unit was added by The Open Source Company.
 In upstream Odoo, this functionality was moved into the Enterprise edition.
 
 Configuration

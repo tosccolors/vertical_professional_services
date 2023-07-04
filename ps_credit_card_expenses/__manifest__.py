@@ -27,7 +27,7 @@
 ##############################################################################
 
 {
-    'name' : 'Magnus Credit Card Expenses',
+    'name' : 'Professional Services Credit Card Expenses',
     'version' : '1.0',
     'category': 'other',
     'description': """
@@ -41,7 +41,7 @@ defined. This is used for reconciliation of the expenses and the final expense i
     """,
     'author'  : 'TOSC - SB',
     'website' : 'http://www.tosc.nl',
-    'depends' : ['magnus_expense'],
+    'depends' : ['ps_expense'],
     'data'    : [
         'security/hr_expense_security.xml',
         'security/ir.model.access.csv',

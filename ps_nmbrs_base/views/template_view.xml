@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <template id="assets_backend" name="magnus_nmbrs analytic_accounts_mapping" inherit_id="web.assets_backend">
+        <template id="assets_backend" name="ps_nmbrs analytic_accounts_mapping" inherit_id="web.assets_backend">
             <xpath expr="." position="inside">
-                <script type="text/javascript" src="/magnus_nmbrs_base/static/src/js/list_view.js"></script>
+                <script type="text/javascript" src="/ps_nmbrs_base/static/src/js/list_view.js"></script>
             </xpath>
         </template>
     </data>

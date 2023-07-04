@@ -36,7 +36,9 @@ class HrEmployeeFromOdooToNmbrs(models.TransientModel):
         config = self.env['nmbrs.interface.config'].search([])[0]
         user = config.api_user
         token = config.api_key
-        authentication_v3 = {'Username': user, 'Token': token, 'Domain': 'magnus'}
+        domain = config.domain
+        ## Todo: make Domain/client configurable
+        authentication_v3 = {'Username': user, 'Token': token, 'Domain': domain}
         client = Client(config.endpoint_employee_service)
         mapping_analytic_account_nmbrs_object = analytic_account_nmbrs_id = self.env['mapping.nmbrs.analytic.account'].search([('analytic_account_odoo', '=', self.analytic_account.id)])
         analytic_account_nmbrs_id = mapping_analytic_account_nmbrs_object.analytic_account_id_nmbrs

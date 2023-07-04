@@ -2,7 +2,7 @@
 # Copyright 2018 Willem Hulshof Magnus (www.magnus.nl).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
-    'name': "Magnus Leave Management",
+    'name': "Professional Services Leave Management",
 
     'summary': """
         Leave Management - extended
@@ -22,7 +22,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'project', 'hr_timesheet', 'hr_timesheet_sheet', 'hr_holidays', 'magnus_timesheet'],
+    'depends': ['base', 'project', 'hr_timesheet', 'hr_timesheet_sheet', 'hr_holidays', 'ps_timesheet_invoicing'],
 
     # always loaded
     'data': [

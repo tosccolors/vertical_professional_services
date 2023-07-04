@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Magnus NMBRs Employee Interface",
+    'name': "Professional Services NMBRs Employee Interface",
 
     'summary': """
         Provides the NMBRs Employee Interface """,
@@ -14,7 +14,7 @@
     'version': '1.0',
     'installable': True,
     # any module necessary for this one to work correctly
-    'depends': ['operating_unit', 'magnus_hr', 'magnus_nmbrs_base'],
+    'depends': ['operating_unit', 'ps_hr', 'ps_nmbrs_base'],
 
     # always loaded
     'data': [

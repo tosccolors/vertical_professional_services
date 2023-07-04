@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "magnus_operating_unit_asset_management",
+    'name': "ps_operating_unit_asset_management",
 
     'summary': """
         Adds OU to OCA Asset Management module""",

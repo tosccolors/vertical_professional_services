@@ -19,7 +19,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['magnus_timesheet','hr_holidays', 'web_tree_many2one_clickable'],
+    'depends': ['ps_timesheet_invoicing','hr_holidays', 'web_tree_many2one_clickable'],
 
     # always loaded
     'data': [

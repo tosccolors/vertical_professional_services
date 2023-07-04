@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "magnus_landing_page",
+    'name': "ps_landing_page",
 
     'summary': """
         Employee Landing Page""",
@@ -19,11 +19,11 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['magnus_timesheet', 'magnus_holidays','magnus_expense'],
+    'depends': ['ps_timesheet_invoicing', 'ps_holidays','ps_expense'],
 
     # always loaded
     'data': [
-        'security/magnus_security.xml',
+        'security/ps_security.xml',
         'security/ir.model.access.csv',
         'views/hr_employee_landing_page_views.xml',
         'views/hr_holidays_views.xml',

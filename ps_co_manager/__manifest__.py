@@ -7,7 +7,7 @@
     'website' : 'http://www.tosc.nl',
     'category': 'Human Resources',
     'description': """Adds a co-manager field to a department""",
-    'depends': ['magnus_expense', 'magnus_timesheet'],
+    'depends': ['magnus_expense', 'ps_timesheet_invoicing'],
     'summary': 'Employee,Department',
     'data': [
         'security/ir_rule.xml',

@@ -3,7 +3,7 @@ odoo.define('magnus_security.sheet', function (require) {
 
     var core = require('web.core');
     var session = require('web.session');
-    var magnus_timesheet = require('magnus_timesheet.sheet');
+    var ps_timesheet_invoicing = require('ps_timesheet_invoicing.sheet');
 
     core.form_custom_registry.get('weekly_timesheet').include({
 

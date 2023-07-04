@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="invoice_supplier_form_auth_magnus" model="ir.ui.view">
+    <record id="invoice_supplier_form_auth_ps" model="ir.ui.view">
         <field name="name">account.move</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account_invoice_2step_validation.invoice_supplier_form_auth"/>
@@ -24,7 +24,7 @@
         </field>
     </record>
 
-    <record id="invoice_form_magnus" model="ir.ui.view">
+    <record id="invoice_form_ps" model="ir.ui.view">
         <field name="name">account.move</field>
         <field name="model">account.move</field>
         <field name="inherit_id" ref="account.view_move_form"/>

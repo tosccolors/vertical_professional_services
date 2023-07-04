@@ -11,7 +11,7 @@ class ResCompany(models.Model):
 
     def find_daterange_cw(self, date_str):
         self.ensure_one()
-        cw_id = self.env.ref('magnus_date_range_week.date_range_calender_week')
+        cw_id = self.env.ref('ps_date_range_week.date_range_calender_week')
         return self.env['date.range'].search([
             ('type_id', '=', cw_id.id),
             ('date_start', '<=', date_str),

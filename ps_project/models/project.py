@@ -38,7 +38,7 @@ class AccountAnalyticAccount(models.Model):
             if len(aa.project_ids) > 1:
                 raise ValidationError(
                     _('Fill in maximum one Project. '
-                      'In Magnus Analytic Accounts can have one project maximum. '
+                      'In Professional Services Analytic Accounts can have one project maximum. '
                     ))
         return True
 

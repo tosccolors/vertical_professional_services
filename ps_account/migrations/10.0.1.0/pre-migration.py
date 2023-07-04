@@ -8,20 +8,20 @@ from openupgradelib import openupgrade
 def migrate(env, version):
     cr = env.cr
 
-    if openupgrade.is_module_installed(env.cr, 'magnus_invoice_layout'):
+    if openupgrade.is_module_installed(env.cr, 'ps_invoice_layout'):
         openupgrade.update_module_names(
             env.cr,
-            [('magnus_invoice_layout', 'magnus_account')],
+            [('ps_invoice_layout', 'ps_account')],
             merge_modules=True)
 
     if openupgrade.is_module_installed(env.cr, 'megis_account_invoice_force_number'):
         openupgrade.update_module_names(
             env.cr,
-            [('megis_account_invoice_force_number', 'magnus_account')],
+            [('megis_account_invoice_force_number', 'ps_account')],
             merge_modules=True)
 
     if openupgrade.is_module_installed(env.cr, 'megis_account_slam'):
         openupgrade.update_module_names(
             env.cr,
-            [('megis_account_slam', 'magnus_account')],
+            [('megis_account_slam', 'ps_account')],
             merge_modules=True)
