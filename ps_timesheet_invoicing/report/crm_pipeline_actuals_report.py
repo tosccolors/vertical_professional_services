@@ -55,35 +55,35 @@ class CrmPipelineActualsReport(models.Model):
         'Total Revenue %',
         readonly=True
     )
-    magnus_blue_bv_amount = fields.Float(
+    ps_blue_bv_amount = fields.Float(
         string='Forecast Blue',
         readonly=True
     )
-    magnus_blue_bv_per = fields.Float(
+    ps_blue_bv_per = fields.Float(
         string='Forecast Blue %',
         readonly=True
     )
-    magnus_red_bv_amount = fields.Float(
+    ps_red_bv_amount = fields.Float(
         string='Forecast Red',
         readonly=True
     )
-    magnus_red_bv_per = fields.Float(
+    ps_red_bv_per = fields.Float(
         string='Forecast Red %',
         readonly=True
     )
-    magnus_green_bv_amount = fields.Float(
+    ps_green_bv_amount = fields.Float(
         string='Forecast Green',
         readonly=True
     )
-    magnus_green_bv_per = fields.Float(
+    ps_green_bv_per = fields.Float(
         string='Forecast Green %',
         readonly=True
     )
-    magnus_black_bv_amount = fields.Float(
+    ps_black_bv_amount = fields.Float(
         string='Forecast Black',
         readonly=True
     )
-    magnus_black_bv_per = fields.Float(
+    ps_black_bv_per = fields.Float(
         string='Forecast Black %',
         readonly=True
     )
@@ -192,14 +192,14 @@ class CrmPipelineActualsReport(models.Model):
                     crs.lead_id AS lead_id,
                     crs.total_revenue AS total_revenue,
                     crs.total_revenue_per AS total_revenue_per,
-                    crs.magnus_red_bv_amount AS magnus_red_bv_amount,
-                    crs.magnus_blue_bv_amount AS magnus_blue_bv_amount,
-                    crs.magnus_green_bv_amount AS magnus_green_bv_amount,
-                    crs.magnus_black_bv_amount AS magnus_black_bv_amount,
-                    crs.magnus_red_bv_per AS magnus_red_bv_per,
-                    crs.magnus_blue_bv_per AS magnus_blue_bv_per,
-                    crs.magnus_green_bv_per AS magnus_green_bv_per,
-                    crs.magnus_black_bv_per AS magnus_black_bv_per
+                    crs.ps_red_bv_amount AS ps_red_bv_amount,
+                    crs.ps_blue_bv_amount AS ps_blue_bv_amount,
+                    crs.ps_green_bv_amount AS ps_green_bv_amount,
+                    crs.ps_black_bv_amount AS ps_black_bv_amount,
+                    crs.ps_red_bv_per AS ps_red_bv_per,
+                    crs.ps_blue_bv_per AS ps_blue_bv_per,
+                    crs.ps_green_bv_per AS ps_green_bv_per,
+                    crs.ps_black_bv_per AS ps_black_bv_per
                 FROM 
                     query01
                 RIGHT JOIN	crm_revenue_split crs ON (
@@ -218,14 +218,14 @@ class CrmPipelineActualsReport(models.Model):
                     crs.lead_id,
                     crs.total_revenue,
                     crs.total_revenue_per,
-                    crs.magnus_red_bv_amount,
-                    crs.magnus_blue_bv_amount,
-                    crs.magnus_green_bv_amount,
-                    crs.magnus_black_bv_amount,
-                    crs.magnus_red_bv_per,
-                    crs.magnus_blue_bv_per,
-                    crs.magnus_green_bv_per,
-                    crs.magnus_black_bv_per)''')
+                    crs.ps_red_bv_amount,
+                    crs.ps_blue_bv_amount,
+                    crs.ps_green_bv_amount,
+                    crs.ps_black_bv_amount,
+                    crs.ps_red_bv_per,
+                    crs.ps_blue_bv_per,
+                    crs.ps_green_bv_per,
+                    crs.ps_black_bv_per)''')
 
 
     @api.model
