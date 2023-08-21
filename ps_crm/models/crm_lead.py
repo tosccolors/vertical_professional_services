@@ -94,14 +94,14 @@ class Lead(models.Model):
     @api.onchange('operating_unit_id')
     def onchange_operating_unit_id(self):
         for rec in self.revenue_split_ids:
-            blue_per = 0.0
-            red_per = 0.0
-            green_per =0.0
-            black_per = 0.0
-            ps_blue_bv_amount = 0.0
-            magnus_red_bv_amount = 0.0
-            magnus_green_bv_amount = 0.0
-            magnus_black_bv_amount = 0.0
+            # blue_per = 0.0
+            # red_per = 0.0
+            # green_per =0.0
+            # black_per = 0.0
+            # ps_blue_bv_amount = 0.0
+            # magnus_red_bv_amount = 0.0
+            # magnus_green_bv_amount = 0.0
+            # magnus_black_bv_amount = 0.0
             rec.magnus_blue_bv_per = 0.0
             rec.magnus_blue_bv_amount = 0.0
             rec.magnus_red_bv_amount = 0.0

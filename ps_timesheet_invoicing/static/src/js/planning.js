@@ -146,7 +146,7 @@ var WeeklyPlanning = form_common.FormWidget.extend(form_common.ReinitializeWidge
         var project_names;
         var default_get;
         var self = this;
-        return self.render_drop.add(new Model('account.analytic.line').call('default_get', [
+        return self.render_drop.add(new Model('ps.time.line').call('default_get', [
             ['account_id','general_account_id','journal_id','date','name','user_id','product_id','product_uom_id','amount','unit_amount','planned', 'employee_id'],
             new data.CompoundContext({'user_id': self.get('user_id'), 'default_planned': true})
         ]).then(function(result) {

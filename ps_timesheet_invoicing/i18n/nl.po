@@ -22,7 +22,7 @@ msgid "%s can not have 2 planning that overlaps on same day!"
 msgstr "%s can not have 2 planning that overlaps on same day!"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_invoice_account_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_invoice_account_id
 msgid "Account"
 msgstr "Rekening"
 
@@ -32,17 +32,17 @@ msgid "Account Entry"
 msgstr "Boeking"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_invoice_date
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_invoice_date
 msgid "Accounting Date"
 msgstr "Boekhouddatum"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_invoice_message_needaction
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_invoice_message_needaction
 msgid "Action Needed"
 msgstr "Vereist actie"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_account_analytic_line_actual_qty
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_account_ps_line_actual_qty
 msgid "Actual Qty"
 msgstr "Actual Qty"
 
@@ -104,12 +104,12 @@ msgid "Add a note..."
 msgstr "Add a note..."
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_invoice_comment
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_invoice_comment
 msgid "Additional Information"
 msgstr "Aanvullende informatie"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_account_analytic_line_filter_inherit_account
+#: model:ir.ui.view,arch_db:ps_timesheet_invoicing.view_ps_time_line_filter_inherit_account
 msgid "All Projects"
 msgstr "All Projects"
 
@@ -194,7 +194,7 @@ msgid "Analytic User Total"
 msgstr "Analytic User Total"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_user_total_analytic_invoice_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_user_total_ps_invoice_id
 msgid "Analytic invoice id"
 msgstr "Analytic invoice id"
 
@@ -850,7 +850,7 @@ msgid "Hr Department"
 msgstr "HR afdeling"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_invoice_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_ps_invoice_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_line_status_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_analytic_user_total_id
 #: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_change_chargecode_id
@@ -964,7 +964,7 @@ msgid "Invoice Properties"
 msgstr "Invoice Properties"
 
 #. module: ps_timesheet_invoicing
-#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_account_invoice_line_analytic_invoice_id
+#: model:ir.model.fields,field_description:ps_timesheet_invoicing.field_account_invoice_line_ps_invoice_id
 msgid "Invoice Reference"
 msgstr "Factuurreferentie"
 

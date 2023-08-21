@@ -36,40 +36,40 @@ class OvertimeBalanceReport(models.Model):
         self.env.cr.execute("""
                         CREATE OR REPLACE VIEW overtime_balance_report AS (
                         SELECT
-                            min(aal.id) AS id,
-                            aal.date AS date,
-                            aal.user_id AS user_id,
+                            min(ptl.id) AS id,
+                            ptl.date AS date,
+                            ptl.user_id AS user_id,
                             SUM(CASE
                                 WHEN pp.overtime = 'true'
                                 AND product_uom_id = 5
-                                THEN aal.unit_amount
+                                THEN ptl.unit_amount
                                 ELSE 0
                                 END) AS overtime_taken,
                             SUM(CASE
                                 WHEN pp.overtime_hrs = 'true'
                                 AND product_uom_id = 5
-                                THEN aal.unit_amount
+                                THEN ptl.unit_amount
                                 ELSE 0
                                 END) AS overtime_hrs,                        
                             (
                               SUM(CASE
                                 WHEN pp.overtime_hrs = 'true'
                                 AND product_uom_id = 5
-                                THEN aal.unit_amount
+                                THEN ptl.unit_amount
                                 ELSE 0
                                 END) -
                               SUM(CASE
                                 WHEN pp.overtime = 'true'
                                 AND product_uom_id = 5
-                                THEN aal.unit_amount
+                                THEN ptl.unit_amount
                                 ELSE 0
                                 END)
                             ) AS overtime_balanced
-                        FROM account_analytic_line aal
-                        JOIN account_analytic_account aa ON aa.id = aal.account_id
+                        FROM ps_time_line ptl
+                        JOIN account_analytic_account aa ON aa.id = ptl.account_id
                         JOIN project_project pp ON pp.analytic_account_id = aa.id
                         WHERE pp.overtime = true OR pp.overtime_hrs = true
-                        GROUP BY aal.date, aal.user_id
+                        GROUP BY ptl.date, ptl.user_id
                         )""")
 
 

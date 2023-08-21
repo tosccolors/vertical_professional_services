@@ -46,6 +46,12 @@ class Task(models.Model):
 class Project(models.Model):
     _inherit = "project.project"
 
+    @api.depends('task_ids.standard')
+    def _compute_standard(self):
+        if self.task_ids:
+            self.standard_task_id = self.env['project.task'].search(
+                [('standard', '=', True), ('id', 'in', self.task_ids.ids)])
+
     overtime = fields.Boolean(
         string='Overtime Taken'
     )
@@ -62,6 +68,12 @@ class Project(models.Model):
         'invoice.schedule.lines',
         'project_id',
         string='Invoice Schedule'
+    )
+    standard_task_id = fields.Many2one(
+        'project.task',
+        compute=_compute_standard,
+        string='Standard Task',
+        store=True
     )
 
     @api.constrains('overtime', 'overtime_hrs')
@@ -190,15 +202,15 @@ class TaskUser(models.Model):
         order='from_date Desc', limit=1)
         return taskUserObj
 
-    def update_analytic_lines(self):
+    def update_ps_time_lines(self):
         next_fee_rate_date = self.search(
             [('from_date', '>', self.from_date),
              ('task_id', '=', self.task_id.id),
              ('user_id', '=', self.user_id.id)],
             order='from_date', limit=1)
 
-        aal_obj = self.env['account.analytic.line']
-        aal_domain = [
+        ptl_obj = self.env['ps.time.line']
+        ptl_domain = [
             ('task_id', '=', self.task_id.id),
             ('user_id', '=', self.user_id.id),
             ('state', 'not in', ['invoiced','invoiced-by-fixed','write_off','expense-invoiced']),
@@ -206,39 +218,39 @@ class TaskUser(models.Model):
         ]
 
         if next_fee_rate_date:
-            aal_domain += [('date', '<', next_fee_rate_date.from_date)]
-        aal_query_line = aal_obj._where_calc(aal_domain)
-        aal_tables, aal_where_clause, aal_where_clause_params = aal_query_line.get_sql()
+            ptl_domain += [('date', '<', next_fee_rate_date.from_date)]
+        ptl_query_line = ptl_obj._where_calc(ptl_domain)
+        ptl_tables, ptl_where_clause, ptl_where_clause_params = ptl_query_line.get_sql()
 
         list_query = ("""
-                WITH aal AS (
+                WITH ptl AS (
                     SELECT
                        id, unit_amount
                     FROM
                        {0}
                     WHERE {1}
                 )
-                UPDATE {0} SET line_fee_rate = {2}, amount = (- aal.unit_amount * {2}), product_id = {3}
-                FROM aal WHERE {0}.id = aal.id
+                UPDATE {0} SET line_fee_rate = {2}, amount = (- ptl.unit_amount * {2}), product_id = {3}
+                FROM ptl WHERE {0}.id = ptl.id
                         """.format(
-            aal_tables,
-            aal_where_clause,
+            ptl_tables,
+            ptl_where_clause,
             self.fee_rate,
             self.product_id.id
         ))
-        self.env.cr.execute(list_query, aal_where_clause_params)
+        self.env.cr.execute(list_query, ptl_where_clause_params)
         return True
 
     @api.model
     def create(self, vals):
         res = super(TaskUser, self).create(vals)
-        res.update_analytic_lines()
+        res.update_ps_time_lines()
         return res
 
     def write(self, vals):
         result = super(TaskUser, self).write(vals)
         for res in self:
-            res.update_analytic_lines()
+            res.update_ps_time_lines()
         return result
 
 class InvoiceScheduleLine(models.Model):
@@ -273,17 +285,17 @@ class ProjectInvoicingProperties(models.Model):
             id = self.id
         project = self.env['project.project'].search([('invoice_properties', '=', id)])
         if project:
-            analytic_lines = self.env['account.analytic.line'].search([
+            ps_time_lines = self.env['ps.time.line'].search([
                 ('project_id', 'in', project.ids),
                 ('product_uom_id', '=', self.env.ref('uom.product_uom_km').id)
             ])
-            if analytic_lines:
+            if ps_time_lines:
                 non_invoiceable_mileage = False if self.invoice_mileage else True
                 cond = '='
-                rec = analytic_lines.ids[0]
-                if len(analytic_lines) > 1:
+                rec = ps_time_lines.ids[0]
+                if len(ps_time_lines) > 1:
                     cond = 'IN'
-                    rec = tuple(analytic_lines.ids)
+                    rec = tuple(ps_time_lines.ids)
                 self.env.cr.execute("""
-                    UPDATE account_analytic_line SET product_uom_id = %s, non_invoiceable_mileage = %s WHERE id %s %s
+                    UPDATE ps_time_line SET product_uom_id = %s, non_invoiceable_mileage = %s WHERE id %s %s
                 """ % (self.env.ref('uom.product_uom_km').id, non_invoiceable_mileage, cond, rec))

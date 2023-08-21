@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data>
+
+        <record id="invoice_form" model="ir.ui.view">
+            <field name="name">account.move.form</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/group/group[1]"  position="inside">
+                    <field name="ic_lines" invisible="1"/>
+                    <button name="action_create_ic_lines" type="object" string="Create Intercompany Lines"
+                            groups="base.group_no_one" attrs="{'invisible': ['|',('ic_lines','!=', False ),('state', 'not in', ('draft','proforma2'))]}"/>
+                    <button name="action_delete_ic_lines" type="object" string="Reset Intercompany Lines"
+                            groups="base.group_no_one" attrs="{'invisible': ['|',('ic_lines','=', False ),('state', 'not in', ('draft','proforma2'))]}"/>
+                </xpath>
+                <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='sequence']" position="after">
+                    <field name="ic_line" invisible="1"/>
+                    <field name="revenue_line" invisible="1"/>
+                </xpath>
+                <!--<xpath expr="//field[@name='invoice_line_ids']/tree" position="attributes">
+                    <attribute name="decoration-danger">revenue_line==False</attribute>
+                </xpath>-->
+                <!--<xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='origin']" position="attributes">
+                    <attribute name="invisible">False</attribute>
+                </xpath>-->
+            </field>
+        </record>
+          <!-- Update account invoice from sale module !-->
+        <!-- <record model="ir.ui.view" id="account_invoice_form">
+            <field name="name">Account Invoice</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="sale.account_invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page/field[@name='invoice_line_ids']/tree/field[@name='layout_category_id']"
+                       position="replace">
+                </xpath>
+            </field>
+        </record> -->
+
+  </data>
+</odoo>

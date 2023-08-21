@@ -90,7 +90,7 @@
             			<field name="month" readonly="1"/>
             			<field name="total_revenue" readonly="1"/>
             			<field name="total_revenue_per" readonly="1"/>
-            			<field name="ps_blue_bv_amount" readonly="1"/>
+            			<field name="magnus_blue_bv_amount" readonly="1"/>
             			<field name="magnus_blue_bv_per"/>
             			<field name="magnus_red_bv_amount" readonly="1"/>
             			<field name="magnus_red_bv_per"/>

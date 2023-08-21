@@ -28,7 +28,7 @@
 
 {
     'name' : 'ps_account',
-    'version' : '1.0',
+    'version' : '14.0.0.0.1',
     'category': 'accounts',
     'description': """
 This module enhances accounts & Invoice in OpenERP.

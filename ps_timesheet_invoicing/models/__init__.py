@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from . import account_invoice
-from . import analytic_invoice
-from . import account_analytic_account
+from . import ps_invoice
 from . import account_move
 from . import hr_timesheet_sheet
 from . import project

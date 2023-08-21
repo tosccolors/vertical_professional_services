@@ -65,56 +65,55 @@ class HrChargeabilityReport(models.Model):
 		self.env.cr.execute("""
 			CREATE OR REPLACE VIEW hr_chargeability_report AS (
 				SELECT
-					min(aa.id) as id,
-					aa.date as date,
-					aa.user_id as user_id,
-					aa.operating_unit_id as operating_unit_id,
-					aa.department_id as department_id,
+					min(pst.id) as id,
+					pst.date as date,
+					pst.user_id as user_id,
+					pst.operating_unit_id as operating_unit_id,
+					pst.department_id as department_id,
 					-- emp.external as external,
 					emp.timesheet_optional as ts_optional,
 					emp.timesheet_no_8_hours_day as ts_no_8_hours_day,
 					SUM(unit_amount) as captured_hours,
 					SUM(CASE 
-							 WHEN aa.chargeable = 'true' 
+							 WHEN pst.chargeable = 'true' 
 							 THEN unit_amount 
 							 ELSE 0 
 						END) as chargeable_hours,
-					(COUNT (DISTINCT aa.date) * (
+					(COUNT (DISTINCT pst.date) * (
 							 CASE 
-							 WHEN dr.date_end - aa.date > 1
+							 WHEN dr.date_end - pst.date > 1
 							 THEN 8 
 							 ELSE 0 
 							 END
 							 )
 					- SUM(
 						CASE 
-							WHEN aa.correction_charge = 'true' 
+							WHEN pst.correction_charge = 'true' 
 							THEN unit_amount 
 							ELSE 0 
 						END)) as norm_hours,
 					0.0  as chargeability
-				FROM account_analytic_line aa
+				FROM ps_time_line pst
 				JOIN resource_resource resource 
-				ON (resource.user_id = aa.user_id)
+				ON (resource.user_id = pst.user_id)
 				JOIN hr_employee emp 
 				ON (emp.resource_id = resource.id)
 				JOIN date_range dr 
-				ON (dr.id = aa.week_id)
-				WHERE aa.product_uom_id = %s 
-					AND aa.planned = FALSE
-					AND (aa.ot = FALSE or aa.ot is null)
-					AND aa.project_id IS NOT NULL 
+				ON (dr.id = pst.week_id)
+				WHERE pst.product_uom_id = %s 
+					AND (pst.ot = FALSE or pst.ot is null)
+					AND pst.project_id IS NOT NULL 
 					AND resource.active = TRUE
 				GROUP BY 
-					aa.operating_unit_id, 
-					aa.user_id, 
+					pst.operating_unit_id, 
+					pst.user_id, 
 					dr.date_end, 
-					aa.date, 
-					aa.department_id, 
+					pst.date, 
+					pst.department_id, 
 					-- emp.external, 
 					emp.timesheet_optional, 
 					emp.timesheet_no_8_hours_day
-				ORDER BY aa.date
+				ORDER BY pst.date
 			)""" % (uom))
 
 

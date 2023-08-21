@@ -8,9 +8,9 @@ from odoo.addons.queue_job.exception import FailedJobError
 import logging
 _logger = logging.getLogger(__name__)
 
-class AnalyticLineStatus(models.TransientModel):
-    _name = "analytic.line.status"
-    _description = "Analytic line Status"
+class TimeLineStatus(models.TransientModel):
+    _name = "time.line.status"
+    _description = "Timeline Status"
 
     name = fields.Selection([
         ('invoiceable', 'To be invoiced'),
@@ -33,10 +33,10 @@ class AnalyticLineStatus(models.TransientModel):
     )
     wip_month_ids = fields.Many2many(
         'date.range',
-        string="Month of Analytic Line or last Wip Posting"
+        string="Month of Timeline or last Wip Posting"
     )
 
-    def validate_entries_month(self, analytic_ids):
+    def validate_entries_month(self, time_line_ids):
         fields_grouped = [
             'id',
             'month_id',
@@ -46,8 +46,8 @@ class AnalyticLineStatus(models.TransientModel):
             'month_id',
             'company_id',
         ]
-        result = self.env['account.analytic.line'].read_group(
-            [('id', 'in', analytic_ids)],
+        result = self.env['ps.time.line'].read_group(
+            [('id', 'in', time_line_ids)],
             fields_grouped,
             grouped_by,
             offset=0,
@@ -61,14 +61,14 @@ class AnalyticLineStatus(models.TransientModel):
         return True
 
     
-    def analytic_invoice_lines(self):
+    def ps_invoice_lines(self):
         context = self.env.context.copy()
-        analytic_ids = context.get('active_ids',[])
-        analytic_lines = self.env['account.analytic.line'].browse(analytic_ids)
+        ptl_ids = context.get('active_ids',[])
+        ptl_lines = self.env['ps.time.line'].browse(ptl_ids)
         status = str(self.name)
         not_lookup_states = ['draft','progress', 'invoiced', 'delayed', 'write-off','change-chargecode']
-        entries = analytic_lines.filtered(lambda a: a.state not in not_lookup_states)
-        expense_entries = analytic_lines.filtered(lambda a: not a.project_id and not a.task_id and not a.sheet_id and a.state == 'draft')
+        entries = ptl_lines.filtered(lambda a: a.state not in not_lookup_states)
+        expense_entries = ptl_lines.filtered(lambda a: not a.project_id and not a.task_id and not a.sheet_id and a.state == 'draft')
         entries = entries + expense_entries
         no_invoicing_property_entries = entries.filtered(lambda al: not al.project_id.invoice_properties)
         if no_invoicing_property_entries and status == 'invoiceable':
@@ -81,23 +81,23 @@ class AnalyticLineStatus(models.TransientModel):
         if entries:
             cond, rec = ("IN", tuple(entries.ids)) if len(entries) > 1 else ("=", entries.id)
             notupdatestate = {}
-            for line in analytic_lines:
+            for line in ptl_lines:
                 notupdatestate.update({line.id: line.state})
             self.env.cr.execute("""
-                UPDATE account_analytic_line SET state = '%s' WHERE id %s %s
+                UPDATE ps_time_line SET state = '%s' WHERE id %s %s
                 """ % (status, cond, rec))
             self.env.cache.invalidate()
             if status == 'delayed' and self.wip:
-                # self.validate_entries_month(analytic_ids)
-                # self.update_line_fee_rates(analytic_ids)
-                self.with_delay(eta=datetime.now(), description="WIP Posting").prepare_account_move(analytic_ids,notupdatestate)
+                # self.validate_entries_month(ptl_ids)
+                # self.update_line_fee_rates(ptl_ids)
+                self.with_delay(eta=datetime.now(), description="WIP Posting").prepare_account_move(ptl_ids,notupdatestate)
             if status == 'invoiceable':
-                # self.update_line_fee_rates(analytic_ids)
-                self.with_context(active_ids=entries.ids).prepare_analytic_invoice()
+                # self.update_line_fee_rates(ptl_ids)
+                self.with_context(active_ids=entries.ids).prepare_ps_invoice()
         return True
 
-    def prepare_analytic_invoice(self):
-        def analytic_invoice_create(result, link_project):
+    def prepare_ps_invoice(self):
+        def ps_invoice_create(result, link_project):
             for res in result:
                 project_id = False
                 analytic_account_ids = res[0]
@@ -122,13 +122,13 @@ class AnalyticLineStatus(models.TransientModel):
                 else:
                     search_domain += [('link_project', '=', False)]
 
-                analytic_invobj = analytic_invoice.search(search_domain, limit=1)
-                if analytic_invobj:
+                ps_invobj = ps_invoice.search(search_domain, limit=1)
+                if ps_invobj:
                     ctx = self.env.context.copy()
-                    ctx.update({'active_invoice_id': analytic_invobj.id})
-                    analytic_invobj.with_context(ctx).partner_id = partner_id
-                    # analytic_invobj.with_context(ctx).month_id = month_id
-                    # analytic_invobj.with_context(ctx).project_operating_unit_id = project_operating_unit_id
+                    ctx.update({'active_invoice_id': ps_invobj.id})
+                    ps_invobj.with_context(ctx).partner_id = partner_id
+                    # ps_invobj.with_context(ctx).month_id = month_id
+                    # ps_invobj.with_context(ctx).project_operating_unit_id = project_operating_unit_id
                 else:
                     data = {
                         'partner_id': partner_id,
@@ -147,18 +147,18 @@ class AnalyticLineStatus(models.TransientModel):
                     }
                     if link_project:
                         data.update({'project_id': project_id, 'link_project': True})
-                    analytic_invoice.create(data)
+                    ps_invoice.create(data)
 
 
         context = self.env.context.copy()
         entries_ids = context.get('active_ids', [])
-        if len(self.env['account.analytic.line'].browse(entries_ids).filtered(lambda a: a.state != 'invoiceable')) > 0:
-            raise UserError(_('Please select only Analytic Lines with state "To Be Invoiced".'))
+        if len(self.env['ps.time.line'].browse(entries_ids).filtered(lambda a: a.state != 'invoiceable')) > 0:
+            raise UserError(_('Please select only TimeLines with state "To Be Invoiced".'))
 
-        analytic_invoice = self.env['analytic.invoice']
+        ps_invoice = self.env['ps.invoice']
         cond, rec = ("in", tuple(entries_ids)) if len(entries_ids) > 1 else ("=", entries_ids[0])
 
-        sep_entries = self.env['account.analytic.line'].search([
+        sep_entries = self.env['ps.time.line'].search([
             ('id', cond, rec),
             '|',
             ('project_id.invoice_properties.group_invoice', '=', False),
@@ -170,47 +170,47 @@ class AnalyticLineStatus(models.TransientModel):
         if rec:
             self.env.cr.execute("""
                 SELECT array_agg(account_id), partner_id, month_id, project_operating_unit_id
-                FROM account_analytic_line
+                FROM ps_time_line
                 WHERE id %s %s AND date_of_last_wip IS NULL 
                 GROUP BY partner_id, month_id, project_operating_unit_id"""
                 % (cond, rec))
 
             result = self.env.cr.fetchall()
-            analytic_invoice_create(result, False)
+            ps_invoice_create(result, False)
 
             #reconfirmed seperate entries
             self.env.cr.execute("""
                             SELECT array_agg(account_id), partner_id, month_of_last_wip, project_operating_unit_id
-                            FROM account_analytic_line
+                            FROM ps_time_line
                             WHERE id %s %s AND date_of_last_wip IS NOT NULL AND month_of_last_wip IS NOT NULL 
                             GROUP BY partner_id, month_of_last_wip, project_operating_unit_id"""
                                 % (cond, rec))
 
             reconfirm_res = self.env.cr.fetchall()
-            analytic_invoice_create(reconfirm_res, False)
+            ps_invoice_create(reconfirm_res, False)
 
         if sep_entries:
             cond1, rec1 = ("IN", tuple(sep_entries.ids)) if len(sep_entries) > 1 else ("=", sep_entries.id)
             self.env.cr.execute("""
                 SELECT array_agg(account_id), partner_id, month_id, project_operating_unit_id, project_id
-                FROM account_analytic_line
+                FROM ps_time_line
                 WHERE id %s %s AND date_of_last_wip IS NULL
                 GROUP BY partner_id, month_id, project_operating_unit_id, project_id"""
                         % (cond1, rec1))
 
             result1 = self.env.cr.fetchall()
-            analytic_invoice_create(result1, True)
+            ps_invoice_create(result1, True)
 
             # reconfirmed grouping entries
             self.env.cr.execute("""
                             SELECT array_agg(account_id), partner_id, month_of_last_wip, project_operating_unit_id, project_id
-                            FROM account_analytic_line
+                            FROM ps_time_line
                             WHERE id %s %s AND date_of_last_wip IS NOT NULL AND month_of_last_wip IS NOT NULL 
                             GROUP BY partner_id, month_of_last_wip, project_operating_unit_id, project_id"""
                                 % (cond1, rec1))
 
             reconfirm_res1 = self.env.cr.fetchall()
-            analytic_invoice_create(reconfirm_res1, True)
+            ps_invoice_create(reconfirm_res1, True)
 
 
     @api.onchange('wip_percentage')
@@ -226,7 +226,7 @@ class AnalyticLineStatus(models.TransientModel):
             self.wip = True
             context = self.env.context.copy()
             entries_ids = context.get('active_ids', [])
-            wip_months = self.env['account.analytic.line'].browse(entries_ids).mapped('wip_month_id')
+            wip_months = self.env['ps.time.line'].browse(entries_ids).mapped('wip_month_id')
             self.wip_month_ids = [(6, 0, wip_months.ids)]
         else:
             self.wip = False
@@ -281,10 +281,10 @@ class AnalyticLineStatus(models.TransientModel):
         return res
 
     # @job
-    def prepare_account_move(self, analytic_lines_ids,notupdatestate):
+    def prepare_account_move(self, time_lines_ids, notupdatestate):
         """ Creates analytics related financial move lines """
-        acc_analytic_line = self.env['account.analytic.line']
-        done_analytic_line = self.env['account.analytic.line']
+        acc_time_line = self.env['ps.time.line']
+        done_time_line = self.env['ps.time.line']
         account_move = self.env['account.move']
         fields_grouped = [
             'id',
@@ -299,8 +299,8 @@ class AnalyticLineStatus(models.TransientModel):
             'wip_month_id',
             'company_id',
         ]
-        result = acc_analytic_line.read_group(
-            [('id','in', analytic_lines_ids)],
+        result = acc_time_line.read_group(
+            [('id','in', time_lines_ids)],
             fields_grouped,
             grouped_by,
             offset=0,
@@ -342,12 +342,12 @@ class AnalyticLineStatus(models.TransientModel):
                         raise UserError(_('Please define receivable account for partner %s.') % (partner.name))
 
                     aml = []
-                    analytic_line_obj = acc_analytic_line.search([('id', 'in', analytic_lines_ids),('partner_id', '=', partner_id),('operating_unit_id', '=', operating_unit_id), ('wip_month_id', '=', month_id)])
-                    analytic_line_obj -= done_analytic_line
+                    time_line_obj = acc_time_line.search([('id', 'in', time_lines_ids),('partner_id', '=', partner_id),('operating_unit_id', '=', operating_unit_id), ('wip_month_id', '=', month_id)])
+                    time_line_obj -= done_time_line
                     # if self.wip_percentage > 0.0:
                         #Skip wip move creation when percantage is 0
                     #creates wip moves for all percentages
-                    for aal in analytic_line_obj:
+                    for aal in time_line_obj:
                         if not aal.product_id.property_account_wip_id:
                             raise UserError(_('Please define WIP account for product %s.') % (aal.product_id.name))
                         for ml in self._prepare_move_line(aal):
@@ -380,17 +380,17 @@ class AnalyticLineStatus(models.TransientModel):
 
                     account_move |= move
                     cond = '='
-                    rec = analytic_line_obj.ids[0]
-                    if len(analytic_line_obj) > 1:
+                    rec = time_line_obj.ids[0]
+                    if len(time_line_obj) > 1:
                         cond = 'IN'
-                        rec = tuple(analytic_line_obj.ids)
+                        rec = tuple(time_line_obj.ids)
 
                     first_of_next_month_date = (datetime.strptime(str(date_end), "%Y-%m-%d") + timedelta(days=1)).strftime("%Y-%m-%d")
-                    wip_month_id = analytic_line_obj[0].find_daterange_month(first_of_next_month_date)
+                    wip_month_id = time_line_obj[0].find_daterange_month(first_of_next_month_date)
 
                     line_query = ("""
                                     UPDATE
-                                       account_analytic_line
+                                       ps_time_line
                                     SET date_of_last_wip = {0}, date_of_next_reconfirmation = {1}, month_of_last_wip = {2}, wip_month_id = {2}
                                     WHERE id {3} {4}
                                     """.format(
@@ -400,13 +400,13 @@ class AnalyticLineStatus(models.TransientModel):
                                     cond,
                                     rec))
                     self.env.cr.execute(line_query)
-                    done_analytic_line |= analytic_line_obj
+                    done_time_line |= time_line_obj
 
         except Exception as e:
-            # update the analytic line record into there previous state when job get failed in delay
+            # update the time line record into there previous state when job get failed in delay
             for id, state in notupdatestate.items():
                 self.env.cr.execute("""
-                                UPDATE account_analytic_line SET state = '%s' WHERE id=%s
+                                UPDATE ps_time_line SET state = '%s' WHERE id=%s
                                 """ % (state,id))
                 self.env.cr.commit()
                 self.env.cache.invalidate()

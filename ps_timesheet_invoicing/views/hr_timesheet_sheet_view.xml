@@ -12,9 +12,9 @@
             attrs="{'invisible': [('state', '!=', 'draft')]}"/>
         </xpath>
         <xpath expr="//sheet/div[@class='oe_title']" position="before">
-            <field name="overtime_analytic_line_id" invisible="1"/>
+            <field name="overtime_line_id" invisible="1"/>
             <div class="oe_button_box" name="button_box">
-                <button class="oe_stat_button" name="action_view_overtime_entry" type="object" icon="fa-pencil-square-o" string="OvertimeEntry" attrs="{'invisible':['|',('overtime_analytic_line_id','=',False),('state','!=','done')]}" groups="hr_timesheet.group_hr_timesheet_user">
+                <button class="oe_stat_button" name="action_view_overtime_entry" type="object" icon="fa-pencil-square-o" string="OvertimeEntry" attrs="{'invisible':['|',('overtime_line_id','=',False),('state','!=','done')]}" groups="hr_timesheet.group_hr_timesheet_user">
                 </button>
             </div>
         </xpath>
@@ -106,7 +106,8 @@
           </search>
       </field>
     </record>
-      <record id="hr_timesheet_sheet_tree_inherited" model="ir.ui.view">
+
+    <record id="hr_timesheet_sheet_tree_inherited" model="ir.ui.view">
       <field name="name">hr.timesheet.sheet.tree</field>
       <field name="model">hr_timesheet.sheet</field>
       <field name="inherit_id" ref="hr_timesheet_sheet.hr_timesheet_sheet_tree"/>
@@ -121,6 +122,7 @@
         </field>
       </field>
     </record>
+
     <record id="act_hr_timesheet_sheet_form" model="ir.actions.act_window">
       <field name="name">Timesheets to Approve</field>
       <field name="type">ir.actions.act_window</field>
@@ -172,17 +174,18 @@
         <field name="context">{"search_default_today":1}</field>
     </record>
 
-    <record id="hr_timesheet_line_search" model="ir.ui.view">
-        <field name="name">account.analytic.line.search</field>
-        <field name="model">account.analytic.line</field>
-        <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search"/>
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='name']" position="after">
-                <separator/>
-                <filter string="Not Planned" name="filter_not_planned" domain="[('planned','=',False)]"/>
-            </xpath>
-        </field>
-    </record>
+<!--      todo: Planned-->
+<!--    <record id="hr_timesheet_line_search" model="ir.ui.view">-->
+<!--        <field name="name">account.analytic.line.search</field>-->
+<!--        <field name="model">account.analytic.line</field>-->
+<!--        <field name="inherit_id" ref="hr_timesheet.hr_timesheet_line_search"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <xpath expr="//field[@name='name']" position="after">-->
+<!--                <separator/>-->
+<!--                <filter string="Not Planned" name="filter_not_planned" domain="[('planned','=',False)]"/>-->
+<!--            </xpath>-->
+<!--        </field>-->
+<!--    </record>-->
 
 
     <menuitem id="hr_timesheet.menu_timesheets_reports" name="Reports"

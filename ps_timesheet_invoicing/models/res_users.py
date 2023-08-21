@@ -33,6 +33,6 @@ class ResUsers(models.Model):
 			else:
 				dep = employee_id.department_id.parent_id.parent_id
 		else:
-			raise ValidationError(_('The Employee in the Analytic line has '
+			raise ValidationError(_('The Employee in the PS Time Line has '
 									'no department defined. Please complete'))
 		return dep.operating_unit_id

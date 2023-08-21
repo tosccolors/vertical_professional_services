@@ -1,6 +1,7 @@
 # Copyright 2018 Eficent Business and IT Consulting Services, S.L.
 # Copyright 2018-2020 Brainbean Apps (https://brainbeanapps.com)
 # Copyright 2018-2019 Onestein (<https://www.onestein.eu>)
+# Copyright 2023 The Open Source Company BV (<https://www.tosc.nl>)
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
 
 import babel.dates
@@ -21,10 +22,12 @@ _logger = logging.getLogger(__name__)
 empty_name = '/'
 
 
-class PSPlanning(models.Model):
-	_name = 'ps.planning'
-	_description = 'Professional Services Planning'
+class PSPlanningSheet(models.Model):
+	_name = 'ps.planning.sheet'
+	_inherit = "hr_timesheet.sheet"
+	_description = 'Professional Services Planning Sheet'
 	_order = 'id desc'
+	_rec_name = "complete_name"
 
 	def _default_date_start(self):
 		return (datetime.today() + relativedelta(weekday=0, days=-6)).strftime('%Y-%m-%d')
@@ -40,19 +43,20 @@ class PSPlanning(models.Model):
 		#     fields.Date.context_today(self)
 		# )
 
-	def _default_employee(self):
-		company = self.env['res.company']._company_default_get()
-		return self.env['hr.employee'].search([
-			('user_id', '=', self.env.uid),
-			('company_id', 'in', [company.id, False]),
-		], limit=1, order="company_id ASC")
+	## we use hr_timesheet_sheet method, OK?
+	# def _default_employee(self):
+	# 	company = self.env['res.company']._company_default_get()
+	# 	return self.env['hr.employee'].search([
+	# 		('user_id', '=', self.env.uid),
+	# 		('company_id', 'in', [company.id, False]),
+	# 	], limit=1, order="company_id ASC")
 
-	def _default_department_id(self):
-		return self._default_employee().department_id
+	## we use hr_timesheet_sheet method, OK?
+	# def _default_department_id(self):
+	# 	return self._default_employee().department_id
 
 	def fetch_weeks_from_planning_quarter(self, planning_quarter):
 		start_date = planning_quarter.date_start
-		end_date = planning_quarter.date_end
 		end_date = planning_quarter.date_end
 		date_range_type_cw = self.env.ref('ps_date_range_week.date_range_calender_week')
 		date_range = self.env['date.range']
@@ -78,10 +82,10 @@ class PSPlanning(models.Model):
 			op = 'NOT IN'
 
 		line_query = ("""
-			DELETE FROM ps_planning_analytic_line_rel 
-				WHERE planning_id = {0} AND analytic_line_id IN (
-					SELECT id FROM account_analytic_line WHERE id IN 
-					(SELECT analytic_line_id FROM ps_planning_analytic_line_rel WHERE planning_id = {0}) 
+			DELETE FROM ps_planning_line_rel 
+				WHERE ps_planning_sheet_id = {0} AND ps_planning_line_ps_time_line_id IN (
+					SELECT id FROM ps_time_line WHERE id IN 
+					(SELECT ps_time_line_id FROM ps_planning_ps_time_line_rel WHERE ps_planning_sheet_id = {0}) 
 						AND employee_id {1} {2}
 					)
 			""".format(
@@ -91,6 +95,7 @@ class PSPlanning(models.Model):
 		))
 		# 
 		self.env.cr.execute(line_query)
+
 	def get_employee_child_ids(self):
 		# get department's manager list
 		self.env.cr.execute("""
@@ -123,21 +128,21 @@ class PSPlanning(models.Model):
 	def get_planning_from_managers(self):
 		line_query = ("""
 						INSERT INTO
-						   ps_planning_analytic_line_rel
-						   (planning_id, analytic_line_id)
+						   ps_planning_ps_time_line_rel
+						   (ps_planning_sheet_id, ps_time_line_id)
 							SELECT
-								mp.id as planning_id,
-								aal.id as analytic_line_id
+								mp.id as ps_planning_sheet_id,
+								ptl.id as ps_time_line_id
 							FROM 
-								timesheet_analytic_line aal
-								JOIN ps_planning mp ON aal.employee_id = mp.employee_id
-								JOIN ps_planning_analytic_line_rel rel ON rel.analytic_line_id = aal.id
-								WHERE aal.week_id >= {0} AND aal.week_id <= {1}
+								ps_time_line ptl
+								JOIN ps_planning mp ON ptl.employee_id = mp.employee_id
+								JOIN ps_planning_ps_time_line_rel rel ON rel.ps_time_line_id = ptl.id
+								WHERE ptl.week_id >= {0} AND ptl.week_id <= {1}
 								AND mp.id = {2} 
 						  EXCEPT
 							SELECT
-							  planning_id, analytic_line_id
-							  FROM ps_planning_analytic_line_rel
+							  ps_planning_sheet_id, ps_time_line_id
+							  FROM ps_planning_ps_time_line_rel
 				""".format(
 			self.week_from.id,
 			self.week_to.id,
@@ -161,20 +166,20 @@ class PSPlanning(models.Model):
 			print("--------executing query")
 			line_query = ("""
 					INSERT INTO
-					   ps_planning_analytic_line_rel
-					   (planning_id, analytic_line_id)
+					   ps_planning_ps_time_line_rel
+					   (ps_planning_sheet_id, ps_time_line_id)
 						SELECT 
-							{0}, aal.id 
-						  FROM timesheet_analytic_line aal 
+							{0}, ptl.id 
+						  FROM ps_time_line ptl 
 						  WHERE 
-							aal.week_id >= {1} AND aal.week_id <= {2}
-							AND aal.id IN (
-								SELECT analytic_line_id FROM ps_planning_analytic_line_rel WHERE planning_id IN 
+							ptl.week_id >= {1} AND ptl.week_id <= {2}
+							AND ptl.id IN (
+								SELECT ps_time_line_id FROM ps_planning_ps_time_line_rel WHERE ps_planning_sheet_id IN 
 								(SELECT id FROM ps_planning WHERE employee_id {3} {4}))
 						EXCEPT
 							SELECT
-							  planning_id, analytic_line_id
-							  FROM ps_planning_analytic_line_rel
+							  ps_planning_sheet_id, ps_time_line_id
+							  FROM ps_planning_ps_time_line_rel
 					""".format(
 						self.id,
 						self.week_from.id,
@@ -187,7 +192,7 @@ class PSPlanning(models.Model):
 
 	def _compute_planning_lines(self):
 		self_planning = self.env.context.get('self_planning', False)
-		self.planning_ids_compute = False
+		self.ps_planning_ids_compute = False
 		print("------self plannig",self_planning)
 		if self_planning:
 			print("--------planning from manager")
@@ -230,115 +235,60 @@ class PSPlanning(models.Model):
 		}
 		return res
 
-	week_to = fields.Many2one('date.range', string="Week Start")
-	week_from = fields.Many2one('date.range', string="Week End")
-	planning_quarter = fields.Many2one('date.range', string='Select Quarter',
-									   required=True, index=True)
-
-	name = fields.Char(
-		compute='_compute_name',
-		context_dependent=True,
+	week_to = fields.Many2one(
+		'date.range',
+		string="Week Start"
 	)
-	employee_id = fields.Many2one(
-		comodel_name='hr.employee',
-		string='Employee',
-		default=lambda self: self._default_employee(),
+	week_from = fields.Many2one(
+		'date.range',
+		string="Week End"
+	)
+	planning_quarter = fields.Many2one(
+		'date.range',
+		string='Select Quarter',
 		required=True,
-		readonly=True,
+		index=True
 	)
-	user_id = fields.Many2one(
-		comodel_name='res.users',
-		related='employee_id.user_id',
-		string='User',
-		store=True,
-		readonly=True,
-	)
-	# date_start = fields.Date(
-	#     string='Date From',
-	#     # default=lambda self: self._default_date_start(),
-	#     required=False,
-	#     index=True,
-	#     readonly=True,
-	#     states={'new': [('readonly', False)]},
+	# planning_line_ids = fields.Many2many(
+	# 	'ps.planning.line',
+	# 	'ps_planning_planning_line_rel',
+	# 	'ps_planning_sheet_id',
+	# 	'ps_planning_line_id',
+	# 	string='Planning lines',
+	# 	copy=False
 	# )
-	# date_end = fields.Date(
-	#     string='Date To',
-	#     # default=lambda self: self._default_date_end(),
-	#     required=False,
-	#     index=True,
-	#     readonly=True,
-	#     states={'new': [('readonly', False)]},
-	# )
-	# planning_ids = fields.One2many(
-	#     comodel_name='account.analytic.line',
-	#     inverse_name='planning_id',
-	#     string='Planning',
-	#     readonly=True,
-	#     states={
-	#         'new': [('readonly', False)],
-	#         'draft': [('readonly', False)],
-	#     },
-	# )
-	planning_analytic_ids = fields.Many2many(
-		'timesheet.analytic.line',
-		'ps_planning_analytic_line_rel',
-		'planning_id',
-		'analytic_line_id',
-		string='Planning lines',
-		copy=False)
-	# planning_analytic_ids = fields.One2many(
-	# 	comodel_name='timesheet.analytic.line',
-	# 	inverse_name='planning_analytic_id',
-	# 	string='Planning',
-	# 	# readonly=True,
-	# )
-	line_ids = fields.One2many(
+	planning_line_ids = fields.One2many(
 		comodel_name='ps.planning.line',
+		inverse_name="planning_sheet_id",
+		string='Planning lines',
+		readonly=True,
+		states={"new": [("readonly", False)], "draft": [("readonly", False)]},
+		copy=False
+	)
+	line_ids = fields.One2many(
+		comodel_name='ps.planning.sheet.line',
 		compute='_compute_line_ids',
-		string='Planning Lines',
-		readonly=False,
+		string='Planning Sheet Lines',
+		readonly=True,
+		states={"new": [("readonly", False)], "draft": [("readonly", False)]},
 	)
 	new_line_ids = fields.One2many(
-		comodel_name='ps.planning.new.analytic.line',
-		inverse_name='planning_id',
-		string='Temporary Plannings',
-		readonly=False,
-	)
-	# state = fields.Char([
-	#     ('new', 'New'),
-	#     ('draft', 'Open'),
-	#     ('confirm', 'Waiting Review'),
-	#     ('done', 'Approved')]
-	# )
-	company_id = fields.Many2one(
-		comodel_name='res.company',
-		string='Company',
-		default=lambda self: self.env['res.company']._company_default_get(),
-		required=True,
+		comodel_name='ps.planning.new.line',
+		inverse_name='planning_sheet_id',
+		string='Temporary Planning Lines',
 		readonly=True,
-	)
-	department_id = fields.Many2one(
-		comodel_name='hr.department',
-		string='Department',
-		default=lambda self: self._default_department_id(),
-		readonly=True,
-	)
-	add_line_project_id = fields.Many2one(
-		comodel_name='project.project',
-		string='Select Project',
-		help='If selected, the associated project is added '
-			 'to the planning sheet when clicked the button.',
+		states={"new": [("readonly", False)], "draft": [("readonly", False)]},
 	)
 	add_line_emp_id = fields.Many2one(
 		comodel_name='hr.employee',
 		string='Select Employee',
 	)
-	total_time = fields.Float(
-		compute='_compute_total_time',
-		store=True,
+	is_planning_officer = fields.Boolean(
+		'Is Planning Officer'
 	)
-	is_planning_officer = fields.Boolean('Is Planning Officer')
-	self_planning = fields.Boolean('Self Planning')
+	self_planning = fields.Boolean(
+		'Self Planning'
+	)
 
 	@api.depends('week_from', 'week_to')
 	def _compute_name(self):
@@ -370,11 +320,11 @@ class PSPlanning(models.Model):
 						period_end,
 					)
 
-	@api.depends('planning_analytic_ids.unit_amount')
+	@api.depends('planning_line_ids.unit_amount')
 	def _compute_total_time(self):
-		# need to add logic for timesheet.analytic.line as well
+		# need to add logic for ps.planning.line as well
 		for sheet in self:
-			sheet.total_time = sum(sheet.mapped('planning_analytic_ids.unit_amount'))
+			sheet.total_time = sum(sheet.mapped('planning_line_ids.unit_amount'))
 
 	def _get_overlapping_sheet_domain(self):
 		""" Hook for extensions """
@@ -383,7 +333,7 @@ class PSPlanning(models.Model):
 			('id', '!=', self.id),
 			('planning_quarter', '=', self.planning_quarter.id),
 			('employee_id', '=', self.employee_id.id),
-			('company_id', '=', self._get_timesheet_sheet_company().id),
+			('company_id', '=', self._get_planning_sheet_company().id),
 		]
 
 	@api.constrains(
@@ -442,21 +392,13 @@ class PSPlanning(models.Model):
 					_('The Company in the Planning Sheet and in '
 					  'the Task must be the same.'))
 
-	def _get_timesheet_sheet_company(self):
+	def _get_planning_sheet_company(self):
 		self.ensure_one()
 		employee = self.employee_id
 		company = employee.company_id or employee.department_id.company_id
 		if not company:
 			company = employee.user_id.company_id
 		return company
-
-	# @api.onchange('employee_id')
-	# def _onchange_employee_id(self):
-	# 	if self.employee_id:
-	# 		company = self._get_timesheet_sheet_company()
-	# 		self.company_id = company
-	# 		# self.review_policy = company.timesheet_sheet_review_policy
-	# 		self.department_id = self.employee_id.department_id
 
 	@api.onchange('employee_id')
 	def onchange_employee_id(self):
@@ -466,7 +408,7 @@ class PSPlanning(models.Model):
 		# if default_planning_quarter:
 		# 	data = {'planning_quarter': [('id', '=', default_planning_quarter)]}
 		# else:
-		company = self._get_timesheet_sheet_company()
+		company = self._get_planning_sheet_company()
 		vals['company_id'] = company.id
 		vals['department_id'] = self.employee_id.department_id.id
 		date = datetime.now().date()
@@ -478,34 +420,30 @@ class PSPlanning(models.Model):
 		data = {'planning_quarter': [('id', 'in', period.ids)]}
 		return {'value': vals, 'domain': data}
 
-	def _get_timesheet_sheet_lines_domain(self):
+	def _get_planning_sheet_lines_domain(self):
 		self.ensure_one()
 		return [
 			('date', '<=', self.week_to.date_end),
 			('date', '>=', self.week_from.date_start),
 			('employee_id', '=', self.employee_id.id),
-			('company_id', '=', self._get_timesheet_sheet_company().id),
+			('company_id', '=', self._get_planning_sheet_company().id),
 			('project_id', '!=', False),
 		]
 
 	# @api.depends('date_start', 'date_end')
 	@api.depends('week_from', 'week_to')
 	def _compute_line_ids(self):
-		SheetLine = self.env['ps.planning.line']
+		SheetLine = self.env['ps.planning.sheet.line']
 		for sheet in self:
 			if not all([sheet.week_from.date_start, sheet.week_to.date_end]):
 				continue
 			matrix = sheet._get_data_matrix()
-			# print("-------matrix",matrix)
 			vals_list = []
-			for key in sorted(matrix,
-							  key=lambda key: self._get_matrix_sortby(key)):
-				# print("------key check",key)
+			for key in sorted(matrix,key=lambda key: self._get_matrix_sortby(key)):
 				vals_list.append(sheet._get_default_sheet_line(matrix, key))
-
-			# print("------valslist",vals_list)
-				# if sheet.state in ['new', 'draft']:
-				#     sheet.clean_timesheets(matrix[key])
+				## todo: not necessary?
+				if sheet.state in ["new", "draft"]:
+					sheet.clean_timelines(matrix[key])
 			sheet.line_ids = SheetLine.create(vals_list)
 
 	@api.model
@@ -513,46 +451,43 @@ class PSPlanning(models.Model):
 		""" Hook for extensions """
 		return ['date', 'project_id','employee_id','week_id']
 
-	@api.model
-	def _matrix_key(self):
-		return namedtuple('MatrixKey', self._matrix_key_attributes())
 
 	@api.model
-	def _get_matrix_key_values_for_line(self, aal):
+	def _get_matrix_key_values_for_line(self, ppl):
 		""" Hook for extensions """
-		week_id = self.env['date.range'].search([('date_start','=',aal.date),('type_id.calender_week','=',True)])
-		# print("-----------emp id",aal.employee_id.name)
-		# print("-----------alll",aal)
+		week_id = self.env['date.range'].search([('date_start','=',ppl.date),('type_id.calender_week','=',True)])
+		# print("-----------emp id",ppl.employee_id.name)
+		# print("-----------alll",ppl)
 		return {
-			# 'date': aal.date,
+			# 'date': ppl.date,
 			'date': week_id.date_start,
 			'week_id':week_id,
-			'project_id': aal.project_id,
-			# 'task_id': aal.task_id,
-			'employee_id': aal.employee_id,
+			'project_id': ppl.project_id,
+			# 'task_id': ppl.task_id,
+			'employee_id': ppl.employee_id,
 		}
-
-	@api.model
-	def _get_matrix_sortby(self, key):
-		res = []
-		for attribute in key:
-			value = None
-			if hasattr(attribute, 'name_get'):
-				name = attribute.name_get()
-				value = name[0][1] if name else ''
-			else:
-				value = attribute
-			res.append(value)
-		return res
+	## we use the inherited method, which is identical
+	# @api.model
+	# def _get_matrix_sortby(self, key):
+	# 	res = []
+	# 	for attribute in key:
+	# 		value = None
+	# 		if hasattr(attribute, 'name_get'):
+	# 			name = attribute.name_get()
+	# 			value = name[0][1] if name else ''
+	# 		else:
+	# 			value = attribute
+	# 		res.append(value)
+	# 	return res
 
 	def _get_data_matrix(self):
 		self.ensure_one()
 		MatrixKey = self._matrix_key()
 		matrix = {}
-		# empty_line = self.env['account.analytic.line']
-		empty_line = self.env['timesheet.analytic.line']
-		# print("---------analytic line ids",self.planning_analytic_ids)
-		for line in self.planning_analytic_ids:
+		# empty_line = self.env['ps.time.line']
+		empty_line = self.env['ps.planning.line']
+		# print("--------- line ids",self.planning_line_ids)
+		for line in self.planning_line_ids:
 			key = MatrixKey(**self._get_matrix_key_values_for_line(line))
 			# print("--------------key",key)
 			if key not in matrix:
@@ -570,23 +505,23 @@ class PSPlanning(models.Model):
 					matrix[key] = empty_line
 		return matrix
 
-	def _compute_planning_analytic_ids(self):
-		TimesheetAnalyticLines = self.env['timesheet.analytic.line']
+	def _compute_planning_line_ids(self):
+		ps_planning_lines = self.env['ps.planning.line']
 		for sheet in self:
-			domain = sheet._get_timesheet_sheet_lines_domain()
+			domain = sheet._get_planning_sheet_lines_domain()
 			# check this
-			timesheets = TimesheetAnalyticLines.search(domain)
+			planning_lines = ps_planning_lines.search(domain)
 			# sheet.link_timesheets_to_sheet(timesheets)
-			sheet.planning_analytic_ids = [(6, 0, timesheets.ids)]
+			sheet.planning_line_ids = [(6, 0, planning_lines.ids)]
 
 	# @api.onchange('date_start', 'date_end', 'employee_id')
 	@api.onchange('week_from', 'week_to', 'employee_id')
 	def _onchange_scope(self):
-		self._compute_planning_analytic_ids()
+		self._compute_planning_line_ids()
 
 
-	@api.onchange('planning_analytic_ids')
-	def _onchange_timesheets(self):
+	@api.onchange('planning_line_ids')
+	def _onchange_planning_lines(self):
 		self._compute_line_ids()
 
 	
@@ -628,7 +563,7 @@ class PSPlanning(models.Model):
 		for rec in self:
 			# if rec.state == 'draft' and \
 			if not self.env.context.get('sheet_write'):
-				rec._update_analytic_lines_from_new_lines(vals)
+				rec._update_time_lines_from_new_lines(vals)
 				if 'add_line_project_id' not in vals:
 					rec.delete_empty_lines(True)
 		return res
@@ -764,11 +699,11 @@ class PSPlanning(models.Model):
 			'company_id': self.company_id.id,
 		}
 		if self.id:
-			values.update({'planning_id': self.id})
+			values.update({'ps_planning_sheet_id': self.id})
 		return values
 
 	@api.model
-	def _prepare_empty_analytic_line(self):
+	def _prepare_empty_planning_line(self):
 		# this function is
 		return {
 			'name': empty_name,
@@ -777,7 +712,7 @@ class PSPlanning(models.Model):
 			'project_id': self.add_line_project_id.id,
 			# 'task_id': self.add_line_task_id.id,
 			'employee_id': self.add_line_emp_id.id,
-			'planning_id': self.id,
+			'ps_planning_sheet_id': self.id,
 			'unit_amount': 0.0,
 			'company_id': self.company_id.id,
 		}
@@ -786,8 +721,8 @@ class PSPlanning(models.Model):
 		# print("---------------add line triggered")
 		if not self.add_line_project_id:
 			return
-		values = self._prepare_empty_analytic_line()
-		print("----------values form empty analytic line",values)
+		values = self._prepare_empty_planning_line()
+		print("----------values form empty planning line",values)
 		new_line_unique_id = self._get_new_line_unique_id()
 		existing_unique_ids = list(set(
 			[frozenset(line.get_unique_id().items()) for line in self.line_ids]
@@ -797,25 +732,17 @@ class PSPlanning(models.Model):
 		if frozenset(new_line_unique_id.items()) not in existing_unique_ids:
 			print("------------values",values)
 			print(" add line context print",self.env.context)
-			# self.planning_ids |= \
-			#     self.env['account.analytic.line']._planning_create(values)
-			self.planning_analytic_ids |= \
-				self.env['timesheet.analytic.line']._planning_create(values)
+			# self.ps_planning_ids |= \
+			#     self.env['ps.time.line']._planning_create(values)
+			self.planning_line_ids |= \
+				self.env['ps.planning.line']._planning_create(values)
 
-	# def link_timesheets_to_sheet(self, timesheets):
-	# 	self.ensure_one()
-		# if self.id and self.state in ['new', 'draft']:
-		#comment for many2many
-		# if self.id:
-			# #self.write({'planning_analytic_ids': [(6, 0, timesheets.ids)]})
-		# 	for aal in timesheets.filtered(lambda a: not a.planning_analytic_id):
-		# 		aal.write({'planning_analytic_id': self.id})
 
-	def clean_timesheets(self, timesheets):
-		repeated = timesheets.filtered(lambda t: t.name == empty_name)
+	def clean_timelines(self, timelines):
+		repeated = timelines.filtered(lambda t: t.name == empty_name)
 		if len(repeated) > 1 and self.id:
-			return repeated.merge_timesheets()
-		return timesheets
+			return repeated.merge_timelines()
+		return timelines
 
 	def _is_add_line(self, row):
 		""" Hook for extensions """
@@ -826,12 +753,12 @@ class PSPlanning(models.Model):
 			and self.add_line_emp_id == row.employee_id
 
 	@api.model
-	def _is_line_of_row(self, aal, row):
+	def _is_line_of_row(self, ptl, row):
 		""" Hook for extensions """
-		# return aal.project_id.id == row.project_id.id \
-		#     and aal.task_id.id == row.task_id.id
-		return aal.project_id.id == row.project_id.id \
-			and aal.employee_id.id == row.employee_id.id
+		# return ptl.project_id.id == row.project_id.id \
+		#     and ptl.task_id.id == row.task_id.id
+		return ptl.project_id.id == row.project_id.id \
+			and ptl.employee_id.id == row.employee_id.id
 
 	def delete_empty_lines(self, delete_empty_rows=False):
 		self.ensure_one()
@@ -846,17 +773,17 @@ class PSPlanning(models.Model):
 				check = not all([l.unit_amount for l in rows])
 			if not check:
 				continue
-			row_lines = self.planning_analytic_ids.filtered(
-				lambda aal: self._is_line_of_row(aal, row)
+			row_lines = self.planning_line_ids.filtered(
+				lambda ptl: self._is_line_of_row(ptl, row)
 			)
 			row_lines.filtered(
 				lambda t: t.name == empty_name and not t.unit_amount
 			).unlink()
-			if self.planning_analytic_ids != self.planning_analytic_ids.exists():
+			if self.planning_line_ids != self.planning_line_ids.exists():
 				self._sheet_write(
-					'planning_analytic_ids', self.planning_analytic_ids.exists())
+					'planning_line_ids', self.planning_line_ids.exists())
 
-	def _update_analytic_lines_from_new_lines(self, vals):
+	def _update_time_lines_from_new_lines(self, vals):
 		self.ensure_one()
 		new_line_ids_list = []
 		for line in vals.get('line_ids', []):
@@ -865,13 +792,13 @@ class PSPlanning(models.Model):
 			# is a computed field. We capture the value of 'new_line_ids'
 			# in the proposed dict before it disappears.
 			# This field holds the ids of the transient records
-			# of model 'ps.planning.new.analytic.line'.
+			# of model 'ps.planning.new.line.line'.
 			if line[0] == 1 and line[2] and line[2].get('new_line_id'):
 				new_line_ids_list += [line[2].get('new_line_id')]
 		for new_line in self.new_line_ids.exists():
 			if new_line.id in new_line_ids_list:
 				# print("-------calling update lines",new_line)
-				new_line._update_analytic_lines()
+				new_line._update_time_lines()
 		self.new_line_ids.exists().unlink()
 		self._sheet_write('new_line_ids', self.new_line_ids.exists())
 
@@ -883,7 +810,7 @@ class PSPlanning(models.Model):
 		
 		return {
 			# comment for many2many
-			# 'planning_analytic_id': line.planning_id.id,
+			# 'planning_line_id': line.ps_planning_sheet_id.id,
 			'date': line.date,
 			'project_id': line.project_id.id,
 			'employee_id': line.employee_id.id,
@@ -904,7 +831,7 @@ class PSPlanning(models.Model):
 
 	def add_new_line(self, line):
 		self.ensure_one()
-		new_line_model = self.env['ps.planning.new.analytic.line']
+		new_line_model = self.env['ps.planning.new.line.line']
 		new_line = self.new_line_ids.filtered(
 			lambda l: self._is_compatible_new_line(l, line)
 		)
@@ -916,55 +843,13 @@ class PSPlanning(models.Model):
 		self._sheet_write('new_line_ids', self.new_line_ids | new_line)
 		line.new_line_id = new_line.id
 
-	# @api.model
-	# def _get_period_start(self, company, date):
-	#     r = company and company.sheet_range or WEEKLY
-	#     if r == WEEKLY:
-	#         if company.timesheet_week_start:
-	#             delta = relativedelta(
-	#                 weekday=int(company.timesheet_week_start),
-	#                 days=6)
-	#         else:
-	#             delta = relativedelta(days=date.weekday())
-	#         return date - delta
-	#     elif r == MONTHLY:
-	#         return date + relativedelta(day=1)
-	#     return date
 
-	# @api.model
-	# def _get_period_end(self, company, date):
-	#     r = company and company.sheet_range or WEEKLY
-	#     if r == WEEKLY:
-	#         if company.timesheet_week_start:
-	#             delta = relativedelta(weekday=(int(
-	#                 company.timesheet_week_start) + 6) % 7)
-	#         else:
-	#             delta = relativedelta(days=6-date.weekday())
-	#         return date + delta
-	#     elif r == MONTHLY:
-	#         return date + relativedelta(months=1, day=1, days=-1)
-	#     return date
-
-	# ------------------------------------------------
-	# OpenChatter methods and notifications
-	# ------------------------------------------------
-
-	# 
-	# def _track_subtype(self, init_values):
-	#     self.ensure_one()
-	#     if 'state' in init_values and self.state == 'confirm':
-	#         return 'hr_timesheet_sheet.mt_timesheet_confirmed'
-	#     elif 'state' in init_values and self.state == 'done':
-	#         return 'hr_timesheet_sheet.mt_timesheet_approved'
-	#     return super()._track_subtype(init_values)
-
-
-class PSAbstractSheetLine(models.AbstractModel):
+class PSAbstractPlanningLine(models.AbstractModel):
 	_name = 'ps.planning.line.abstract'
-	_description = 'Abstract Timesheet Sheet Line'
+	_description = 'Abstract Planning Line'
 
-	planning_id = fields.Many2one(
-		comodel_name='ps.planning',
+	planning_sheet_id = fields.Many2one(
+		comodel_name='ps.planning.sheet',
 		ondelete='cascade',
 	)
 	date = fields.Date()
@@ -999,10 +884,10 @@ class PSAbstractSheetLine(models.AbstractModel):
 		}
 
 
-class PlanningLine(models.TransientModel):
-	_name = 'ps.planning.line'
+class PSPlanningSheetLine(models.TransientModel):
+	_name = 'ps.planning.sheet.line'
 	_inherit = 'ps.planning.line.abstract'
-	_description = 'Planning Line'
+	_description = 'PS Planning Line'
 
 	value_x = fields.Char(
 		string='Date Name',
@@ -1032,7 +917,7 @@ class PlanningLine(models.TransientModel):
 
 	@api.model
 	def _get_sheet(self):
-		sheet = self.planning_id
+		sheet = self.ps_planning_sheet_id
 		if not sheet:
 			model = self.env.context.get('params', {}).get('model', '')
 			obj_id = self.env.context.get('params', {}).get('id')
@@ -1041,35 +926,33 @@ class PlanningLine(models.TransientModel):
 		return sheet
 
 
-class SheetNewAnalyticLine(models.TransientModel):
-	_name = 'ps.planning.new.analytic.line'
+class SheetNewPlanningLine(models.TransientModel):
+	_name = 'ps.planning.new.line'
 	_inherit = 'ps.planning.line.abstract'
-	_description = 'ps planning New Analytic Line'
+	_description = 'New PS Planning Line'
 
 	@api.model
-	def _is_similar_analytic_line(self, aal):
-		# print("--------aalllllllll",aal)
+	def _is_similar_planning_line(self, ppl):
+		# print("--------ptlllllllll",ptl)
 		""" Hook for extensions """
-		return aal.date == self.date \
-			and aal.project_id.id == self.project_id.id \
-			and aal.employee_id.id == self.employee_id.id
+		return ppl.date == self.date \
+			and ppl.project_id.id == self.project_id.id \
+			and ppl.employee_id.id == self.employee_id.id
 
 	@api.model
-	def _update_analytic_lines(self):
-		sheet = self.planning_id
-		timesheets = sheet.planning_analytic_ids.filtered(
-			lambda aal: self._is_similar_analytic_line(aal)
+	def _update_planning_lines(self):
+		sheet = self.ps_planning_sheet_id
+		planning_lines = sheet.planning_line_ids.filtered(
+			lambda ppl: self._is_similar_planning_line(ppl)
 		)
-		# not getting analytic line id on new entry of time --- above
-		# print("------timesheets",timesheets)
-		new_ts = timesheets.filtered(lambda t: t.name == empty_name)
-		amount = sum(t.unit_amount for t in timesheets)
+		new_ts = planning_lines.filtered(lambda t: t.name == empty_name)
+		amount = sum(t.unit_amount for t in planning_lines)
 		diff_amount = self.unit_amount - amount
 		# print("-------diff amount",diff_amount)
 		if len(new_ts) > 1:
 			print("---entered update if")
-			new_ts = new_ts.merge_timesheets()
-			sheet._sheet_write('planning_analytic_ids', sheet.planning_analytic_ids.exists())
+			new_ts = new_ts.merge_timelines()
+			sheet._sheet_write('planning_line_ids', sheet.planning_line_ids.exists())
 		if not diff_amount:
 			return
 		if new_ts:
@@ -1080,7 +963,7 @@ class SheetNewAnalyticLine(models.TransientModel):
 			else:
 				new_ts.unlink()
 				sheet._sheet_write(
-					'planning_analytic_ids', sheet.planning_analytic_ids.exists())
+					'planning_line_ids', sheet.planning_line_ids.exists())
 		else:
 			# print("---------sheet employee id",sheet.employee_id.name)
 			# print("---------sheet employee id self",self.employee_id.name)
@@ -1089,12 +972,12 @@ class SheetNewAnalyticLine(models.TransientModel):
 				'name': empty_name,
 				'unit_amount': diff_amount,
 			})
-			# self.env['account.analytic.line']._planning_create(new_ts_values)
+			# self.env['ps.time.line']._planning_create(new_ts_values)
 			print('-----------new ts values',new_ts_values)
-			planning_analytic_ids = self.env['timesheet.analytic.line']._planning_create(new_ts_values)
-			planning_analytic_ids |= sheet.planning_analytic_ids
+			planning_line_ids = self.env['ps.planning.line']._planning_create(new_ts_values)
+			planning_line_ids |= sheet.planning_line_ids
 			sheet._sheet_write(
-				'planning_analytic_ids', planning_analytic_ids.exists())
+				'planning_line_ids', planning_line_ids.exists())
 			
 
 class PSStandbyPlanning(models.Model):
@@ -1117,7 +1000,7 @@ class PSStandbyPlanning(models.Model):
 
 	@api.model
 	def default_get(self, fields):
-		rec = super(PAStandbyPlanning, self).default_get(fields)
+		rec = super(PSStandbyPlanning, self).default_get(fields)
 		emp_ids = self.env['hr.employee'].search([('user_id', '=', self.env.uid)], limit=1)
 		rec.update({'employee_id': emp_ids and emp_ids.id or False})
 		return rec
@@ -1139,13 +1022,6 @@ class HrEmployee(models.Model):
 		if self.env.context.get('ps_planning', False):
 			pass
 
-		# for emp in self:
-		#     name = emp.name
-		#     # if analytic.code:
-		#     #     name = '[' + analytic.code + '] ' + name
-		#     # if analytic.partner_id.commercial_partner_id.name:
-		#     #     name = name + ' - ' + analytic.partner_id.commercial_partner_id.name
-		#     res.append((emp.id, name))
 		res = super(HrEmployee, self).name_get()
 		return res
 

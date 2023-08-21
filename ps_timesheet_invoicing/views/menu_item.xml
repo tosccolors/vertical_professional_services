@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
         <!-- Top menu item -->
-        <menuitem name="Analytic Invoicing"
-                  id="menu_analytic_invoicing"
+        <menuitem name="PS Invoicing"
+                  id="menu_ps_invoicing"
                   sequence="40"
                   web_icon="ps_timesheet_invoicing,static/description/icon.png"/>
-        <menuitem id="menu_analytic" name="Time and Billing"
-                  parent="menu_analytic_invoicing"
+        <menuitem id="menu_ps" name="Time and Billing"
+                  parent="menu_ps_invoicing"
                   sequence="2"/>
-        <menuitem id="menu_action_analytic_invoice"
-                  action="ps_timesheet_invoicing.action_view_analytic_invoice" name="Draft Invoices"
-                  parent="menu_analytic" sequence="20" />
-        <menuitem id="menu_analytic_entries" name="Analytic"
-                  parent="menu_analytic_invoicing"
+        <menuitem id="menu_action_ps_invoice"
+                  action="action_view_ps_invoice" name="Draft Invoices"
+                  parent="menu_ps" sequence="20" />
+        <menuitem id="menu_timeline_entries" name="Time Lines"
+                  parent="menu_ps_invoicing"
                   sequence="2"/>
-        <menuitem id="menu_action_analytic_account_lines"
-                  action="account_analytic_line_action_entries_ps"
-                  parent="menu_analytic_entries" sequence="1" groups="analytic.group_analytic_accounting"/>
+        <menuitem id="menu_action_ps_time_lines"
+                  action="ps_time_line_action_entries"
+                  parent="menu_timeline_entries" sequence="1" groups="analytic.group_analytic_accounting"/>
 
 </odoo>

@@ -9,6 +9,7 @@ import calendar
 
 class TimeLine(models.Model):
     _name = 'ps.time.line'
+    _inherit = 'account.analytic.line'
     _description = 'Professional Services Time Line'
     _order = 'date desc'
     _check_company_auto = True
@@ -43,8 +44,8 @@ class TimeLine(models.Model):
             ['task_user_id', 'line_fee_rate', 'product_id', 'amount'])
         uom_hrs = self.env.ref("product.product_uom_hour").id
         for line in self.filtered(lambda line: line.task_id and line.product_uom_id.id == uom_hrs):
-            # all analytic lines need a project_operating_unit_id and
-            # for all analytic lines day_name, week_id and month_id are computed
+            # all ps_time lines need a project_operating_unit_id and
+            # for all ps_time lines day_name, week_id and month_id are computed
             date = line.date
             line.project_operating_unit_id = \
                 line.account_id.operating_unit_ids \
@@ -156,7 +157,7 @@ class TimeLine(models.Model):
     @api.model
     def default_get(self, fields):
         context = self._context
-        res = super(TimeLine, self).default_get(fields)
+        res = super().default_get(fields)
         if 'planning_lines' in context:
             project = self.env['project.project']
             project_id = context.get('default_project_id', project)
@@ -164,118 +165,12 @@ class TimeLine(models.Model):
             project = project.browse(project_id)
             account_id = project.analytic_account_id
             operating_unit_id = account_id.operating_unit_ids and account_id.operating_unit_ids[0] or False
-            res.update({'operating_unit_id': operating_unit_id, 'name': '/', 'task_id': task_id})
+            res.update({'operating_unit_id':operating_unit_id, 'name': '/', 'task_id': task_id})
         if 'timesheet_date_start' in context:
             date = context.get('timesheet_date_start')
             res.update({'date': date})
         return res
 
-    sheet_id = fields.Many2one(
-        comodel_name="hr_timesheet.sheet",
-        string="Sheet"
-    )
-    sheet_state = fields.Selection(
-        string="Sheet State",
-        related="sheet_id.state"
-    )
-    name = fields.Char(
-        'Description',
-        required=True
-    )
-    date = fields.Date(
-        'Date',
-        required=True,
-        index=True,
-        default=fields.Date.context_today
-    )
-    amount = fields.Monetary(
-        'Amount',
-        required=True,
-        default=0.0
-    )
-    unit_amount = fields.Float(
-        'Quantity',
-        default=0.0
-    )
-    product_uom_id = fields.Many2one(
-        'uom.uom',
-        string='Unit of Measure',
-        domain="[('category_id', '=', product_uom_category_id)]"
-    )
-    account_id = fields.Many2one(
-        'account.analytic.account',
-        'Analytic Account',
-        required=True,
-        ondelete='restrict',
-        index=True,
-        check_company=True
-    )
-    partner_id = fields.Many2one(
-        'res.partner',
-        string='Partner',
-        check_company=True
-    )
-    user_id = fields.Many2one(
-        'res.users',
-        string='User',
-        default=_default_user
-    )
-    company_id = fields.Many2one(
-        'res.company',
-        string='Company',
-        required=True,
-        readonly=True,
-        default=lambda self: self.env.company
-    )
-    currency_id = fields.Many2one(
-        related="company_id.currency_id",
-        string="Currency",
-        readonly=True,
-        store=True,
-        compute_sudo=True
-    )
-    product_id = fields.Many2one(
-        'product.product',
-        string='Product',
-        check_company=True
-    )
-    task_id = fields.Many2one(
-        'project.task',
-        'Task',
-        compute='_compute_task_id',
-        store=True,
-        readonly=False,
-        index=True,
-        domain="[('company_id', '=', company_id), ('project_id.allow_timesheets', '=', True), ('project_id', '=?', project_id)]"
-    )
-    project_id = fields.Many2one(
-        'project.project',
-        'Project',
-        compute='_compute_project_id',
-        store=True,
-        readonly=False,
-        domain=_domain_project_id
-    )
-    user_id = fields.Many2one(
-        compute='_compute_user_id',
-        store=True,
-        readonly=False
-    )
-    employee_id = fields.Many2one(
-        'hr.employee',
-        "Employee",
-    )
-    department_id = fields.Many2one(
-        'hr.department',
-        "Department",
-        store=True,
-        compute_sudo=True
-    )
-    ## todo: are we using this?
-    # encoding_uom_id = fields.Many2one(
-    #     'uom.uom',
-    #     compute='_compute_encoding_uom_id'
-    # )
     kilometers = fields.Integer(
         'Kilometers'
     )
@@ -284,7 +179,7 @@ class TimeLine(models.Model):
         store=True
     )
     ref_id = fields.Many2one(
-        'account.analytic.line',
+        'ps.time.line',
         string='Reference'
     )
     week_id = fields.Many2one(
@@ -303,7 +198,7 @@ class TimeLine(models.Model):
         'date.range',
         compute=_compute_time_line,
         store=True,
-        string="Month of Analytic Line or last Wip Posting"
+        string="Month of PS Time Line or last Wip Posting"
     )
     month_of_last_wip = fields.Many2one(
         "date.range",
@@ -344,7 +239,7 @@ class TimeLine(models.Model):
         store=True,
     )
     # ts_line = fields.Boolean(
-    #     compute=_compute_analytic_line,
+    #     compute=_compute_time_line,
     #     string='Timesheet line',
     #     store=True,
     # )
@@ -412,7 +307,7 @@ class TimeLine(models.Model):
         default='draft'
     )
     user_total_id = fields.Many2one(
-        'analytic.user.total',
+        'ps.time.line.user.total',
         string='Summary Reference',
     )
     date_of_last_wip = fields.Date(
@@ -421,11 +316,230 @@ class TimeLine(models.Model):
     date_of_next_reconfirmation = fields.Date(
         "Date Of Next Reconfirmation"
     )
+    tag_ids = fields.Boolean(
+        'field not used'
+    )
+    task_user_id = fields.Many2one(
+        'task.user',
+        string='Task User Fee Rate',
+        compute=_compute_time_line,
+        store=True
+    )
 
-    @api.constrains('company_id', 'account_id')
-    def _check_company_id(self):
-        for line in self:
-            if line.account_id.company_id and line.company_id.id != line.account_id.company_id.id:
-                raise ValidationError(
-                    _('The selected account belongs to another company than the one you\'re trying to create an analytic item for'))
+
+    @api.model
+    def get_task_user_product(self, task_id, user_id):
+        taskUserObj = self.env['task.user']
+        product_id = False
+        if task_id and user_id:
+            date_now = fields.Date.today()
+            #task-358
+            taskUser = taskUserObj.search([('task_id', '=', task_id), ('from_date', '<=', date_now), ('user_id', '=', user_id)],
+                                          limit=1, order='from_date Desc')
+            if taskUser and taskUser.product_id:
+                product_id = taskUser.product_id.id if taskUser and taskUser.product_id else False
+            else:
+                #check standard task for fee earners
+                project_id = self.env['project.task'].browse(task_id).project_id
+                standard_task = project_id.task_ids.filtered('standard')
+                if standard_task:
+                    taskUser = taskUserObj.search([('task_id', '=', standard_task.id), ('user_id', '=', user_id)],
+                                                  limit=1)
+                    product_id = taskUser.product_id.id if taskUser and taskUser.product_id else False
+
+        if user_id and not product_id:
+            user = self.env['res.users'].browse(user_id)
+            employee = user._get_related_employees()
+            product_id = employee.product_id and employee.product_id.id or False
+        return product_id
+
+    @api.model
+    def get_fee_rate(self, task_id=None, user_id=None, date=None, project_rate=False):
+        uid = user_id or self.user_id.id or False
+        tid = task_id or self.task_id.id or False
+        date = date or self.date or False
+        fr = 0.0
+        ic_fr = 0.0
+        # fr = None
+        if uid and tid and date:
+            task_user = self.env['task.user'].get_task_user_obj(tid, uid, date)[:1]
+            if task_user and task_user.fee_rate:
+                fr = task_user.fee_rate
+                ic_fr = task_user.ic_fee_rate
+            if project_rate:
+                return fr or 0.0
+            # check standard task for fee earners
+            else:
+                project_id = self.env['project.task'].browse(tid).project_id
+                standard_task = project_id.task_ids.filtered('standard')
+                if standard_task:
+                    # task-358
+                    task_user = self.env['task.user'].get_task_user_obj(standard_task.id, uid, date)
+                    if task_user:
+                        fr = task_user[:1].fee_rate
+                        ic_fr = task_user[:1].ic_fee_rate
+        return [fr, ic_fr]
+        # if fr == None:
+        #     employee = self.env['hr.employee'].search([('user_id', '=', uid)])
+        #     fr = employee.fee_rate or employee.product_id and employee.product_id.lst_price or 0.0
+        #     if self.product_id and self.product_id != employee.product_id:
+        #         fr = self.product_id.lst_price
+        # return fr
+    def merge_timelines(self):
+        unit_amount = sum(
+            [t.unit_amount for t in self])
+        amount = sum([t.amount for t in self])
+        self[0].write({
+            'unit_amount': unit_amount,
+            'amount': amount,
+        })
+        self[1:].unlink()
+        return self[0]
+
+    @api.model
+    def get_fee_rate_amount(self, task_id=None, user_id=None, unit_amount=False):
+        fr = self.get_fee_rate(task_id=task_id, user_id=user_id)[0]
+        unit_amount = unit_amount if unit_amount else self.unit_amount
+        amount = - unit_amount * fr
+        return amount
+
+    @api.onchange('date')
+    def _onchange_dates(self):
+        if self.planned or self.env.context.get('default_planned',False) :
+            dt = datetime.strptime(str(self.date), "%Y-%m-%d") if self.date else datetime.now().date()
+            self.date = dt-timedelta(days=dt.weekday())
+            self.company_id = self.env.user.company_id
+            date = self.find_daterange_week(self.date)
+            self.week_id = date.id
+        elif self.sheet_id and not self.sheet_id.date_start <= self.date <= self.sheet_id.date_end:
+            self.date = self.sheet_id.date_start
+            return {
+                'warning': {'title': _('Error'), 'message': _('Please fill in date within timesheet dates.'), },
+            }
+        elif self.env.context.get('timesheet_date_start',False) and  self.env.context.get('timesheet_date_end',False):
+            start_date = datetime.strptime(self.env.context.get('timesheet_date_start'), "%Y-%m-%d").date()
+            end_date = datetime.strptime(self.env.context.get('timesheet_date_end'), "%Y-%m-%d").date()
+            if not start_date <= self.date <= end_date:
+                self.date = start_date
+            # return {
+            #     'warning': {'title': _('Error'), 'message': _('Please fill in date within timesheet dates.'), },
+            # }
+
+
+    @api.onchange('product_id', 'product_uom_id', 'unit_amount', 'currency_id')
+    def on_change_unit_amount(self):
+        if self.product_uom_id == self.env.ref("uom.product_uom_hour").id:
+            return {}
+        return super().on_change_unit_amount()
+
+    def write(self, vals):
+        uom_hour = self.env.ref("uom.product_uom_hour")
+        # don't call super if only state has to be updated
+        if self and 'state' in vals and len(vals) == 1:
+            state = vals['state']
+            cond, rec = ("IN", tuple(self.ids)) if len(self) > 1 else ("=",
+                                                                       self.id)
+            self.env.cr.execute("""
+                               UPDATE %s SET state = '%s' WHERE id %s %s
+                               """ % (self._table, state, cond, rec))
+            self.env.cache.invalidate()
+            vals.pop('state')
+            return True
+
+        if len(self) == 1:
+            task_id = vals.get('task_id', self.task_id and self.task_id.id)
+            user_id = vals.get('user_id', self.user_id and self.user_id.id)
+            # for planning skip fee rate check
+            planned = vals.get('planned', self.planned)
+            # some cases product id is missing
+            if not vals.get('product_id', self.product_id) and user_id:
+                product_id = self.get_task_user_product(task_id, user_id) or False
+                if not product_id and not planned:
+                    user = self.env.user.browse(user_id)
+                    raise ValidationError(_(
+                        'Please fill in Fee Rate Product in employee %s.\n '
+                    ) % user.name)
+                vals['product_id'] = product_id
+            ts_line = vals.get('ts_line', self.product_uom_id == uom_hour and task_id and not planned)
+            if ts_line:
+                unit_amount = vals.get('unit_amount', self.unit_amount)
+                vals['amount'] = self.get_fee_rate_amount(task_id, user_id, unit_amount)
+
+        if self.filtered('ts_line') and not (
+                'unit_amount' in vals or
+                'product_uom_id' in vals or
+                'sheet_id' in vals or
+                'date' in vals or
+                'project_id' in vals or
+                'task_id' in vals or
+                'user_id' in vals or
+                'name' in vals or
+                'ref' in vals) and any(this.product_uom_id == uom_hour for this in self):
+            # always copy context to keep other context reference
+            context = self.env.context.copy()
+            context.update({'ps_check_state': True})
+            return super().with_context(context).write(vals)
+        return super().write(vals)
+
+    def _get_timesheet_cost(self, values):
+        ## turn off updating amount and account
+        values = values if values is not None else {}
+        if values.get('project_id') or self.project_id:
+            if values.get('amount'):
+                return {}
+            # unit_amount = values.get('unit_amount', 0.0) or self.unit_amount
+            user_id = values.get('user_id') or self.user_id.id or self._default_user()
+            user = self.env['res.users'].browse([user_id])
+            emp = self.env['hr.employee'].search([('user_id', '=', user_id)], limit=1)
+            # cost = emp and emp.timesheet_cost or 0.0
+            uom = (emp or user).company_id.project_time_mode_id
+            # Nominal employee cost = 1 * company project UoM (project_time_mode_id)
+            return {
+                # 'amount': -unit_amount * cost,
+                'product_uom_id': uom.id,
+                # 'account_id': values.get('account_id') or self.account_id.id or emp.account_id.id,
+            }
+        return {}
+
+    def _check_state(self):
+        """
+        to check if any lines computes method calls allow to modify
+        :return: True or super
+        """
+        context = self.env.context.copy()
+        if 'ps_check_state' in context \
+                or 'active_invoice_id' in context:
+            return True
+        return super()._check_state()
+
+    @api.model
+    def run_reconfirmation_process(self):
+        current_date = datetime.now().date()
+        # pre_month_start_date = current_date.replace(day=1, month=current_date.month - 1)
+        month_days = calendar.monthrange(current_date.year, current_date.month)[1]
+        month_end_date = current_date.replace(day=month_days)
+
+        domain = [('date_of_next_reconfirmation', '!=', False), ('date_of_next_reconfirmation', '<=', month_end_date),
+                  ('state', '=', 'delayed')]
+        query_line = self._where_calc(domain)
+        self_tables, where_clause, where_clause_params = query_line.get_sql()
+
+        list_query = ("""                    
+                UPDATE {0}
+                SET state = 're_confirmed', date_of_next_reconfirmation = null
+                WHERE {1}                          
+                     """.format(
+            self_tables,
+            where_clause
+        ))
+        self.env.cr.execute(list_query, where_clause_params)
+        return True
+
+    def modified(self, fnames):
+        if not self.env.context.get('_timesheet_write'):
+            # disable modification triggers when writing timesheets
+            return super().modified(fnames)
+
+
+
 

@@ -42,7 +42,7 @@
         </record>
         <record model="ir.rule" id="ps_planning_emplyoee_rule">
             <field name="name">Professional Services Planning </field>
-            <field name="model_id" search="[('model','=','ps.planning')]" model="ir.model"/>
+            <field name="model_id" search="[('model','=','ps.planning.sheet')]" model="ir.model"/>
             <field name="global" eval="True"/>
             <field name="domain_force">['|','|','|',('employee_id.department_id.manager_id.user_id','=',user.id),('employee_id.department_id.parent_id.manager_id.user_id','=',user.id),('employee_id.parent_id.user_id','=',user.id),('employee_id.user_id','=',user.id)]</field>
         </record>

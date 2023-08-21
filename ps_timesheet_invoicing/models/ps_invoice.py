@@ -7,16 +7,16 @@ from odoo.exceptions import UserError, ValidationError
 from datetime import datetime
 import json
 
-class AnalyticInvoice(models.Model):
-    _name = "analytic.invoice"
+class PSInvoice(models.Model):
+    _name = "ps.invoice"
     _inherits = {'account.move': "invoice_id"}
-    _description = "Analytic Invoice"
+    _description = "PS Invoice"
     _order = "date_to desc"
     _rec_name = 'partner_id'
 
 
     @api.depends('account_analytic_ids', 'month_id')
-    def _compute_analytic_lines(self):
+    def _compute_ps_lines(self):
         if len(self.account_analytic_ids) > 0:
             account_analytic_ids = self.account_analytic_ids.ids
             hrs = self.env.ref('uom.product_uom_hour').id
@@ -35,7 +35,7 @@ class AnalyticInvoice(models.Model):
                 ('product_uom_id', '!=', hrs),
                 ('amount', '>', 0)
             ]
-            self.time_line_ids = self.env['account.analytic.line'].search(time_domain).ids
+            self.time_line_ids = self.env['ps.time.line'].search(time_domain).ids
             self.cost_line_ids = self.env['account.analytic.line'].search(cost_domain).ids
             self.revenue_line_ids = self.env['account.analytic.line'].search(revenue_domain).ids
         else:
@@ -52,22 +52,22 @@ class AnalyticInvoice(models.Model):
         :return:
         '''
         task_user_ids, user_total_data = [], []
-        ## first we compute user_total_lines already in the invoice and the analytic_lines we shouldn't look at
-        user_total_invoiced_lines, aal_ids = self._existing_user_total_lines()
-        ## then we determine the analytic_account_ids, that will be invoiced in this analytic_invoice
+        ## first we compute user_total_lines already in the invoice and the ps_time_lines we shouldn't look at
+        user_total_invoiced_lines, ptl_ids = self._existing_user_total_lines()
+        ## then we determine the analytic_account_ids, that will be invoiced in this ps_invoice
         analytic_accounts = self._determine_analytic_account_ids()
         if analytic_accounts:
             self.account_analytic_ids = [(6, 0, analytic_accounts)]
-            ## we build the domains for the selection of analytic_lines for both regular and reconfirmed aal's
+            ## we build the domains for the selection of ps_time_lines for both regular and reconfirmed ptl's
             time_domain_regular, \
-            time_domain_reconfirm = self._calculate_domain(aal_ids)
-            ## we determine the grouping of analytic_lines in the user_total_lines
+            time_domain_reconfirm = self._calculate_domain(ptl_ids)
+            ## we determine the grouping of ps_time_lines in the user_total_lines
             reg_fields_grouped, \
             reg_grouped_by, \
             reconfirmed_fields_grouped, \
             reconfirmed_grouped_by = self._calculate_grouping()
-            ## the actual reads of the selected analytic_lines
-            result_regular = self.env['account.analytic.line'].read_group(
+            ## the actual reads of the selected ps_time_lines
+            result_regular = self.env['ps.time.line'].read_group(
                 time_domain_regular,
                 reg_fields_grouped,
                 reg_grouped_by,
@@ -75,7 +75,7 @@ class AnalyticInvoice(models.Model):
                 limit=None,
                 orderby=False,
                 lazy=False)
-            result_reconfirm = self.env['account.analytic.line'].read_group(
+            result_reconfirm = self.env['ps.time.line'].read_group(
                 time_domain_reconfirm,
                 reconfirmed_fields_grouped,
                 reconfirmed_grouped_by,
@@ -115,55 +115,55 @@ class AnalyticInvoice(models.Model):
         task_user_obj = self.env['task.user']
         for item in result:
             vals = self._prepare_user_total(item, reconfirmed_entries)
-            aal_domain = time_domain + [
+            ptl_domain = time_domain + [
                 ('user_id', '=', vals['user_id']),
                 ('task_id', '=', vals['task_id']),
                 ('account_id', '=', vals['account_id']),
                 ('product_id', '=', vals['product_id']),
                 ('line_fee_rate', '=', vals['line_fee_rate'])]
             if reconfirmed_entries:
-                aal_domain += [('month_of_last_wip', '=', vals['gb_month_id'])]
+                ptl_domain += [('month_of_last_wip', '=', vals['gb_month_id'])]
             else:
-                aal_domain += [('month_id', '=', vals['gb_month_id'])]
+                ptl_domain += [('month_id', '=', vals['gb_month_id'])]
                 if vals['gb_week_id']:
-                    aal_domain += [('week_id', '=', vals['gb_week_id'])]
+                    ptl_domain += [('week_id', '=', vals['gb_week_id'])]
 
-            user_total_analytic_lines = []
-            for aal in self.env['account.analytic.line'].search(aal_domain):
+            user_total_ps_time_lines = []
+            for ptl in self.env['ps.time.line'].search(ptl_domain):
                 task_user_lines = task_user_obj.get_task_user_obj(
-                    aal.task_id.id,
-                    aal.user_id.id,
-                    aal.date) \
+                    ptl.task_id.id,
+                    ptl.user_id.id,
+                    ptl.date) \
                                   or task_user_obj.get_task_user_obj(
-                    aal.task_id.project_id.task_ids.filtered('standard').id,
-                    aal.user_id.id,
-                    aal.date)
+                    ptl.task_id.project_id.task_ids.filtered('standard').id,
+                    ptl.user_id.id,
+                    ptl.date)
                 if task_user_lines:
                     task_user_ids += task_user_lines.ids
-                user_total_analytic_lines.append((4, aal.id))
-            vals['detail_ids'] = user_total_analytic_lines
+                user_total_ps_time_lines.append((4, ptl.id))
+            vals['detail_ids'] = user_total_ps_time_lines
             user_total_data.append((0, 0, vals))
         return list(set(task_user_ids)), user_total_data
 
     def _existing_user_total_lines(self):
         ctx = self.env.context.copy()
         current_ref = ctx.get('active_invoice_id', False)
-        aal_ids = self.env['account.analytic.line']
+        ptl_ids = self.env['ps.time.line']
         if not current_ref:
             return [], []
         # get all invoiced user total objs using current reference
-        user_total_invoiced_lines = self.env['analytic.user.total'].search([
-            ('analytic_invoice_id', '=', current_ref),
+        user_total_invoiced_lines = self.env['ps.time.user.total'].search([
+            ('ps_invoice_id', '=', current_ref),
             ('state', 'in', ('invoice_created', 'invoiced'))
         ])
-        # don't look for analytic lines which have been already added to other analytic invoice
-        other_lines = self.env['analytic.user.total'].search([
-            ('analytic_invoice_id', '!=', current_ref),
+        # don't look for ps_time lines which have been already added to other analytic invoice
+        other_lines = self.env['ps.time.user.total'].search([
+            ('ps_invoice_id', '!=', current_ref),
             ('state', 'not in', ('invoice_created', 'invoiced'))
         ])
         for t in other_lines:
-            aal_ids |= t.detail_ids
-        return user_total_invoiced_lines, aal_ids
+            ptl_ids |= t.detail_ids
+        return user_total_invoiced_lines, ptl_ids
 
     def _determine_analytic_account_ids(self):
         partner_id = self.partner_id or False
@@ -178,7 +178,7 @@ class AnalyticInvoice(models.Model):
                     ('partner_id', '=', self.project_id.partner_id.id)])
         return analytic_accounts.ids if len(analytic_accounts) > 0 else False
 
-    def _calculate_domain(self, aal_ids):
+    def _calculate_domain(self, ptl_ids):
         account_analytic_ids = self.account_analytic_ids.ids
         domain = [('account_id', 'in', account_analytic_ids)]
         if self.project_operating_unit_id:
@@ -194,8 +194,8 @@ class AnalyticInvoice(models.Model):
             ('chargeable', '=', True),
             ('product_uom_id', '=', hrs),
             ('state', 'in', ['invoiceable', 'progress'])]
-        if aal_ids:
-            time_domain += [('id', 'not in', aal_ids.ids)]
+        if ptl_ids:
+            time_domain += [('id', 'not in', ptl_ids.ids)]
         time_domain_regular = time_domain + [('month_of_last_wip', '=', False)]
         if self.month_id:
             time_domain_regular += self.month_id.get_domain('date')
@@ -362,23 +362,23 @@ class AnalyticInvoice(models.Model):
         index=True
     )
     time_line_ids = fields.Many2many(
-        'account.analytic.line',
-        compute='_compute_analytic_lines',
+        'ps.time.line',
+        compute='_compute_ps_time_lines',
         string='Time Line',
     )
     cost_line_ids = fields.Many2many(
         'account.analytic.line',
-        compute='_compute_analytic_lines',
+        compute='_compute_ps_time_lines',
         string='Cost Line',
     )
     revenue_line_ids = fields.Many2many(
         'account.analytic.line',
-        compute='_compute_analytic_lines',
+        compute='_compute_ps_time_lines',
         string='Revenue Line',
     )
     user_total_ids = fields.One2many(
-        'analytic.user.total',
-        'analytic_invoice_id',
+        'ps.time.line.user.total',
+        'ps_invoice_id',
         compute='_compute_objects',
         string='User Total Line',
         store=True
@@ -438,16 +438,16 @@ class AnalyticInvoice(models.Model):
     )
 
     def unlink_rec(self):
-        user_total_ids = self.env['analytic.user.total'].search(
-            [('analytic_invoice_id', '=', False)])
+        user_total_ids = self.env['ps.time.user.total'].search(
+            [('ps_invoice_id', '=', False)])
         if user_total_ids:
-            #reset analytic line state to invoiceable
-            analytic_lines = user_total_ids.mapped('detail_ids')
-            analytic_lines.write({'state': 'invoiceable'})
+            #reset ps time line state to invoiceable
+            ps_time_lines = user_total_ids.mapped('detail_ids')
+            ps_time_lines.write({'state': 'invoiceable'})
             user_total_ids.unlink()
 
     def write(self, vals):
-        res = super(AnalyticInvoice, self).write(vals)
+        res = super(PSInvoice, self).write(vals)
         self.unlink_rec()
         analytic_lines = self.user_total_ids.mapped('detail_ids')
         if analytic_lines:
@@ -456,7 +456,7 @@ class AnalyticInvoice(models.Model):
 
     @api.model
     def create(self, vals):
-        res = super(AnalyticInvoice, self).create(vals)
+        res = super(PSInvoice, self).create(vals)
         analytic_lines = res.user_total_ids.mapped('detail_ids')
         if analytic_lines:
             analytic_lines.write({'state': 'progress'})
@@ -467,12 +467,12 @@ class AnalyticInvoice(models.Model):
             reset analytic line state to invoiceable
             :return:
         """
-        analytic_lines = self.env['account.analytic.line']
+        analytic_lines = self.env['ps.time.line']
         for obj in self:
             analytic_lines |= obj.user_total_ids.mapped('detail_ids')
         if analytic_lines:
             analytic_lines.write({'state': 'invoiceable'})
-        return super(AnalyticInvoice, self).unlink()
+        return super(PSInvoice, self).unlink()
 
     @api.model
     def _prepare_invoice_line(self, line, invoice_id):
@@ -496,7 +496,7 @@ class AnalyticInvoice(models.Model):
             'account_analytic_id': line.account_id and line.account_id.id or False,
             'price_unit': line.fee_rate if line.operating_unit_id == line.project_operating_unit_id else
                             line.ic_fee_rate,
-            'analytic_invoice_id': line.analytic_invoice_id.id,
+            'ps_invoice_id': line.ps_invoice_id.id,
             'origin': line.task_id.project_id.po_number
                         if line.task_id and line.task_id.project_id and line.task_id.project_id.correction_charge
                         else '/',
@@ -509,7 +509,7 @@ class AnalyticInvoice(models.Model):
             raise UserError(_("Can't generate invoice, kindly re-set invoice to draft'"))
         invoices = {}
         user_summary_lines = self.user_total_ids.filtered(lambda x: x.state == 'draft')
-        aal_from_summary = self.env['account.analytic.line']
+        ptl_from_summary = self.env['ps.time.line']
         user_total = self.env['analytic.user.total']
 
         invoices['lines'] = []
@@ -518,17 +518,17 @@ class AnalyticInvoice(models.Model):
             inv_line_vals = self._prepare_invoice_line(line, self.invoice_id.id)
             inv_line_vals['user_task_total_line_id'] = line.id
             invoices['lines'].append((0, 0, inv_line_vals))
-            aal_from_summary |= line.detail_ids
+            ptl_from_summary |= line.detail_ids
             user_total |= line
 
         if invoices['lines']:
             self.write({'invoice_line_ids': invoices['lines']})
 
         self.invoice_id.compute_taxes()
-        if self.state == 'draft' and aal_from_summary:
+        if self.state == 'draft' and ptl_from_summary:
             self.state = 'open'
-        if aal_from_summary:
-            self._sql_update(aal_from_summary, 'invoice_created')
+        if ptl_from_summary:
+            self._sql_update(ptl_from_summary, 'invoice_created')
         if user_total:
             self._sql_update(user_total, 'invoice_created')
         return True
@@ -585,7 +585,7 @@ class AnalyticInvoice(models.Model):
                                FROM project_invoicing_properties prop
                                JOIN project_project pp ON pp.invoice_properties = prop.id
                                JOIN 
-                                   (SELECT project_id FROM account_analytic_line aal WHERE aal.id %s %s GROUP BY project_id) AS temp 
+                                   (SELECT project_id FROM ps_time_line ptl WHERE ptl.id %s %s GROUP BY project_id) AS temp 
                                    ON temp.project_id = pp.id
                                WHERE prop.specs_invoice_report = TRUE
                                """ % (cond, rec))
@@ -613,7 +613,7 @@ class AnalyticInvoice(models.Model):
                 grouped_by += [
                     'line_fee_rate', ]
 
-            aal_grp_data = self.env['account.analytic.line'].read_group(
+            ptl_grp_data = self.env['ps.time.line'].read_group(
                 [('id', 'in', analytic_obj.ids), ('project_id', '=', data[0])],
                 fields_grouped,
                 grouped_by,
@@ -623,7 +623,7 @@ class AnalyticInvoice(models.Model):
                 lazy=False
             )
 
-            for item in aal_grp_data:
+            for item in ptl_grp_data:
                 project_obj = project.browse(item.get('project_id')[0])
                 user_obj = user.browse(item.get('user_id')[0])
                 unit_amount = item.get('unit_amount')
@@ -700,7 +700,7 @@ class AnalyticInvoice(models.Model):
                            FROM project_invoicing_properties prop
                            JOIN project_project pp ON pp.invoice_properties = prop.id
                            JOIN 
-                               (SELECT project_id FROM account_analytic_line aal WHERE aal.id %s %s GROUP BY project_id) AS temp 
+                               (SELECT project_id FROM ps_time_line ptl WHERE ptl.id %s %s GROUP BY project_id) AS temp 
                                ON temp.project_id = pp.id
                            WHERE prop.specs_invoice_report = TRUE AND prop.specs_on_task_level = TRUE
                            """ % (cond, rec))
@@ -727,7 +727,7 @@ class AnalyticInvoice(models.Model):
                 grouped_by += [
                     'line_fee_rate', ]
 
-            aal_grp_data = self.env['account.analytic.line'].read_group(
+            ptl_grp_data = self.env['ps.time.line'].read_group(
                 [('id', 'in', analytic_obj.ids), ('project_id', '=', data[0])],
                 fields_grouped,
                 grouped_by,
@@ -737,7 +737,7 @@ class AnalyticInvoice(models.Model):
                 lazy=False
             )
 
-            for item in aal_grp_data:
+            for item in ptl_grp_data:
                 project_obj = project.browse(item.get('project_id')[0])
                 task_obj = task.browse(item.get('task_id')[0])
                 unit_amount = item.get('unit_amount')
@@ -767,11 +767,11 @@ class AnalyticInvoice(models.Model):
         return result
 
 
-class AnalyticUserTotal(models.Model):
-    _name = "analytic.user.total"
-    _description = "Analytic User Total"
+class TimelineUserTotal(models.Model):
+    _name = "ps.time.line.user.total"
+    _description = "Timeline User Total"
 
-    @api.depends('unit_amount', 'user_id', 'task_id', 'analytic_invoice_id.task_user_ids')
+    @api.depends('unit_amount', 'user_id', 'task_id', 'ps_invoice_id.task_user_ids')
     def _compute_fee_rate(self):
         """
             First, look get fee rate from task_user_ids from analytic invoice.
@@ -779,31 +779,31 @@ class AnalyticUserTotal(models.Model):
         :return:
         """
         task_user = self.env['task.user']
-        ## get task-user out of first aaline
-        aaline = self.detail_ids and self.detail_ids[0]
+        ## get task-user out of first ptline
+        ptline = self.detail_ids and self.detail_ids[0]
         task_user |= task_user.search(
-                [('id', 'in', self.analytic_invoice_id.task_user_ids.ids),('task_id', '=', self.task_id.id),
-                 ('from_date', '<=', aaline.date), ('user_id', '=', self.user_id.id)])
+                [('id', 'in', self.ps_invoice_id.task_user_ids.ids),('task_id', '=', self.task_id.id),
+                 ('from_date', '<=', ptline.date), ('user_id', '=', self.user_id.id)])
         if task_user:
             task_user = task_user.search([('id', 'in', task_user.ids)], limit=1, order='from_date Desc')
             self.fee_rate = fr = task_user.fee_rate
             self.ic_fee_rate = ic_fr = task_user.ic_fee_rate
         else:
-            self.fee_rate = fr = aaline.get_fee_rate(self.task_id.id, self.user_id.id, aaline.date)[0]
-            self.ic_fee_rate = ic_fr = aaline.get_fee_rate(self.task_id.id, self.user_id.id, aaline.date)[1]
+            self.fee_rate = fr = ptline.get_fee_rate(self.task_id.id, self.user_id.id, ptline.date)[0]
+            self.ic_fee_rate = ic_fr = ptline.get_fee_rate(self.task_id.id, self.user_id.id, ptline.date)[1]
         self.amount = - self.unit_amount * fr
         self.ic_amount = - self.unit_amount * ic_fr
 
-    def _compute_analytic_line(self):
+    def _compute_time_line(self):
         for aut in self:
-            aut.count_analytic_line = str(len(aut.detail_ids)) + ' (records)'
+            aut.count_time_line = str(len(aut.detail_ids)) + ' (records)'
 
     @api.model
     def _default_user(self):
         return self.env.context.get('user_id', self.env.user.id)
 
-    analytic_invoice_id = fields.Many2one(
-        'analytic.invoice'
+    ps_invoice_id = fields.Many2one(
+        'ps.invoice'
     )
     fee_rate = fields.Float(
         compute=_compute_fee_rate,
@@ -822,14 +822,14 @@ class AnalyticUserTotal(models.Model):
         string='Intercompany Amount'
     )
     detail_ids = fields.One2many(
-        'account.analytic.line',
+        'ps.time.line',
         'user_total_id',
         string='Detail Time Lines',
         readonly=True,
         copy=False
     )
-    count_analytic_line = fields.Char(
-        compute=_compute_analytic_line,
+    count_time_line = fields.Char(
+        compute=_compute_time_line,
         string='Detail Time Lines'
     )
     gb_week_id = fields.Many2one(
