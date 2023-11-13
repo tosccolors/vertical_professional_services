@@ -71,7 +71,7 @@ thereof""",
         'report/hr_chargeability_report.xml',
         'report/status_time_report.xml',
         'report/overtime_balance_report.xml',
-        'report/crm_pipeline_actuals_report.xml',
+#        'report/crm_pipeline_actuals_report.xml', ## to make module installable. View is necessary
         'views/hr_timesheet_sheet_view.xml',
         'views/hr_timesheet_views_orig.xml',
         'views/hr_views_orig.xml',
