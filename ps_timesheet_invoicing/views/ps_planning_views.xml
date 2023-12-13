@@ -3,7 +3,7 @@
 
         <record id="ps_planning_tree" model="ir.ui.view">
             <field name="name">ps.planning.tree</field>
-            <field name="model">ps.planning</field>
+            <field name="model">ps.planning.sheet</field>
             <field name="arch" type="xml">
                 <tree
                     string="Planning Sheets"
@@ -15,13 +15,14 @@
                     <!--<field name="date_end" invisible="1"/>-->
                     <!--<field name="reviewer_id"/>-->
                     <field name="total_time" widget="float_time"/>
+                    <field name="state" />
                 </tree>
             </field>
         </record>
 
         <record id="ps_planning_tree_my" model="ir.ui.view">
             <field name="name">ps.planning.tree.my</field>
-            <field name="model">ps.planning</field>
+            <field name="model">ps.planning.sheet</field>
             <field name="inherit_id" ref="ps_planning_tree"/>
             <field name="mode">primary</field>
             <field name="priority">1000</field>
@@ -34,10 +35,11 @@
 
         <record id="ps_planning_form" model="ir.ui.view">
             <field name="name">ps.planning.form</field>
-            <field name="model">ps.planning</field>
+            <field name="model">ps.planning.sheet</field>
             <field name="arch" type="xml">
                 <form string="planning">
                     <field name="user_id" invisible="1"/>
+                    <field name="state" invisible="1" />
                     <!--<field name="review_policy" invisible="1"/>-->
                     <header>
                         <button class="oe_stat_button" name="compute_planning_lines" type="object" string="Update Planning" />
@@ -82,7 +84,7 @@
                                             <field name="value_x"/>
                                             <field name="value_y"/>
                                             <field name="unit_amount" widget="float_time"/>
-                                            <field name="planning_id"/>
+                                            <field name="planning_sheet_id"/>
                                             <field name="date"/>
                                             <field name="employee_id"/>
                                             <field name="project_id"/>
@@ -111,6 +113,7 @@
                                     </group>
                                 </group>
                             </page>
+                            <!--
                             <page string="Details">
                                 <field
                                     name="planning_analytic_ids"
@@ -137,6 +140,7 @@
                                     </form>
                                 </field>
                             </page>
+                            -->
                         </notebook>
                     </sheet>
                 </form>
@@ -144,7 +148,7 @@
         </record>
         <record id="act_view_ps_planning" model="ir.actions.act_window">
             <field name="name">My Planning</field>
-            <field name="res_model">ps.planning</field>
+            <field name="res_model">ps.planning.sheet</field>
             <field name="view_mode">form</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
@@ -169,7 +173,7 @@
 
         <record id="ps_planning_form_my" model="ir.ui.view">
             <field name="name">ps.planning.form.my</field>
-            <field name="model">ps.planning</field>
+            <field name="model">ps.planning.sheet</field>
             <field name="inherit_id" ref="ps_planning_form"/>
             <field name="mode">primary</field>
             <field name="priority">1000</field>
@@ -182,7 +186,7 @@
 
         <record id="view_ps_planning_kanban" model="ir.ui.view">
             <field name="name">ps.planning.kanban</field>
-            <field name="model">ps.planning</field>
+            <field name="model">ps.planning.sheet</field>
             <field name="arch" type="xml">
                 <kanban class="o_kanban_mobile" create="0">
                     <field name="employee_id"/>
@@ -236,7 +240,7 @@
 
         <record id="act_ps_planning_my_planning" model="ir.actions.act_window">
             <field name="name">My Planning Sheets</field>
-            <field name="res_model">ps.planning</field>
+            <field name="res_model">ps.planning.sheet</field>
             <field name="view_mode">form</field>
             <field name="view_mode">tree,kanban,form</field>
             <field name="domain">[('employee_id.user_id', '=', uid)]</field>
@@ -271,7 +275,7 @@
 
         <record id="act_ps_planning_all_plannings" model="ir.actions.act_window">
             <field name="name">My Employee's Planning Sheets</field>
-            <field name="res_model">ps.planning</field>
+            <field name="res_model">ps.planning.sheet</field>
             <field name="view_mode">form</field>
             <field name="view_mode">tree,kanban,form</field>
             <!--<field name="search_view_id" ref="view_ps_planning_filter"/>-->
@@ -309,7 +313,7 @@
         <record id="act_ps_planning_to_review" model="ir.actions.act_window">
             <field name="name">Planning Sheets to Review</field>
             <field name="type">ir.actions.act_window</field>
-            <field name="res_model">ps.planning</field>
+            <field name="res_model">ps.planning.sheet</field>
             <field name="view_mode">form</field>
             <field name="view_mode">tree,kanban,form</field>
             <field name="view_id" eval="False"/>

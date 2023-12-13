@@ -16,7 +16,7 @@ class PSInvoice(models.Model):
 
 
     @api.depends('account_analytic_ids', 'month_id')
-    def _compute_ps_lines(self):
+    def _compute_ps_time_lines(self):
         if len(self.account_analytic_ids) > 0:
             account_analytic_ids = self.account_analytic_ids.ids
             hrs = self.env.ref('uom.product_uom_hour').id
@@ -152,12 +152,12 @@ class PSInvoice(models.Model):
         if not current_ref:
             return [], []
         # get all invoiced user total objs using current reference
-        user_total_invoiced_lines = self.env['ps.time.user.total'].search([
+        user_total_invoiced_lines = self.env['ps.time.line.user.total'].search([
             ('ps_invoice_id', '=', current_ref),
             ('state', 'in', ('invoice_created', 'invoiced'))
         ])
         # don't look for ps_time lines which have been already added to other analytic invoice
-        other_lines = self.env['ps.time.user.total'].search([
+        other_lines = self.env['ps.time.line.user.total'].search([
             ('ps_invoice_id', '!=', current_ref),
             ('state', 'not in', ('invoice_created', 'invoiced'))
         ])
@@ -245,7 +245,7 @@ class PSInvoice(models.Model):
             'operating_unit_id': item.get('operating_unit_id')[0] if item.get('operating_unit_id', False) else False,
             'project_operating_unit_id': item.get('project_operating_unit_id')[0] if item.get(
                 'project_operating_unit_id', False) else False,
-            'line_fee_rate': item.get('line_fee_rate')
+            'line_fee_rate': item.get('line_fee_rate'),
         }
         if reconfirmed_entries:
             vals.update({'gb_month_id': item.get('month_of_last_wip')[0] if item.get(
@@ -270,7 +270,7 @@ class PSInvoice(models.Model):
                     """ % (self_obj._table, status, cond, rec))
 
 
-    @api.depends('invoice_id.state')
+    @api.depends('invoice_id.state', 'invoice_id.line_ids')
     def _compute_state(self):
         for ai in self:
             if not ai.invoice_id:
@@ -330,7 +330,7 @@ class PSInvoice(models.Model):
     @api.depends('account_analytic_ids', 'project_id')
     def _compute_invoice_properties(self):
         if len(self.account_analytic_ids.ids) == 1 and self.project_id:
-            self.invoice_properties = self.project_id.invoice_properties and self.project_id.invoice_properties.id
+            self.invoice_properties = self.project_id.invoice_properties.id
 
     name = fields.Char(
         string='Name'
@@ -438,7 +438,7 @@ class PSInvoice(models.Model):
     )
 
     def unlink_rec(self):
-        user_total_ids = self.env['ps.time.user.total'].search(
+        user_total_ids = self.env['ps.time.line.user.total'].search(
             [('ps_invoice_id', '=', False)])
         if user_total_ids:
             #reset ps time line state to invoiceable
@@ -447,7 +447,7 @@ class PSInvoice(models.Model):
             user_total_ids.unlink()
 
     def write(self, vals):
-        res = super(PSInvoice, self).write(vals)
+        res = super().write(vals)
         self.unlink_rec()
         analytic_lines = self.user_total_ids.mapped('detail_ids')
         if analytic_lines:
@@ -456,7 +456,7 @@ class PSInvoice(models.Model):
 
     @api.model
     def create(self, vals):
-        res = super(PSInvoice, self).create(vals)
+        res = super().create(vals)
         analytic_lines = res.user_total_ids.mapped('detail_ids')
         if analytic_lines:
             analytic_lines.write({'state': 'progress'})
@@ -467,25 +467,23 @@ class PSInvoice(models.Model):
             reset analytic line state to invoiceable
             :return:
         """
-        analytic_lines = self.env['ps.time.line']
-        for obj in self:
-            analytic_lines |= obj.user_total_ids.mapped('detail_ids')
+        analytic_lines = self.mapped('user_total_ids.detail_ids')
         if analytic_lines:
             analytic_lines.write({'state': 'invoiceable'})
-        return super(PSInvoice, self).unlink()
+        return super().unlink()
 
     @api.model
     def _prepare_invoice_line(self, line, invoice_id):
         ctx = self.env.context.copy()
         ctx.update({
-            'active_model':'analytic.invoice',
-            'active_id':line.id,
+            'active_model': 'analytic.invoice',
+            'active_id': invoice_id,
         })
         invoice_line = self.env['account.move.line'].with_context(ctx).new({
-            'invoice_id': invoice_id,
+            'move_id': invoice_id,
             'product_id': line.product_id.id,
             'quantity': line.unit_amount,
-            'uom_id': line.product_uom_id.id,
+            'product_uom_id': line.product_uom_id.id,
             'user_id': line.user_id.id,
         })
         # Get other invoice line values from product onchange
@@ -493,13 +491,14 @@ class PSInvoice(models.Model):
         invoice_line_vals = invoice_line._convert_to_write(invoice_line._cache)
 
         invoice_line_vals.update({
-            'account_analytic_id': line.account_id and line.account_id.id or False,
+            'analytic_account_id': line.account_id.id,
             'price_unit': line.fee_rate if line.operating_unit_id == line.project_operating_unit_id else
                             line.ic_fee_rate,
             'ps_invoice_id': line.ps_invoice_id.id,
-            'origin': line.task_id.project_id.po_number
-                        if line.task_id and line.task_id.project_id and line.task_id.project_id.correction_charge
-                        else '/',
+# TODO: no origin field any more, readd?
+#            'origin': line.task_id.project_id.po_number
+#                        if line.task_id and line.task_id.project_id.correction_charge
+#                        else '/',
         })
 
         return invoice_line_vals
@@ -510,7 +509,7 @@ class PSInvoice(models.Model):
         invoices = {}
         user_summary_lines = self.user_total_ids.filtered(lambda x: x.state == 'draft')
         ptl_from_summary = self.env['ps.time.line']
-        user_total = self.env['analytic.user.total']
+        user_total = self.env['ps.time.line.user.total']
 
         invoices['lines'] = []
 
@@ -524,7 +523,6 @@ class PSInvoice(models.Model):
         if invoices['lines']:
             self.write({'invoice_line_ids': invoices['lines']})
 
-        self.invoice_id.compute_taxes()
         if self.state == 'draft' and ptl_from_summary:
             self.state = 'open'
         if ptl_from_summary:
@@ -534,14 +532,8 @@ class PSInvoice(models.Model):
         return True
 
     def delete_invoice(self):
-        if self.state == 'invoiced':
-            self.invoice_id.action_cancel()
-            self.invoice_id.action_invoice_draft()
-            self.invoice_line_ids.unlink()
-        elif not self.invoice_id.move_name:
-            self.invoice_line_ids.unlink()
-        elif self.state == 'open':
-            self.invoice_line_ids.unlink()
+        self.mapped('invoice_id').button_draft()
+        self.mapped('invoice_id.line_ids').unlink()
 
         if not self.invoice_line_ids:
             self.state = 'draft'
@@ -551,7 +543,7 @@ class PSInvoice(models.Model):
 
     def action_view_invoices(self):
         self.ensure_one()
-        action = self.env.ref('account.action_invoice_tree1').read()[0]
+        action = self.env.ref('account.action_move_out_invoice_type').read()[0]
         invoices = self.mapped('invoice_id')
         if len(invoices) > 1:
             action['domain'] = [('id', 'in', invoices.ids)]
@@ -934,4 +926,4 @@ class TimelineUserTotal(models.Model):
         index=True,
         default=fields.Date.context_today
     )
-
+    line_fee_rate = fields.Float()

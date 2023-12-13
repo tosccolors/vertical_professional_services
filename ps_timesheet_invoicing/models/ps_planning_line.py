@@ -58,7 +58,7 @@ class PSPlanningLine(models.Model):
     user_id = fields.Many2one(
         'res.users',
         string='User',
-        default='_default_user'
+        default=lambda self: self._default_user(),
     )
     week_id = fields.Many2one(
         'date.range',
@@ -96,7 +96,7 @@ class PSPlanningLine(models.Model):
 
     @api.model
     def _default_user(self):
-        return self.env.context.get('user_id', self.env.user.id)
+        return self.env.user.browse(self.env.context.get('user_id', self.env.user.id))
 
     @api.model
     def _planning_create(self, values):

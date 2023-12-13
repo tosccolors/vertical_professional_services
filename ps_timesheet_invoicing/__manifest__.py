@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 # Copyright 2014-2023 The Open Source Company (www.tosc.nl).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     'name': 'Timesheet and Invoicing',
-    'version': '14.0.0.0.1',
+    'version': '14.0.1.0.0',
     'summary': """This module introduces an advanced professional services invoicing process,
         offering fixed price, time and material, licensing and several combinations
          thereof""",
@@ -31,13 +30,9 @@ thereof""",
     'author': "The Open Source Company",
     'website': "http://www.tosc.nl",
 
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
-    # for the full list
     'category': 'module_category_specific_industry_applications',
-
-    # any module necessary for this one to work correctly
     'depends': ['account',
+                'account_move_name_sequence',
                 'analytic',
                 'uom',
                 'hr',
@@ -59,10 +54,10 @@ thereof""",
                 'queue_job'
                 ],
 
-    # always loaded
     'data': [
         'data/cron_data.xml',
         'data/data.xml',
+        'data/date_range_type.xml',
         'security/ps_security.xml',
         'security/ir.model.access.csv',
         'wizard/time_line_invoice_view.xml',
@@ -77,11 +72,11 @@ thereof""",
         'views/hr_views_orig.xml',
         'views/project_timesheet_view.xml',
         'views/project_view.xml',
-        # 'views/hr_timesheet_assets.xml',
+        'views/task_user.xml',
         'views/hr_view.xml',
         'views/ps_time_line_view.xml',
         'views/fleet_view.xml',
-        'views/ps_planning_view.xml',
+        'views/ps_planning_views.xml',
         'views/ps_invoice.xml',
         'views/product_view.xml',
         'views/account_move_view.xml',
@@ -91,7 +86,17 @@ thereof""",
         'views/res_company_view.xml',
     ],
     'installable': True,
-    # only loaded in demonstration mode
-    'demo' : [],
+    'demo' : [
+        'demo/account_analytic_account.xml',
+        'demo/date_range.xml',
+        'demo/hr_department.xml',
+        'demo/hr_employee.xml',
+        'demo/project_invoicing_properties.xml',
+        'demo/project_project.xml',
+        'demo/res_company.xml',
+        'demo/task_user.xml',
+        # needs to be on the bottom
+        'demo/ps_time_line.xml',
+    ],
     'qweb': ['static/src/xml/planning.xml',],
 }

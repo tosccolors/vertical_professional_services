@@ -83,9 +83,9 @@ class PSPlanningSheet(models.Model):
 
 		line_query = ("""
 			DELETE FROM ps_planning_line_rel 
-				WHERE ps_planning_sheet_id = {0} AND ps_planning_line_ps_time_line_id IN (
+				WHERE planning_sheet_id = {0} AND ps_planning_line_ps_time_line_id IN (
 					SELECT id FROM ps_time_line WHERE id IN 
-					(SELECT ps_time_line_id FROM ps_planning_ps_time_line_rel WHERE ps_planning_sheet_id = {0}) 
+					(SELECT ps_time_line_id FROM ps_planning_ps_time_line_rel WHERE planning_sheet_id = {0}) 
 						AND employee_id {1} {2}
 					)
 			""".format(
@@ -129,9 +129,9 @@ class PSPlanningSheet(models.Model):
 		line_query = ("""
 						INSERT INTO
 						   ps_planning_ps_time_line_rel
-						   (ps_planning_sheet_id, ps_time_line_id)
+						   (planning_sheet_id, ps_time_line_id)
 							SELECT
-								mp.id as ps_planning_sheet_id,
+								mp.id as planning_sheet_id,
 								ptl.id as ps_time_line_id
 							FROM 
 								ps_time_line ptl
@@ -141,7 +141,7 @@ class PSPlanningSheet(models.Model):
 								AND mp.id = {2} 
 						  EXCEPT
 							SELECT
-							  ps_planning_sheet_id, ps_time_line_id
+							  planning_sheet_id, ps_time_line_id
 							  FROM ps_planning_ps_time_line_rel
 				""".format(
 			self.week_from.id,
@@ -167,18 +167,18 @@ class PSPlanningSheet(models.Model):
 			line_query = ("""
 					INSERT INTO
 					   ps_planning_ps_time_line_rel
-					   (ps_planning_sheet_id, ps_time_line_id)
+					   (planning_sheet_id, ps_time_line_id)
 						SELECT 
 							{0}, ptl.id 
 						  FROM ps_time_line ptl 
 						  WHERE 
 							ptl.week_id >= {1} AND ptl.week_id <= {2}
 							AND ptl.id IN (
-								SELECT ps_time_line_id FROM ps_planning_ps_time_line_rel WHERE ps_planning_sheet_id IN 
+								SELECT ps_time_line_id FROM ps_planning_ps_time_line_rel WHERE planning_sheet_id IN 
 								(SELECT id FROM ps_planning WHERE employee_id {3} {4}))
 						EXCEPT
 							SELECT
-							  ps_planning_sheet_id, ps_time_line_id
+							  planning_sheet_id, ps_time_line_id
 							  FROM ps_planning_ps_time_line_rel
 					""".format(
 						self.id,
@@ -192,16 +192,11 @@ class PSPlanningSheet(models.Model):
 
 	def _compute_planning_lines(self):
 		self_planning = self.env.context.get('self_planning', False)
-		self.ps_planning_ids_compute = False
-		print("------self plannig",self_planning)
 		if self_planning:
-			print("--------planning from manager")
 			self.get_planning_from_managers()
 		elif self.employee_id.user_id.has_group("ps_timesheet_invoicing.group_ps_planning_officer") or self.employee_id.user_id.has_group("hr.group_hr_user") or self.employee_id.user_id.has_group("hr.group_hr_manager"):
-			print("--------planning from either one of them")
 			self.get_planning_from_employees()
 		else:
-			print("--------planning from manager 2")
 			self.get_planning_from_managers()
 
 	def compute_planning_lines(self):
@@ -243,20 +238,14 @@ class PSPlanningSheet(models.Model):
 		'date.range',
 		string="Week End"
 	)
+	date_start = fields.Date(related='planning_quarter.date_start')
+	date_end = fields.Date(related='planning_quarter.date_end')
 	planning_quarter = fields.Many2one(
 		'date.range',
 		string='Select Quarter',
 		required=True,
 		index=True
 	)
-	# planning_line_ids = fields.Many2many(
-	# 	'ps.planning.line',
-	# 	'ps_planning_planning_line_rel',
-	# 	'ps_planning_sheet_id',
-	# 	'ps_planning_line_id',
-	# 	string='Planning lines',
-	# 	copy=False
-	# )
 	planning_line_ids = fields.One2many(
 		comodel_name='ps.planning.line',
 		inverse_name="planning_sheet_id",
@@ -327,7 +316,6 @@ class PSPlanningSheet(models.Model):
 			sheet.total_time = sum(sheet.mapped('planning_line_ids.unit_amount'))
 
 	def _get_overlapping_sheet_domain(self):
-		""" Hook for extensions """
 		self.ensure_one()
 		return [
 			('id', '!=', self.id),
@@ -335,62 +323,6 @@ class PSPlanningSheet(models.Model):
 			('employee_id', '=', self.employee_id.id),
 			('company_id', '=', self._get_planning_sheet_company().id),
 		]
-
-	@api.constrains(
-		'week_from',
-		'week_to',
-		'company_id',
-		'employee_id',
-	)
-	def _check_overlapping_sheets(self):
-		for sheet in self:
-			overlapping_sheets = self.search(
-				sheet._get_overlapping_sheet_domain()
-			)
-			if overlapping_sheets:
-				raise ValidationError(_(
-					'You cannot have 2 or more sheets that overlap!\n'
-					'Please use the menu "Planning Sheet" '
-					'to avoid this problem.\nConflicting sheets:\n - %s' % (
-						'\n - '.join(overlapping_sheets.mapped('name')),
-					)
-				))
-
-	@api.constrains('company_id', 'employee_id')
-	def _check_company_id_employee_id(self):
-		for rec in self.sudo():
-			if rec.company_id and rec.employee_id.company_id and \
-					rec.company_id != rec.employee_id.company_id:
-				raise ValidationError(
-					_('The Company in the Planning Sheet and in '
-					  'the Employee must be the same.'))
-
-	@api.constrains('company_id', 'department_id')
-	def _check_company_id_department_id(self):
-		for rec in self.sudo():
-			if rec.company_id and rec.department_id.company_id and \
-					rec.company_id != rec.department_id.company_id:
-				raise ValidationError(
-					_('The Company in the Planning Sheet and in '
-					  'the Department must be the same.'))
-
-	@api.constrains('company_id', 'add_line_project_id')
-	def _check_company_id_add_line_project_id(self):
-		for rec in self.sudo():
-			if rec.company_id and rec.add_line_project_id.company_id and \
-					rec.company_id != rec.add_line_project_id.company_id:
-				raise ValidationError(
-					_('The Company in the Planning Sheet and in '
-					  'the Project must be the same.'))
-
-	@api.constrains('company_id', 'add_line_emp_id')
-	def _check_company_id_add_line_emp_id(self):
-		for rec in self.sudo():
-			if rec.company_id and rec.add_line_emp_id.company_id and \
-					rec.company_id != rec.add_line_emp_id.company_id:
-				raise ValidationError(
-					_('The Company in the Planning Sheet and in '
-					  'the Task must be the same.'))
 
 	def _get_planning_sheet_company(self):
 		self.ensure_one()
@@ -539,17 +471,11 @@ class PSPlanningSheet(models.Model):
 			return employee.user_id.id
 		return False
 
-	# 
-	# def copy(self, default=None):
-	# 	if not self.env.context.get('allow_copy_timesheet'):
-	# 		raise UserError(_('You cannot duplicate a sheet.'))
-	# 	return super().copy(default=default)
-
 	@api.model
 	def create(self, vals):
 		self._check_employee_user_link(vals)
-		res = super(PSPlanning).create(vals)
-		# res.write({'state': 'draft'})
+		vals.setdefault('state', 'draft')
+		res = super().create(vals)
 		return res
 
 	def _sheet_write(self, field, recs):
@@ -557,27 +483,7 @@ class PSPlanningSheet(models.Model):
 
 	def write(self, vals):
 		self._check_employee_user_link(vals)
-		res = super().write(vals)
-		# print("------ write vals",vals)
-		# print("----write context",self.env.context)
-		for rec in self:
-			# if rec.state == 'draft' and \
-			if not self.env.context.get('sheet_write'):
-				rec._update_time_lines_from_new_lines(vals)
-				if 'add_line_project_id' not in vals:
-					rec.delete_empty_lines(True)
-		return res
-
-	# 
-	# def unlink(self):
-	#     for sheet in self:
-	#         if sheet.state in ('confirm', 'done'):
-	#             raise UserError(_(
-	#                 'You cannot delete a planning sheet which is already'
-	#                 ' submitted or confirmed: %s') % (
-	#                     sheet.name,
-	#                 ))
-	#     return super().unlink()
+		return super().write(vals)
 
 	def _get_informables(self):
 		""" Hook for extensions """
@@ -653,17 +559,6 @@ class PSPlanningSheet(models.Model):
 		name = date
 		return name
 
-	def _get_dates(self):
-		start = self.week_from.date_start
-		end = self.week_to.date_start
-		if end < start:
-			return []
-		dates = [start]
-		while start != end:
-			start += relativedelta(days=7)
-			dates.append(start)
-		return dates
-
 	def _get_line_name(self, project_id, employee_id=None, **kwargs):
 		self.ensure_one()
 		if employee_id:
@@ -699,7 +594,7 @@ class PSPlanningSheet(models.Model):
 			'company_id': self.company_id.id,
 		}
 		if self.id:
-			values.update({'ps_planning_sheet_id': self.id})
+			values.update({'planning_sheet_id': self.id})
 		return values
 
 	@api.model
@@ -712,7 +607,7 @@ class PSPlanningSheet(models.Model):
 			'project_id': self.add_line_project_id.id,
 			# 'task_id': self.add_line_task_id.id,
 			'employee_id': self.add_line_emp_id.id,
-			'ps_planning_sheet_id': self.id,
+			'planning_sheet_id': self.id,
 			'unit_amount': 0.0,
 			'company_id': self.company_id.id,
 		}
@@ -797,10 +692,7 @@ class PSPlanningSheet(models.Model):
 				new_line_ids_list += [line[2].get('new_line_id')]
 		for new_line in self.new_line_ids.exists():
 			if new_line.id in new_line_ids_list:
-				# print("-------calling update lines",new_line)
 				new_line._update_time_lines()
-		self.new_line_ids.exists().unlink()
-		self._sheet_write('new_line_ids', self.new_line_ids.exists())
 
 	@api.model
 	def _prepare_new_line(self, line):
@@ -809,8 +701,6 @@ class PSPlanningSheet(models.Model):
 		# week_from.date_start, sheet.week_to.date_end
 		
 		return {
-			# comment for many2many
-			# 'planning_line_id': line.ps_planning_sheet_id.id,
 			'date': line.date,
 			'project_id': line.project_id.id,
 			'employee_id': line.employee_id.id,
@@ -831,7 +721,7 @@ class PSPlanningSheet(models.Model):
 
 	def add_new_line(self, line):
 		self.ensure_one()
-		new_line_model = self.env['ps.planning.new.line.line']
+		new_line_model = self.env['ps.planning.new.line']
 		new_line = self.new_line_ids.filtered(
 			lambda l: self._is_compatible_new_line(l, line)
 		)
@@ -911,13 +801,12 @@ class PSPlanningSheetLine(models.TransientModel):
 				'title': _("Warning"),
 				'message': _("Save the planning Sheet first."),
 			}}
-		print("---planning line employee id",sheet.employee_id.name)
 		# in planning line itself current employee id is being showed. Track this and save employee id for each line
 		sheet.add_new_line(self)
 
 	@api.model
 	def _get_sheet(self):
-		sheet = self.ps_planning_sheet_id
+		sheet = self.planning_sheet_id
 		if not sheet:
 			model = self.env.context.get('params', {}).get('model', '')
 			obj_id = self.env.context.get('params', {}).get('id')
@@ -933,7 +822,6 @@ class SheetNewPlanningLine(models.TransientModel):
 
 	@api.model
 	def _is_similar_planning_line(self, ppl):
-		# print("--------ptlllllllll",ptl)
 		""" Hook for extensions """
 		return ppl.date == self.date \
 			and ppl.project_id.id == self.project_id.id \
@@ -941,7 +829,7 @@ class SheetNewPlanningLine(models.TransientModel):
 
 	@api.model
 	def _update_planning_lines(self):
-		sheet = self.ps_planning_sheet_id
+		sheet = self.planning_sheet_id
 		planning_lines = sheet.planning_line_ids.filtered(
 			lambda ppl: self._is_similar_planning_line(ppl)
 		)
@@ -978,8 +866,16 @@ class SheetNewPlanningLine(models.TransientModel):
 			planning_line_ids |= sheet.planning_line_ids
 			sheet._sheet_write(
 				'planning_line_ids', planning_line_ids.exists())
-			
 
+	@api.model
+	def _update_analytic_lines(self):
+		"""No need for any updates here"""
+		pass
+			
+	def unlink(self):
+		"""No need for any updates here"""
+		return super().unlink()
+	
 class PSStandbyPlanning(models.Model):
 	_name = "ps.standby.planning"
 	_description = "Stand-By Planning"

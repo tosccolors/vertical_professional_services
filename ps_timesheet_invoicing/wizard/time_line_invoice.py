@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-
 from odoo import api, fields, models, _
 from datetime import datetime, timedelta
 from odoo.exceptions import UserError, ValidationError
-# from odoo.addons.queue_job.job import job, related_action
 from odoo.addons.queue_job.exception import FailedJobError
 import logging
 _logger = logging.getLogger(__name__)
@@ -36,31 +33,6 @@ class TimeLineStatus(models.TransientModel):
         string="Month of Timeline or last Wip Posting"
     )
 
-    def validate_entries_month(self, time_line_ids):
-        fields_grouped = [
-            'id',
-            'month_id',
-            'company_id',
-        ]
-        grouped_by = [
-            'month_id',
-            'company_id',
-        ]
-        result = self.env['ps.time.line'].read_group(
-            [('id', 'in', time_line_ids)],
-            fields_grouped,
-            grouped_by,
-            offset=0,
-            limit=None,
-            orderby=False,
-            lazy=False
-        )
-        if len(result) > 1:
-            raise ValidationError(
-                _("Entries must belong to same month!"))
-        return True
-
-    
     def ps_invoice_lines(self):
         context = self.env.context.copy()
         ptl_ids = context.get('active_ids',[])
@@ -76,23 +48,21 @@ class TimeLineStatus(models.TransientModel):
             raise UserError(_(
                 'Project(s) %s doesn\'t have invoicing properties.'
                 )%project_names)
-        for entry in entries:
-            entry.wip_percentage=self.wip_percentage
+        # TODO: field doesn't exist on ps.time.line?
+        # entries.write({'wip_percentage': self.wip_percentage})
         if entries:
-            cond, rec = ("IN", tuple(entries.ids)) if len(entries) > 1 else ("=", entries.id)
-            notupdatestate = {}
-            for line in ptl_lines:
-                notupdatestate.update({line.id: line.state})
-            self.env.cr.execute("""
-                UPDATE ps_time_line SET state = '%s' WHERE id %s %s
-                """ % (status, cond, rec))
+            self.env.cr.execute(
+                "UPDATE ps_time_line SET state=%s WHERE id IN %s",
+                (status, tuple(entries.ids)),
+            )
             self.env.cache.invalidate()
             if status == 'delayed' and self.wip:
-                # self.validate_entries_month(ptl_ids)
-                # self.update_line_fee_rates(ptl_ids)
+                notupdatestate = {
+                    line.id: line.state
+                    for line in ptl_lines
+                }
                 self.with_delay(eta=datetime.now(), description="WIP Posting").prepare_account_move(ptl_ids,notupdatestate)
             if status == 'invoiceable':
-                # self.update_line_fee_rates(ptl_ids)
                 self.with_context(active_ids=entries.ids).prepare_ps_invoice()
         return True
 
@@ -132,18 +102,17 @@ class TimeLineStatus(models.TransientModel):
                 else:
                     data = {
                         'partner_id': partner_id,
-                        'type': 'out_invoice',
-                        'account_id': partner.property_account_receivable_id.id,
+                        'move_type': 'out_invoice',
                         'month_id': month_id,
                         'project_operating_unit_id': project_operating_unit_id,
                         'operating_unit_id': project_operating_unit_id,
                         'link_project': False,
-                        'payment_term_id': partner.property_payment_term_id.id or False,
-                        'journal_id': self.env['account.move'].default_get(['journal_id'])['journal_id'],
+                        'invoice_payment_term_id': partner.property_payment_term_id.id or False,
+                        'journal_id': self.env['account.move'].with_context(default_move_type='out_invoice')._get_default_journal().id,
                         'fiscal_position_id': partner.property_account_position_id.id or False,
                         'user_id': self.env.user.id,
                         'company_id': self.env.user.company_id.id,
-                        'date_invoice': datetime.now().date(),
+                        'invoice_date': datetime.now().date(),
                     }
                     if link_project:
                         data.update({'project_id': project_id, 'link_project': True})
@@ -156,24 +125,24 @@ class TimeLineStatus(models.TransientModel):
             raise UserError(_('Please select only TimeLines with state "To Be Invoiced".'))
 
         ps_invoice = self.env['ps.invoice']
-        cond, rec = ("in", tuple(entries_ids)) if len(entries_ids) > 1 else ("=", entries_ids[0])
 
         sep_entries = self.env['ps.time.line'].search([
-            ('id', cond, rec),
+            ('id', 'in', entries_ids),
             '|',
             ('project_id.invoice_properties.group_invoice', '=', False),
             ('task_id.project_id.invoice_properties.group_invoice', '=', False)
         ])
-        if sep_entries:
-            rec = list(set(entries_ids)-set(sep_entries.ids))
-            cond, rec = ("IN", tuple(rec)) if len(rec) > 1 else ("=", rec and rec[0] or [])
-        if rec:
+
+        entries_ids = set(entries_ids) - set(sep_entries.ids)
+
+        if entries_ids:
             self.env.cr.execute("""
                 SELECT array_agg(account_id), partner_id, month_id, project_operating_unit_id
                 FROM ps_time_line
-                WHERE id %s %s AND date_of_last_wip IS NULL 
-                GROUP BY partner_id, month_id, project_operating_unit_id"""
-                % (cond, rec))
+                WHERE id IN %s AND date_of_last_wip IS NULL 
+                GROUP BY partner_id, month_id, project_operating_unit_id""",
+                (tuple(entries_ids),),
+            )
 
             result = self.env.cr.fetchall()
             ps_invoice_create(result, False)
@@ -182,21 +151,21 @@ class TimeLineStatus(models.TransientModel):
             self.env.cr.execute("""
                             SELECT array_agg(account_id), partner_id, month_of_last_wip, project_operating_unit_id
                             FROM ps_time_line
-                            WHERE id %s %s AND date_of_last_wip IS NOT NULL AND month_of_last_wip IS NOT NULL 
-                            GROUP BY partner_id, month_of_last_wip, project_operating_unit_id"""
-                                % (cond, rec))
+                            WHERE id IN %s AND date_of_last_wip IS NOT NULL AND month_of_last_wip IS NOT NULL 
+                            GROUP BY partner_id, month_of_last_wip, project_operating_unit_id""",
+                            (tuple(entries_ids),))
 
             reconfirm_res = self.env.cr.fetchall()
             ps_invoice_create(reconfirm_res, False)
 
         if sep_entries:
-            cond1, rec1 = ("IN", tuple(sep_entries.ids)) if len(sep_entries) > 1 else ("=", sep_entries.id)
             self.env.cr.execute("""
                 SELECT array_agg(account_id), partner_id, month_id, project_operating_unit_id, project_id
                 FROM ps_time_line
-                WHERE id %s %s AND date_of_last_wip IS NULL
-                GROUP BY partner_id, month_id, project_operating_unit_id, project_id"""
-                        % (cond1, rec1))
+                WHERE id IN %s AND date_of_last_wip IS NULL
+                GROUP BY partner_id, month_id, project_operating_unit_id, project_id""",
+                (tuple(sep_entries.ids),),
+            )
 
             result1 = self.env.cr.fetchall()
             ps_invoice_create(result1, True)
@@ -205,9 +174,10 @@ class TimeLineStatus(models.TransientModel):
             self.env.cr.execute("""
                             SELECT array_agg(account_id), partner_id, month_of_last_wip, project_operating_unit_id, project_id
                             FROM ps_time_line
-                            WHERE id %s %s AND date_of_last_wip IS NOT NULL AND month_of_last_wip IS NOT NULL 
-                            GROUP BY partner_id, month_of_last_wip, project_operating_unit_id, project_id"""
-                                % (cond1, rec1))
+                            WHERE id IN %s AND date_of_last_wip IS NOT NULL AND month_of_last_wip IS NOT NULL 
+                            GROUP BY partner_id, month_of_last_wip, project_operating_unit_id, project_id""",
+                            (tuple(sep_entries.ids),),
+            )
 
             reconfirm_res1 = self.env.cr.fetchall()
             ps_invoice_create(reconfirm_res1, True)

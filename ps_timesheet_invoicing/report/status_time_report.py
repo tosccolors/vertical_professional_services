@@ -85,7 +85,7 @@ class StatusTimeReport(models.Model):
                 dr.id as week_id,
                 hrc.id as employee_id, 
                 hrc.department_id as department_id,  
-                -- hrc.external as external,
+                hrc.external as external,
                 hrc.timesheet_optional as ts_optional,
                 string_agg(rp.name,',' ORDER BY rp.name ASC) as validators,
                 htsss.state as state

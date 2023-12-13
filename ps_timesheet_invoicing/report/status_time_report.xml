@@ -25,7 +25,7 @@
                     <field name="week_id"/>
                     <filter string="Internal Employees"
                             domain="[('external','=',False)]"
-                            name="internal_emp_filter"/>
+                        name="internal_emp_filter"/>
                     <separator/>
                     <filter string="Time Sheet Optional"
                             domain="[('ts_optional','=',True)]"

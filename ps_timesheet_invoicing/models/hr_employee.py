@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 The Open Source Company ((www.tosc.nl).)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
@@ -6,7 +5,7 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo.tools.translate import _
 
-class Employee(models.Model):
+class HrEmployee(models.Model):
     _inherit = "hr.employee"
 
     @api.depends('product_id')
@@ -19,8 +18,10 @@ class Employee(models.Model):
             'ps_timesheet_invoicing.product_category_fee_rate').id)]
 
     def _get_overtime_hours(self):
-        self.overtime_hours = sum(
-            self.env['hr_timesheet.sheet'].search([('employee_id', '=', self.id)]).mapped('overtime_hours'))
+        for this in self:
+            this.overtime_hours = sum(
+                self.env['hr_timesheet.sheet'].search([('employee_id', '=', this.id)]).mapped('overtime_hours')
+            )
 
     planning_week = fields.Boolean(
         string="Planning by week"
@@ -44,21 +45,6 @@ class Employee(models.Model):
         compute=_compute_fee_rate,
         string='Fee Rate',
         readonly=True
-    )
-    no_ott_check = fields.Boolean(
-        '8 Hours OTT possible',
-        help="No Overtime Check"
-    )
-
-
-class Department(models.Model):
-    _inherit = "hr.department"
-
-
-    operating_unit_id = fields.Many2one(
-        comodel_name='operating.unit',
-        string='Operating Unit',
-        track_visibility='onchange'
     )
     no_ott_check = fields.Boolean(
         '8 Hours OTT possible',

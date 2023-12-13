@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr.employee_qdp" model="hr.employee">
+        <field name="product_id" ref="product.product_product_1" />
+    </record>
+</odoo>

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 The Open Source Company ((www.tosc.nl).)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
@@ -6,6 +5,8 @@ from odoo import models, fields, api, _
 from datetime import datetime, timedelta
 from odoo.exceptions import UserError, ValidationError
 import calendar
+from contextlib import contextmanager
+
 
 class TimeLine(models.Model):
     _name = 'ps.time.line'
@@ -13,15 +14,6 @@ class TimeLine(models.Model):
     _description = 'Professional Services Time Line'
     _order = 'date desc'
     _check_company_auto = True
-
-    # ## Todo: check/correct
-    # def _compute_sheet(self):
-    #     """Links the timesheet line to the corresponding sheet"""
-    #     uom_hrs = self.env.ref("uom.product_uom_hour").id
-    #     for timesheet in self.filtered(lambda line: line.task_id and line.product_uom_id.id == uom_hrs):
-    #         sheet = timesheet._determine_sheet()
-    #         if timesheet.sheet_id != sheet:
-    #             timesheet.sheet_id = sheet
 
     @api.depends('project_id.chargeable',
                  'project_id.correction_charge',
@@ -40,20 +32,16 @@ class TimeLine(models.Model):
                  'task_user_id.fee_rate',
                  )
     def _compute_time_line(self):
-        self.filtered(lambda i: isinstance(i.id, (int, long))).read(
-            ['task_user_id', 'line_fee_rate', 'product_id', 'amount'])
-        uom_hrs = self.env.ref("product.product_uom_hour").id
+        uom_hrs = self.env.ref("uom.product_uom_hour").id
         for line in self.filtered(lambda line: line.task_id and line.product_uom_id.id == uom_hrs):
             # all ps_time lines need a project_operating_unit_id and
             # for all ps_time lines day_name, week_id and month_id are computed
             date = line.date
-            line.project_operating_unit_id = \
-                line.account_id.operating_unit_ids \
-                and line.account_id.operating_unit_ids[0] or False
-            line.day_name = str(datetime.strptime(date, '%Y-%m-%d').
-                                strftime("%m/%d/%Y")) + \
-                            ' (' + datetime.strptime(date, '%Y-%m-%d'). \
-                                strftime('%a') + ')'
+            line.project_operating_unit_id = line.account_id.operating_unit_ids[:1]
+            line.day_name = '%s (%s)' % (
+                date.strftime("%m/%d/%Y"),
+                date.strftime('%a'),
+            )
             line.week_id = line.find_daterange_week(date)
             line.month_id = var_month_id = line.find_daterange_month(date)
             # only when project_id these fields are computed
@@ -238,11 +226,11 @@ class TimeLine(models.Model):
         compute=_compute_time_line,
         store=True,
     )
-    # ts_line = fields.Boolean(
-    #     compute=_compute_time_line,
-    #     string='Timesheet line',
-    #     store=True,
-    # )
+    ts_line = fields.Boolean(
+        compute=_compute_time_line,
+        string='Timesheet line',
+        store=True,
+    )
     correction_charge = fields.Boolean(
         compute=_compute_time_line,
         string='Correction Chargeability',
@@ -326,18 +314,18 @@ class TimeLine(models.Model):
         store=True
     )
 
-
-    @api.model
-    def get_task_user_product(self, task_id, user_id):
+    def get_task_user_product(self, task_id=None, user_id=None):
         taskUserObj = self.env['task.user']
         product_id = False
+        task_id = task_id or self.task_id.id
+        user_id = user_id or self.user_id.id
         if task_id and user_id:
             date_now = fields.Date.today()
             #task-358
             taskUser = taskUserObj.search([('task_id', '=', task_id), ('from_date', '<=', date_now), ('user_id', '=', user_id)],
                                           limit=1, order='from_date Desc')
             if taskUser and taskUser.product_id:
-                product_id = taskUser.product_id.id if taskUser and taskUser.product_id else False
+                product_id = taskUser.product_id.id
             else:
                 #check standard task for fee earners
                 project_id = self.env['project.task'].browse(task_id).project_id
@@ -353,7 +341,6 @@ class TimeLine(models.Model):
             product_id = employee.product_id and employee.product_id.id or False
         return product_id
 
-    @api.model
     def get_fee_rate(self, task_id=None, user_id=None, date=None, project_rate=False):
         uid = user_id or self.user_id.id or False
         tid = task_id or self.task_id.id or False
@@ -535,11 +522,30 @@ class TimeLine(models.Model):
         self.env.cr.execute(list_query, where_clause_params)
         return True
 
-    def modified(self, fnames):
-        if not self.env.context.get('_timesheet_write'):
-            # disable modification triggers when writing timesheets
-            return super().modified(fnames)
+    @contextmanager
+    def _as_analytic_line(self, recordset):
+        """Return a context manager that returns the ps.time.line model when saying recordset.env['account.analytic.line']"""
 
+        class EnvWithAnalyticLineAsPsTimeLine(api.Environment):
+            def __new__(cls, wrapped_env):
+                self = object.__new__(cls)
+                args = (wrapped_env.cr, wrapped_env.uid, wrapped_env.context, wrapped_env.su)
+                self.cr, self.uid, self.context, self.su = self.args = args
+                self.registry = wrapped_env.registry
+                self.cache = wrapped_env.cache
+                self._cache_key = wrapped_env._cache_key
+                self._protected = wrapped_env._protected
+                self.all = wrapped_env.all
+                return self
 
+            def __getitem__(self, model_name):
+                return super().__getitem__(
+                    model_name if model_name != 'account.analytic.line' else 'ps.time.line'
+                )
 
-
+        original_env = recordset.env
+        if type(original_env) != EnvWithAnalyticLineAsPsTimeLine:
+            recordset.env = EnvWithAnalyticLineAsPsTimeLine(recordset.env)
+        yield recordset
+        if type(original_env) != EnvWithAnalyticLineAsPsTimeLine:
+            recordset.env = original_env
