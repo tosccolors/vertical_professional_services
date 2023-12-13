@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 Willem Hulshof The Open Source Company (www.tosc.nl).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
@@ -22,23 +21,16 @@ Steps to generate monthly expected revenue:
     'author': "TOSC",
     'website': "http://www.tosc.nl",
 
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
-    # for the full list
     'category': 'Sales',
     'version': '14.0.1.0.0',
 
-    # any module necessary for this one to work correctly
-    # 'depends': ['base', 'crm', 'crm_sector', 'project', 'operating_unit', 'hr', 'web_readonly_bypass','utm', 'date_range','web_notify'],
-    # commented by deekshith
-    'depends': ['base','uom', 'crm', 'crm_industry', 'project', 'operating_unit', 'hr','utm', 'date_range','web_notify','sale'],
+    'depends': ['base','uom', 'crm', 'crm_industry', 'project', 'operating_unit', 'hr', 'utm', 'date_range','web_notify','sale'],
 
     # always loaded
     'data': [
         'security/crm_security.xml',
         'security/ir.model.access.csv',
         'views/crm_lead_views.xml',
-        # 'views/crm_menus.xml',
     ],
     'installable': True,
 }
