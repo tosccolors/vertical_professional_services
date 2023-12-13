@@ -101,9 +101,6 @@ class HREmployeeWizard(models.TransientModel):
                      'email': self.email,
                      'mobile': self.mobile,
                      'ref': self.ref,
-                     'supplier': True,
-                     'customer': False,
-                     'notify_email':'none',
                      'property_supplier_payment_term_id': account_payment_term_id and account_payment_term_id.id ,
                      'supplier_payment_mode_id':account_payment_mode_id and account_payment_mode_id.id,
                      'lang':'nl_NL'}
@@ -122,10 +119,11 @@ class HREmployeeWizard(models.TransientModel):
         user = {'lastname': self.lastname,
                 'firstname': self.firstname,
                 'login': self.login,
-                'partner_id': partner_id and partner_id.id,
-                'default_operating_unit_id': self.default_operating_unit_id and self.default_operating_unit_id.id,
-                'operating_unit_ids': [(6, 0, self.operating_unit_ids and self.operating_unit_ids.ids)],
-                'role_line_ids': list_role
+                'partner_id': partner_id.id,
+                'default_operating_unit_id': self.default_operating_unit_id.id,
+                'operating_unit_ids': [(6, 0, self.operating_unit_ids.ids)],
+                'role_line_ids': list_role,
+                'notification_type': 'inbox',
                 }
         user_id = self.env['res.users'].create(user)
         return user_id
@@ -157,34 +155,21 @@ class HREmployeeWizard(models.TransientModel):
                      'mobile_phone': self.mobile,
                      'birthday': self.birthday,
                      'place_of_birth': self.place_of_birth,
-                     'address_home_id': user_id.partner_id and user_id.partner_id.id,
-                     'user_id': user_id and user_id.id,
-                     'bank_account_id': res_partner_bank_id and res_partner_bank_id.id,
-                     'department_id': self.department_id and self.department_id.id,
-                     'account_id': self.account_id and self.account_id.id,
-                     'initial_employment_date': self.initial_employment_date,
+                     'address_home_id': user_id.partner_id.id,
+                     'user_id': user_id.id,
+                     'bank_account_id': res_partner_bank_id.id,
+                     'department_id': self.department_id.id,
+                     # TODO: which account_id is this about? missing dependency?
+                     # 'account_id': self.account_id.id,
+                     'service_hire_date': self.initial_employment_date,
                      'official_date_of_employment': self.official_date_of_employment,
                      'temporary_contract': self.temporary_contract,
                      'category_ids': [(6, 0, self.category_ids.ids)],
                      'external': self.external,
-                     'product_id': self.product_id and self.product_id.id,
-                     'parent_id': self.parent_id and self.parent_id.id,
+                     'product_id': self.product_id.id,
+                     'parent_id': self.parent_id.id,
                      }
         return self.env['hr.employee'].create(employee)
-
-    # @api.multi
-    def create_holiday(self, employee_id):
-        hr_leave_type = self.env['hr.leave.type'].search([('is_leave_type_of_wizard', '=', True)], limit=1)
-        holiday = {'holiday_status_id':hr_leave_type.id,
-                                'holiday_type':'employee',
-                                'employee_id':employee_id.id,
-                                'number_of_days': self.leave_hours/HOURS_PER_DAY,
-                                # 'type':'add',
-                                'state':'confirm'}
-        holiday_id = self.env['hr.leave.allocation'].create(holiday)
-        holiday_id.action_approve()
-        return True
-
 
     # @api.multi
     def create_all(self):
@@ -193,8 +178,9 @@ class HREmployeeWizard(models.TransientModel):
         user_id = self.create_user(partner_id)
         res_partner_bank_id = self.create_res_partner_bank(partner_id)
         employee_id = self.create_employee(user_id, res_partner_bank_id)
-        self.create_holiday(employee_id)
-        return employee_id
+        result_dict = self.env['ir.actions.actions']._for_xml_id('hr.open_view_employee_list_my')
+        result_dict.update(views=[(False, 'form')], res_id=employee_id.id)
+        return result_dict
     
 class UsersRoleWizard(models.TransientModel):
     _name= "users.role.wizard"
