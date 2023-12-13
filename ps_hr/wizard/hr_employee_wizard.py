@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
+# Copyright 2018 The Open Source Company ((www.tosc.nl).)
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
@@ -205,19 +205,3 @@ class UsersRoleWizard(models.TransientModel):
     from_date = fields.Date("From")
     to_date = fields.Date("To")
     is_enable = fields.Boolean("Enabled")
-    
-
-    
-    
-    
-    
-    
-    
-
-
-
-
-    
- 
-
-    

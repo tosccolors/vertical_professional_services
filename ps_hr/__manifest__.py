@@ -27,14 +27,14 @@ In the object hr. employee on the tab 'HR Settings' under the heading 'Status' c
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Human Resources',
-    'version': '0.1',
+    'version': '14.0.1.0.0',
 
     # any module necessary for this one to work correctly
     'depends': ['base', 'hr', 
-    # 'hr_employee_seniority', commented coz the source module not found
-    'hr_employee_service',
+    'hr_employee_service_contract',
     'hr_contract',
-    'account_payment_mode'],
+    'account_payment_mode',
+    'operating_unit'],
 
     # always loaded
     'data': [

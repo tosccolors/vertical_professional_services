@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 The Open Source Company ((www.tosc.nl).)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
@@ -38,12 +37,11 @@ class Employee(models.Model):
     def onchange_dates(self):
         self.validate_dates()
 
-    # @api.one
     @api.constrains('official_date_of_employment', 'end_date_of_employment')
     def _check_closing_date(self):
         self.validate_dates()
 
-    @api.depends('contract_ids', 'initial_employment_date', 'end_date_of_employment')
+    @api.depends('contract_ids', 'service_hire_date', 'end_date_of_employment')
     def _compute_months_service(self):
         date_now = fields.Date.today()
         Contract = self.env['hr.contract'].sudo()
@@ -52,7 +50,7 @@ class Employee(models.Model):
             if employee.end_date_of_employment:
                 date_now = employee.end_date_of_employment
 
-            if employee.initial_employment_date:
+            if employee.service_hire_date:
                 first_contract = employee._first_contract()
                 if first_contract:
                     to_dt = fields.Date.from_string(first_contract.date_start)
@@ -60,7 +58,7 @@ class Employee(models.Model):
                     to_dt = fields.Date.from_string(date_now)
 
                 from_dt = fields.Date.from_string(
-                    employee.initial_employment_date)
+                    employee.service_hire_date)
 
                 nb_month += relativedelta(to_dt, from_dt).years * 12 + \
                     relativedelta(to_dt, from_dt).months + \
