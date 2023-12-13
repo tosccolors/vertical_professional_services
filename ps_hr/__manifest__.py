@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Copyright 2018 Willem Hulshof The Open Source Company (www.tosc.nl).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
@@ -23,30 +22,26 @@ In the object hr. employee on the tab 'HR Settings' under the heading 'Status' c
     'author': "TOSC",
     'website': "http://www.tosc.nl",
 
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
-    # for the full list
     'category': 'Human Resources',
-    'version': '0.1',
+    'version': '14.0.1.0.0',
 
-    # any module necessary for this one to work correctly
-    'depends': ['base', 'hr', 
-    # 'hr_employee_seniority', commented coz the source module not found
-    'hr_employee_service',
-    'hr_contract',
-    'account_payment_mode'],
+    'depends': [
+        'account_payment_mode',
+        'account_payment_partner',
+        'base_user_role',
+        'hr',
+        'hr_contract',
+        'hr_employee_firstname',
+        'hr_employee_service_contract',
+        'hr_holidays',
+        'operating_unit',
+        'partner_firstname',
+    ],
 
-    # always loaded
     'data': [
         'views/hr_views.xml',
+        'views/templates.xml',
         'wizard/hr_employee_wizard_view.xml',
-        
-    ],
-    
-    'installable': True,
-    # only loaded in demonstration mode
-    'demo' : [],
-        'qweb': [
-        "static/src/xml/qweb.xml",
+        'security/ir.model.access.csv',
     ],
 }
