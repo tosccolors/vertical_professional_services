@@ -26,7 +26,7 @@ Steps to generate monthly expected revenue:
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Sales',
-    'version': '0.1',
+    'version': '14.0.1.0.0',
 
     # any module necessary for this one to work correctly
     # 'depends': ['base', 'crm', 'crm_sector', 'project', 'operating_unit', 'hr', 'web_readonly_bypass','utm', 'date_range','web_notify'],
@@ -41,8 +41,4 @@ Steps to generate monthly expected revenue:
         # 'views/crm_menus.xml',
     ],
     'installable': True,
-    # only loaded in demonstration mode
-    'demo': [
-        # 'demo/demo.xml'
-    ],
 }
