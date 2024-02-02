@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+<!--        Not necessary anymore since we don't have to filter financial analytic linbes anymore-->
+<!--        <record id="act_ps_time_line" model="ir.actions.act_window">-->
+<!--            <field name="domain">[('project_id', '!=', False),('planned', '=', False)]</field>-->
+<!--        </record>-->
+
+        <record id="ps_time_line_forecasting_tree" model="ir.ui.view">
+            <field name="name">timeline.with.lead.opportunity.tree</field>
+            <field name="model">ps.time.line</field>
+            <field name="arch" type="xml">
+               <tree string="Timesheet" create="false" edit="false" delete="true">
+                <!-- removed copy="false" from tree definition -->
+                <!-- <tree string="Timesheet" create="false" edit="false" delete="true" copy="false"> -->
+                    <field name="date" />
+                    <field name="state"/>
+                    <field name="user_id" />
+                    <field name="operating_unit_id" />
+                    <field name="week_id" string="Timesheet Week"/>
+                    <field name="project_id" required="1"/>
+                    <field name="task_id" context="{'default_project_id': project_id}" domain="[('project_id', '=', project_id)]"/>
+                    <field name="unit_amount" string="Duration" sum="Total time" widget="float_time"/>
+                    <field name="actual_qty" invisible="1"/>
+<!--                    <field name="planned_qty" invisible="1"/>-->
+               </tree>
+            </field>
+        </record>
+
+<!--
+
+        <record id="act_planning_line_forecast" model="ir.actions.act_window">
+            <field name="name">Staffing &amp; Forecast</field>
+            <field name="res_model">ps.planning.line</field>
+            <field name="domain">[('project_id', '!=', False), '|',('correction_charge', '=', True),('chargeable', '=', True)]</field>
+            <field name="context">{"search_default_today":1}</field>
+            <field name="view_mode">tree,pivot</field>
+            <field name="search_view_id" ref="ps_planning_line_search"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Click to record activities.
+              </p><p>
+                You can track Staffing Forecast.
+              </p>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="act_planning_line_forecast_view_tree">
+            <field name="view_mode">tree</field>
+            <field name="sequence">2</field>
+            <field name="view_id" ref="planning_line_forecasting_tree"/>
+            <field name="act_window_id" ref="act_planning_line_forecast"/>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="act_planning_line_forecast_view_pivot">
+            <field name="view_mode">pivot</field>
+            <field name="sequence">1</field>
+            <field name="view_id" ref="view_planning_line_pivot_forecast"/>
+            <field name="act_window_id" ref="act_planning_line_forecast"/>
+        </record>
+
+        <menuitem id="menu_hr_working_hours" parent="menu_timesheets_reports" action="act_planning_line_forecast"
+            name="Planned Activity Analysis" sequence="9" groups="group_planning_forecasting"/-->
+
+
+<!--        TODO: planned vs actual are different objects now-->
+
+<!--        <record id="view_ps_time_line_pivot_forecast" model="ir.ui.view">&ndash;&gt;-->
+<!--            <field name="name">ps.time.line.pivot.forcast</field>-->
+<!--            <field name="model">ps.time.line</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <pivot string="Time Lines" >-->
+<!--                    <field name="account_id" type="row"/>-->
+<!--                    <field name="unit_amount" type="measure"/>-->
+<!--                </pivot>-->
+<!--            </field>-->
+<!--        </record>-->
+<!--        <record id="view_account_analytic_line_pivot_planned_vs_actual" model="ir.ui.view">-->
+<!--            <field name="name">account.analytic.line.pivot</field>-->
+<!--            <field name="model">account.analytic.line</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <pivot string="Analytic Entries">-->
+<!--                    <field name="account_id" type="row"/>-->
+<!--                    <field name="planned_qty" type="measure"/>-->
+<!--                    <field name="actual_qty" type="measure"/>-->
+<!--                </pivot>-->
+<!--            </field>-->
+<!--        </record>-->
+<!--        <record id="act_hr_timesheet_line_planned_vs_actual" model="ir.actions.act_window">-->
+<!--            <field name="name">Planned vs. Actual Activity Analysis</field>-->
+<!--            <field name="res_model">account.analytic.line</field>-->
+<!--            <field name="domain">[('project_id', '!=', False), '|', ('correction_charge', '=', True), ('chargeable', '=', True)]</field>-->
+<!--            <field name="context">{"search_default_today":1}</field>-->
+<!--            <field name="view_mode">tree,pivot</field>-->
+<!--            <field name="search_view_id" ref="hr_timesheet.hr_timesheet_line_search"/>-->
+<!--            <field name="view_ids"-->
+<!--               eval="[(5, 0, 0),-->
+<!--                      (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_account_analytic_line_pivot_planned_vs_actual')}),-->
+<!--            ]"/>-->
+<!--            <field name="help" type="html">-->
+<!--              <p class="oe_view_nocontent_create">-->
+<!--                Click to record activities.-->
+<!--              </p><p>-->
+<!--                You can track Planned vs. Actual Activity Analysis.-->
+<!--              </p>-->
+<!--            </field>-->
+<!--        </record>-->
+
+
+<!--        TODO Adding Account analytic line's account moves when state in delay in list view-->
+        <!--<record id="view_account_analytic_line_move_tree_form" model="ir.ui.view">
+            <field name="name">account.analytic.line.move.tree.form</field>
+            <field name="model">account.analytic.line</field>
+            <field name="inherit_id" ref="analytic.view_account_analytic_line_form"/>
+            <field name="groups_id" eval="[(6, 0, [ref('account.group_account_invoice')])]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <notebook name="Account Analytic Lines">
+                        <page string="Analytic Move Lines">
+                            <field name="account_analy_line_ids" widget="one2many_list">
+                                <tree string="analytic line list">
+                                    <field name="move_id"/>
+                                    <field name="account_id"/>
+                                    <field name="ref"/>
+                                    <field name="date"/>
+                                    <field name="credit"/>
+                                    <field name="debit"/>
+                                    <field name="wip_percentage"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </xpath>
+            </field>
+        </record>-->
+<!--    Todo: planned vs actual-->
+<!--        <menuitem id="menu_hr_working_planned_vs_actual" parent="hr_timesheet.menu_timesheets_reports" action="act_hr_timesheet_line_planned_vs_actual"-->
+<!--            name="Planned vs. Actual Activity Analysis" sequence="9" groups="group_planning_forecasting"/>-->
+
+    </data>
+</odoo>

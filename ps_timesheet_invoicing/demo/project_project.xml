@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="project_overtime" model="project.project">
+        <field name="name">Overtime</field>
+        <field name="overtime" eval="True" />
+        <field name="overtime_hrs" eval="True" />
+        <field name="chargeable" eval="True" />
+    </record>
+    <record id="project.project_project_2" model="project.project">
+        <field name="invoice_properties" ref="project_invoicing_property_time_spent" />
+        <field name="partner_id" ref="base.res_partner_12" />
+        <field name="invoice_address" ref="base.res_partner_12" />
+        <field name="chargeable" eval="True" />
+    </record>
+</odoo>
