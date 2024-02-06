@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Professional Services Calender",
+    'name': "Professional Services Calendar",
 
     'summary': """
-        Professional Services Calender""",
+        Professional Services Calendar""",
 
     'description': """
-        Professional Services Calender
+        Professional Services Calendar
     """,
 
     'author': "TOSC",

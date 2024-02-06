@@ -33,7 +33,7 @@ class FleetVehicleContract(models.Model):
         
     @api.onchange('lease_period')
     @api.depends('lease_period')
-    def _lease_priod_on_change(self):
+    def _lease_period_on_change(self):
         if self.lease_period > 0:
             if self.start_date:
                 start_date = datetime.strptime(self.start_date, '%Y-%m-%d')

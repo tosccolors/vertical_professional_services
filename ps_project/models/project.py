@@ -11,7 +11,6 @@ class Project(models.Model):
     code = fields.Char('Project Code')
     tag_ids = fields.Many2many('project.tags', string='Tags')
     po_number = fields.Char('PO Number')
-    slamid = fields.Char('Slam ID')
     invoice_address = fields.Many2one('res.partner', string='Invoice Address')
     correction_charge = fields.Boolean('Correction Chargeability')
     chargeable = fields.Boolean('Chargeable', default=True)

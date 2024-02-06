@@ -89,7 +89,7 @@
                                  <span t-if="o.operating_unit_id and o.operating_unit_id.partner_id and o.operating_unit_id.partner_id.vat"
                                        t-field="o.operating_unit_id.partner_id.vat"/><br/>
                                  <t t-if="analytic_invoice_id and not sale_inv">
-                                     <span t-field="analytic_invoice_id[0].month_id.calender_name"/>
+                                     <span t-field="analytic_invoice_id[0].month_id.calendar_name"/>
                                     <span t-esc="time.strftime('%Y', time.strptime(str(analytic_invoice_id[0].month_id.date_start),'%Y-%m-%d'))"/>
                                  </t>
                                  <br/>

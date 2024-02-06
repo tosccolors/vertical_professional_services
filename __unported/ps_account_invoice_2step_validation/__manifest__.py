@@ -11,7 +11,8 @@
     'version' : '0.9',
     'category': 'accounts',
     'description': """
-This module adds authorization steps in workflow in professional services supplier invoices.
+This module adds authorization steps in workflow in professional services supplier invoices version 10.0. and 12.0.
+ >= 14.0: this module deprecated. base_tier_validation and helper mods.
 =============================================================================
 
 Enchanced to add
@@ -27,7 +28,7 @@ Enchanced to add
         "views/account_move_view.xml",
     ],
     'demo' : [],
-    'installable': True
+    'installable': False
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

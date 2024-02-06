@@ -7,7 +7,7 @@
             <field name="inherit_id" ref="date_range.view_date_range_tree"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                    <field name="calender_name"/>
+                    <field name="calendar_name"/>
                 </field>
             </field>
         </record>
@@ -18,7 +18,7 @@
             <field name="inherit_id" ref="date_range.view_date_range_form_view"/>
             <field name="arch" type="xml">
                 <field name="name" position="after">
-                    <field name="calender_name"/>
+                    <field name="calendar_name"/>
                 </field>
             </field>
         </record>
