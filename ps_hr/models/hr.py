@@ -19,7 +19,6 @@ class Employee(models.Model):
     emergency_contact = fields.Char('Emergency Contact')
     description = fields.Text('Description')
     pass_number_alarm = fields.Char('Pass Number Alarm')
-    slamid = fields.Char('Slam ID')
     personnel_number = fields.Char('Personnel Number')
     employee_numbersid = fields.Char('Employee NMBRs ID')
     date_last_promotion = fields.Date('Date of last Promotion')
