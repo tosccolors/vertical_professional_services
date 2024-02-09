@@ -9,8 +9,6 @@ from . import fleet
 from . import res_users
 from . import hr_department
 from . import hr_employee
-from . import ps_planning_line
-from . import ps_planning
 from . import res_company
 from . import ps_time_line
 from . import task_user

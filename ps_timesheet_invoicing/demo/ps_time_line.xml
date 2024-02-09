@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="time_line_demo_user_2023_12_18" model="ps.time.line">
         <field name="user_id" ref="base.user_demo" />

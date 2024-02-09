@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data noupdate="1">
         <record id="date_range_quarter" model="date.range.type">
             <field name="name">Fiscal quarter</field>
-            <field name="allow_overlap" eval="False"/>
+            <field name="allow_overlap" eval="False" />
         </record>
     </data>
 </odoo>

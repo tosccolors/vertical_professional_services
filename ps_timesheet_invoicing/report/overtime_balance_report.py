@@ -1,39 +1,23 @@
-# -*- coding: utf-8 -*-
+from odoo import fields, models, tools
 
-from odoo import api, fields, models, tools, _
 
 class OvertimeBalanceReport(models.Model):
-    _name = 'overtime.balance.report'
+    _name = "overtime.balance.report"
     _auto = False
-    _description = 'Overtime Balance Report'
+    _description = "Overtime Balance Report"
 
-    date = fields.Date(
-        'Date',
-        readonly=True
-    )
-    user_id = fields.Many2one(
-        'res.users',
-        string='User',
-        readonly=True
-    )
-    overtime_balanced = fields.Float(
-        string="Overtime Balance",
-        readonly=True
-    )
-    overtime_taken = fields.Float(
-        string="Overtime Taken",
-        readonly=True
-    )
-    overtime_hrs = fields.Float(
-        string="Overtime Hrs",
-        readonly=True
-    )
+    date = fields.Date("Date", readonly=True)
+    user_id = fields.Many2one("res.users", string="User", readonly=True)
+    overtime_balanced = fields.Float(string="Overtime Balance", readonly=True)
+    overtime_taken = fields.Float(string="Overtime Taken", readonly=True)
+    overtime_hrs = fields.Float(string="Overtime Hrs", readonly=True)
 
     # @api.model_cr
     def init(self):
-        tools.drop_view_if_exists(self.env.cr, 'overtime_balance_report')
+        tools.drop_view_if_exists(self.env.cr, "overtime_balance_report")
 
-        self.env.cr.execute("""
+        self.env.cr.execute(
+            """
                         CREATE OR REPLACE VIEW overtime_balance_report AS (
                         SELECT
                             min(ptl.id) AS id,
@@ -50,7 +34,7 @@ class OvertimeBalanceReport(models.Model):
                                 AND product_uom_id = 5
                                 THEN ptl.unit_amount
                                 ELSE 0
-                                END) AS overtime_hrs,                        
+                                END) AS overtime_hrs,
                             (
                               SUM(CASE
                                 WHEN pp.overtime_hrs = 'true'
@@ -70,7 +54,5 @@ class OvertimeBalanceReport(models.Model):
                         JOIN project_project pp ON pp.analytic_account_id = aa.id
                         WHERE pp.overtime = true OR pp.overtime_hrs = true
                         GROUP BY ptl.date, ptl.user_id
-                        )""")
-
-
-
+                        )"""
+        )

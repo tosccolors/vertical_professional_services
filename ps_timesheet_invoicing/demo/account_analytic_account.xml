@@ -1,12 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="analytic.analytic_nebula" model="account.analytic.account">
-        <field name="operating_unit_ids" eval="[(4, ref('operating_unit.main_operating_unit'))]" />
+        <field
+            name="operating_unit_ids"
+            eval="[(4, ref('operating_unit.main_operating_unit'))]"
+        />
     </record>
     <function name="write" model="account.analytic.account">
         <function name="search" model="account.analytic.account">
             <value eval="[('project_ids', '=', ref('project.project_project_2'))]" />
         </function>
-        <value eval="{'operating_unit_ids': [(4, ref('operating_unit.main_operating_unit'))]}" />
+        <value
+            eval="{'operating_unit_ids': [(4, ref('operating_unit.main_operating_unit'))]}"
+        />
     </function>
 </odoo>

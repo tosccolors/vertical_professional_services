@@ -1,7 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="project_invoicing_property_time_spent" model="project.invoicing.properties">
+    <record
+        id="project_invoicing_property_time_spent"
+        model="project.invoicing.properties"
+    >
         <field name="name">Time spent</field>
         <field name="actual_time_spent" eval="True" />
+        <field name="specs_invoice_report" eval="True" />
     </record>
 </odoo>

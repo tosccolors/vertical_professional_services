@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo noupdate="1">
     <function model="date.range.generator" name="action_apply">
         <function
@@ -12,7 +12,8 @@
                 'duration_count': 1,
                 'count': 104,
                 'name_prefix': 'Week ',
-            }]" />
+            }]"
+        />
     </function>
     <function model="date.range.generator" name="action_apply">
         <function
@@ -26,7 +27,8 @@
                 'duration_count': 1,
                 'count': 24,
                 'name_prefix': 'Month ',
-            }]" />
+            }]"
+        />
     </function>
     <function model="date.range.generator" name="action_apply">
         <function
@@ -40,6 +42,7 @@
                 'duration_count': 3,
                 'count': 8,
                 'name_prefix': 'Quarter ',
-            }]" />
+            }]"
+        />
     </function>
 </odoo>

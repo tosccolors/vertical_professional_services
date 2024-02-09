@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="task_user_task_11" model="task.user">
         <field name="task_id" ref="project.project_task_11" />
