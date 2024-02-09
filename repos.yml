@@ -1,0 +1,82 @@
+account-analytic:
+  remotes:
+    oca: https://github.com/OCA/account-analytic
+  merges:
+    - oca 14.0
+account-financial-tools:
+  remotes:
+    oca: https://github.com/OCA/account-financial-tools
+  merges:
+    - oca 14.0
+account-payment:
+  remotes:
+    oca: https://github.com/OCA/account-payment
+  merges:
+    - oca 14.0
+bank-payment:
+  remotes:
+    oca: https://github.com/OCA/bank-payment
+  merges:
+    - oca 14.0
+community-data-files:
+  remotes:
+    oca: https://github.com/OCA/community-data-files
+  merges:
+    - oca 14.0
+crm:
+  remotes:
+    oca: https://github.com/OCA/crm
+  merges:
+    - oca 14.0
+hr:
+  remotes:
+    oca: https://github.com/OCA/hr
+  merges:
+    - oca 14.0
+operating-unit:
+  remotes:
+    oca: https://github.com/OCA/operating-unit
+  merges:
+    - oca 14.0
+partner-contact:
+  remotes:
+    oca: https://github.com/OCA/partner-contact
+  merges:
+    - oca 14.0
+queue:
+  remotes:
+    oca: https://github.com/OCA/queue
+  merges:
+    - oca 14.0
+server-backend:
+  remotes:
+    oca: https://github.com/OCA/server-backend
+  merges:
+    - oca 14.0
+server-ux:
+  remotes:
+    oca: https://github.com/OCA/server-ux
+  merges:
+    - oca 14.0
+timesheet:
+  remotes:
+    oca: https://github.com/OCA/timesheet
+  merges:
+    - oca 14.0
+web:
+  remotes:
+    oca: https://github.com/OCA/web
+  merges:
+    - oca 14.0
+misc:
+  remotes:
+    tosccolors: https://github.com/tosccolors/misc
+  merges:
+    - tosccolors 14.0
+../src:
+  defaults:
+    depth: 1
+  remotes:
+    oca: https://github.com/OCA/ocb
+  merges:
+    - oca 14.0
