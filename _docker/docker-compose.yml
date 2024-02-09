@@ -1,6 +1,6 @@
 # Composition for development
 
-version: '2'
+version: "2"
 
 services:
   odoo:
