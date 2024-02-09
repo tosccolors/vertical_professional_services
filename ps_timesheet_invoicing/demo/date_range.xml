@@ -33,7 +33,7 @@
             model="date.range.generator"
             name="create"
             eval="[{
-                'type_id': ref('account_fiscal_month.date_range_fiscal_month'),
+                'type_id': ref('ps_timesheet_invoicing.date_range_quarter'),
                 'date_start': datetime.now().date() + relativedelta(years=-1, month=1, day=1),
                 'date_end': datetime.now().date() + relativedelta(month=12, day=31),
                 'unit_of_time': '1',
