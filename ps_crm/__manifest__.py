@@ -25,6 +25,11 @@
         "security/crm_security.xml",
         "security/ir.model.access.csv",
         "views/crm_lead_views.xml",
+        "views/hr_department.xml",
+    ],
+    "demo": [
+        "demo/hr_department.xml",
+        "demo/res_partner.xml",
     ],
     "installable": True,
 }
