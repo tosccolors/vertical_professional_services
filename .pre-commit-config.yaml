@@ -12,7 +12,6 @@ exclude: |
   ^ps_contract|
   ^ps_credit_card_expenses|
   ^ps_equipment|
-  ^ps_fleet|
   ^ps_fleet_rdw|
   ^ps_follow_up|
   ^ps_holidays|
