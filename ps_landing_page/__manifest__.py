@@ -1,36 +1,18 @@
-# -*- coding: utf-8 -*-
 {
-    'name': "ps_landing_page",
-
-    'summary': """
-        Employee Landing Page""",
-
-    'description': """
-        Employee Landing Page
-    """,
-
-    'author': "TOSC",
-    'website': "http://www.tosc.nl",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
-    # for the full list
-    'category': 'Report',
-    'version': '0.1',
-
-    # any module necessary for this one to work correctly
-    'depends': ['ps_timesheet_invoicing', 'ps_holidays','ps_expense'],
-
-    # always loaded
-    'data': [
-        'security/ps_security.xml',
-        'security/ir.model.access.csv',
-        'views/hr_employee_landing_page_views.xml',
-        'views/hr_holidays_views.xml',
-        'views/analytic_views.xml',
+    "name": "Employee Landing Page",
+    "summary": "Employee Landing Page",
+    "author": "The Open Source Company",
+    "website": "http://www.tosc.nl",
+    "category": "Report",
+    "version": "14.0.1.0.0",
+    "license": "AGPL-3",
+    "depends": ["ps_timesheet_invoicing", "ps_holidays", "ps_expense"],
+    "data": [
+        "security/ps_security.xml",
+        "security/ir.model.access.csv",
+        "views/hr_employee_landing_page_views.xml",
     ],
-    # only loaded in demonstration mode
-    'demo': [
-        # 'demo/demo.xml',
+    "demo": [
+        "demo/res_groups.xml",
     ],
 }

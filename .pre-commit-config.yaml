@@ -18,7 +18,6 @@ exclude: |
   ^ps_hr|
   ^ps_invoice_layout|
   ^ps_klippa|
-  ^ps_landing_page|
   ^ps_nmbrs_base|
   ^ps_nmbrs_employee_interface|
   ^ps_nmbrs_fleet_interface|
