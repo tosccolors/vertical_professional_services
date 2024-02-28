@@ -8,6 +8,11 @@ account-financial-tools:
     oca: https://github.com/OCA/account-financial-tools
   merges:
     - oca 14.0
+account-invoicing:
+  remotes:
+    oca: https://github.com/OCA/account-invoicing
+  merges:
+    - oca 14.0
 account-payment:
   remotes:
     oca: https://github.com/OCA/account-payment

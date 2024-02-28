@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="res_partner_category_ps_0" model="res.partner.category">
+        <field name="name">Electricity Market Party</field>
+    </record>
+    <record id="res_partner_category_ps_4" model="res.partner.category">
+        <field name="name">TSO's</field>
+        <field name="parent_id" ref="res_partner_category_ps_0" />
+    </record>
+    <record id="res_partner_category_ps_5" model="res.partner.category">
+        <field name="name">NEMO's</field>
+        <field name="parent_id" ref="res_partner_category_ps_0" />
+    </record>
+    <record id="res_partner_category_ps_11" model="res.partner.category">
+        <field name="name">Consortiums</field>
+        <field name="parent_id" ref="res_partner_category_ps_0" />
+    </record>
+</odoo>

@@ -1,12 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <!-- Added partner categories and partners to this file, because it
          turned out to be a bad idea to rely on demo data in base module,
          that can change from release to release. Only dependency on
          countries remain. They are less likely to change/disappear.
     -->
-
-    <!-- Partner relation types -->
     <record id="rel_type_consortium" model="res.partner.relation.type">
         <field name="name">Is Consortium consisting of</field>
         <field name="name_inverse">Is member of</field>
@@ -26,23 +24,4 @@
         <field name="contact_type_left">p</field>
         <field name="contact_type_right">c</field>
     </record>
-
-    <!-- Categories -->
-    <record id="res_partner_category_ps_0" model="res.partner.category">
-        <field name="name">Electricity Market Party</field>
-    </record>
-    <record id="res_partner_category_ps_4" model="res.partner.category">
-        <field name="name">TSO's</field>
-        <field name="parent_id" ref="res_partner_category_ps_0"/>
-    </record>
-    <record id="res_partner_category_ps_5" model="res.partner.category">
-        <field name="name">NEMO's</field>
-        <field name="parent_id" ref="res_partner_category_ps_0"/>
-    </record>
-    <record id="res_partner_category_ps_11" model="res.partner.category">
-        <field name="name">Consortiums</field>
-        <field name="parent_id" ref="res_partner_category_ps_0"/>
-    </record>
-
-
 </odoo>
