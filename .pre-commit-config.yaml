@@ -9,7 +9,6 @@ exclude: |
   ^ps_assets_equipment_link|
   ^ps_calendar|
   ^ps_co_manager|
-  ^ps_contract|
   ^ps_credit_card_expenses|
   ^ps_equipment|
   ^ps_fleet_rdw|

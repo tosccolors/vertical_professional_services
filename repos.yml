@@ -28,6 +28,11 @@ community-data-files:
     oca: https://github.com/OCA/community-data-files
   merges:
     - oca 14.0
+contract:
+  remotes:
+    oca: https://github.com/OCA/contract
+  merges:
+    - oca 14.0
 crm:
   remotes:
     oca: https://github.com/OCA/crm
