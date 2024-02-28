@@ -1,0 +1,5 @@
+<odoo>
+    <record id="hr_holidays.holiday_status_cl" model="hr.leave.type">
+        <field name="is_leave_type_of_wizard" eval="True" />
+    </record>
+</odoo>
