@@ -4,7 +4,7 @@
         <field name="user_id" ref="base.user_demo" />
         <field name="project_id" ref="project.project_project_2" />
         <field name="task_id" ref="project.project_task_11" />
-        <field name="name">/</field>
+        <field name="name">Timeline for 2023-12-18</field>
         <field name="unit_amount">1</field>
         <field name="amount">42</field>
         <field name="date">2023-12-18</field>

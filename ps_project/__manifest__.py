@@ -20,6 +20,5 @@
         "security/ir.model.access.csv",
         "views/project_views.xml",
         "views/menuitem.xml",
-        "report/report_invoice.xml",
     ],
 }

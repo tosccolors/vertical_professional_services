@@ -12,7 +12,7 @@
                 />
                 <t
                     t-set="add_specs_invoice_report"
-                    t-value="project_ids.filtered(lambda p: p.correction_charge and p.specs_invoice_report)"
+                    t-value="project_ids.filtered(lambda p: p.correction_charge and p.invoice_properties.specs_invoice_report)"
                 />
                 <div class="row" t-if="len(add_specs_invoice_report) > 0">
                     <div class="col-xs-6" style="page-break-inside:avoid;">
@@ -54,18 +54,19 @@
                                         </td>
                                         <td class="text-right" width="30%">
                                             <span
-                                                t-field="aal_val.sheet_id.date_from"
+                                                t-field="aal_val.sheet_id.date_start"
                                                 t-options='{"widget": "date"}'
                                             />
                                             -
                                             <span
-                                                t-field="aal_val.sheet_id.date_to"
+                                                t-field="aal_val.sheet_id.date_end"
                                                 t-options='{"widget": "date"}'
                                             />
                                         </td>
                                         <td class="text-right" width="10%">
-                                            <t
-                                                t-esc="'%02d:%02d' % (int(aal_val.unit_amount), aal_val.unit_amount % 1 * 60)"
+                                            <span
+                                                t-field="aal_val.unit_amount"
+                                                t-options='{"widget": "float_time"}'
                                             />
                                         </td>
                                     </tr>

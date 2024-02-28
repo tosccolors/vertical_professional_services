@@ -63,7 +63,10 @@ class AccountMove(models.Model):
                 ptl.project_id if ptl.project_id else ptl.task_id.project_id,
                 ptl.user_id,
             )
-            if project_id.correction_charge and project_id.specs_invoice_report:
+            if (
+                project_id.correction_charge
+                and project_id.invoice_properties.specs_invoice_report
+            ):
                 if (project_id, user_id) in userProject:
                     userProject[(project_id, user_id)] = userProject[
                         (project_id, user_id)

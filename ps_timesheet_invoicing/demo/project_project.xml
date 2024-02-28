@@ -11,5 +11,6 @@
         <field name="partner_id" ref="base.res_partner_12" />
         <field name="invoice_address" ref="base.res_partner_12" />
         <field name="chargeable" eval="True" />
+        <field name="correction_charge" eval="True" />
     </record>
 </odoo>

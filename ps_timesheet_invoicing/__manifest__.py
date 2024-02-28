@@ -41,6 +41,7 @@
         "wizard/time_line_invoice_view.xml",
         "wizard/change_chargecode_view.xml",
         "report/hr_chargeability_report.xml",
+        "report/report_invoice.xml",
         "report/status_time_report.xml",
         "report/overtime_balance_report.xml",
         "report/crm_pipeline_actuals_report.xml",
