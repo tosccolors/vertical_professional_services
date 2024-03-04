@@ -1,26 +1,32 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
-
         <record model="ir.ui.view" id="project_invoicing_Period_form_view">
             <field name="name">Invoicing Properties</field>
             <field name="model">project.invoicing.properties</field>
-            <field name="inherit_id" ref="ps_project.project_invoicing_Period_form_view"/>
+            <field
+                name="inherit_id"
+                ref="ps_project.project_invoicing_Period_form_view"
+            />
             <field name="arch" type="xml">
                 <xpath expr="//group" position="after">
                     <group name="custom_header_footer" string="Custom Header/Footer">
-                        <field name="custom_layout"/>
-
-                        <field name="custom_header" attrs="{'invisible':[('custom_layout', '=', False)],'required':[('custom_layout', '=', True)]}"/>
-                        <field name="custom_footer" attrs="{'invisible':[('custom_layout', '=', False)],'required':[('custom_layout', '=', True)]}"/>
+                        <field name="custom_layout" />
+                        <field
+                            name="custom_header"
+                            attrs="{'invisible':[('custom_layout', '=', False)],'required':[('custom_layout', '=', True)]}"
+                        />
+                        <field
+                            name="custom_footer"
+                            attrs="{'invisible':[('custom_layout', '=', False)],'required':[('custom_layout', '=', True)]}"
+                        />
                     </group>
                 </xpath>
                 <xpath expr="//field[@name='specs_invoice_report']" position="after">
-                    <field name="specs_on_task_level"/>
+                    <field name="specs_on_task_level" />
                 </xpath>
             </field>
         </record>
-
         <!--<record model="ir.ui.view" id="view_task_form2_ps_account">
             <field name="name">project Task ps</field>
             <field name="model">project.task</field>
@@ -31,6 +37,5 @@
                 </xpath>
             </field>
         </record>-->
-
     </data>
 </odoo>

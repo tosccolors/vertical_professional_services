@@ -58,6 +58,11 @@ queue:
     oca: https://github.com/OCA/queue
   merges:
     - oca 14.0
+reporting-engine:
+  remotes:
+    oca: https://github.com/OCA/reporting-engine
+  merges:
+    - oca 14.0
 server-backend:
   remotes:
     oca: https://github.com/OCA/server-backend

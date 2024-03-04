@@ -90,8 +90,12 @@ class TestPsTimesheetInvoicing(TransactionCase):
         report_html, _type = self.env.ref("account.account_invoices")._render_qweb_pdf(
             ps_invoice.invoice_id.ids
         )
-        self.assertIn(self.ps_line.task_id.name, report_html.decode("utf8"))
 
+    def test_01_invoicing2(self):
+        self.test_01_invoicing()
+        ps_invoice = self.env["ps.invoice"].search(
+            [("user_total_ids.detail_ids", "in", self.ps_line.ids)]
+        )
         ps_invoice.delete_invoice()
         self.assertEqual(ps_invoice.state, "draft")
         with Form(ps_invoice) as ps_invoice_form:

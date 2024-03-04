@@ -1,10 +1,6 @@
 exclude: |
   (?x)
-  # NOT INSTALLABLE ADDONS
-  ^ps_invoice_layout/|
-  # END NOT INSTALLABLE ADDONS
   # TODO: remove migrated modules here
-  ^ps_account|
   ^ps_account_payment_order_operating_unit|
   ^ps_assets_equipment_link|
   ^ps_calendar|
