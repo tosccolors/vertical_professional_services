@@ -3,7 +3,6 @@ exclude: |
   # TODO: remove migrated modules here
   ^ps_account_payment_order_operating_unit|
   ^ps_assets_equipment_link|
-  ^ps_calendar|
   ^ps_co_manager|
   ^ps_credit_card_expenses|
   ^ps_equipment|

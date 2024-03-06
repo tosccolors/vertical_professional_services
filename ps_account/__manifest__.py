@@ -15,6 +15,7 @@
         "operating_unit_report_layout",
         "ps_timesheet_invoicing",
         "report_qweb_pdf_watermark",
+        "ps_calendar",
     ],
     "data": [
         "report/report_layout.xml",

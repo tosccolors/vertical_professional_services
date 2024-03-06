@@ -14,6 +14,7 @@
         "crm",
         "crm_industry",
         "project",
+        "ps_date_range_week",
         "operating_unit",
         "hr",
         "utm",
