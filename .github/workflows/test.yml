@@ -16,6 +16,8 @@ jobs:
       - name: Build docker image
         run: |
           git config --global init.defaultBranch main
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
           pip install git-aggregator
           cd _docker
           mkdir -p  odoo/local-src odoo/external-src data songs
