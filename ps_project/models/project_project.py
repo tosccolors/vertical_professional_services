@@ -1,7 +1,7 @@
 # Copyright 2018 The Open Source Company ((www.tosc.nl).)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class Project(models.Model):
@@ -36,3 +36,30 @@ class Project(models.Model):
             (value.id, "%s%s" % (value.code + "-" if value.code else "", value.name))
             for value in self
         ]
+
+    @api.model
+    def _name_search(
+        self, name="", args=None, operator="ilike", limit=100, name_get_uid=None
+    ):
+        """Allow searching for code too"""
+        result = self.browse([])
+        if name and operator == "ilike":
+            result += self.browse(
+                self._search(
+                    list(args or []) + [("code", "ilike", "%s%%" % name)],
+                    limit=limit,
+                    access_rights_uid=name_get_uid,
+                )
+            )
+            if result:
+                args = (args or []) + [("id", "not in", result.ids)]
+        result += self.browse(
+            super()._name_search(
+                name=name,
+                args=args,
+                operator=operator,
+                limit=(limit - len(result)) if limit else limit,
+                name_get_uid=name_get_uid,
+            )
+        )
+        return result.ids

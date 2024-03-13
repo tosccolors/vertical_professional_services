@@ -21,4 +21,7 @@
         "views/project_views.xml",
         "views/menuitem.xml",
     ],
+    "demo": [
+        "demo/project_project.xml",
+    ],
 }

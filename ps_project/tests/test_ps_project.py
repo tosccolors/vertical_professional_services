@@ -24,3 +24,17 @@ class TestPsProject(TransactionCase):
         self.assertEqual(task.parsed_description, "hello world")
         task.description = False
         self.assertFalse(task.parsed_description)
+
+    def test_name_search(self):
+        result = self.env["project.project"].name_search("4")
+        self.assertIn(
+            self.env.ref("project.project_project_2").id, map(lambda x: x[0], result)
+        )
+        result = self.env["project.project"].name_search("4", limit=None)
+        self.assertIn(
+            self.env.ref("project.project_project_2").id, map(lambda x: x[0], result)
+        )
+        result = self.env["project.project"].name_search(
+            "4", limit=None, args=[("name", "=", "nonexistent")]
+        )
+        self.assertFalse(result)
