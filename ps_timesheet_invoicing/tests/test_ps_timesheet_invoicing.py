@@ -14,13 +14,15 @@ class TestPsTimesheetInvoicing(TransactionCase):
     def test_00_timesheet(self):
         """Test creating and submitting timesheets"""
         task = self.project.task_ids[:1]
+        task.standard = True
         sheet = (
             self.env["hr_timesheet.sheet"]
             .with_user(self.env.ref("base.user_demo"))
             .create({})
         )
         sheet.add_line_project_id = self.project
-        sheet.add_line_task_id = task
+        sheet.onchange_add_project_id()
+        self.assertEqual(sheet.add_line_task_id, task)
         sheet.button_add_line()
         sheet.with_context(sheet_write=True)._compute_line_ids()
         with Form(sheet) as sheet_form:

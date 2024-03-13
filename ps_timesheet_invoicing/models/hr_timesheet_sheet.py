@@ -76,6 +76,16 @@ class HrTimesheetSheet(models.Model):
                     return False
         return False
 
+    @api.onchange("add_line_project_id")
+    def onchange_add_project_id(self):
+        default_tasks = (
+            self.add_line_project_id.task_ids.filtered("standard")
+            or self.add_line_project_id.task_ids
+        )
+        if len(default_tasks) == 1:
+            self.add_line_task_id = default_tasks
+        return super().onchange_add_project_id()
+
     @api.model
     def default_get(self, fields):
         rec = super().default_get(fields)
