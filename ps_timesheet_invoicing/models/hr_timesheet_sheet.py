@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 from odoo import SUPERUSER_ID, _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.osv.expression import TRUE_LEAF
 from odoo.tools import float_compare
 
 _logger = logging.getLogger(__name__)
@@ -80,7 +81,13 @@ class HrTimesheetSheet(models.Model):
         rec = super().default_get(fields)
         week = self.get_week_to_submit()
         if week:
-            rec.update({"week_id": week.id})
+            rec.update(
+                {
+                    "week_id": week.id,
+                    "date_start": week.date_start,
+                    "date_end": week.date_end,
+                }
+            )
         else:
             if self._uid == SUPERUSER_ID:
                 raise UserError(
@@ -106,7 +113,7 @@ class HrTimesheetSheet(models.Model):
         return [
             ("type_id", "=", date_range_type_cw_id),
             ("active", "=", True),
-            ("id", "not in", logged_weeks),
+            ("id", "not in", logged_weeks) if logged_weeks else TRUE_LEAF,
         ]
 
     def _get_employee_domain(self):
