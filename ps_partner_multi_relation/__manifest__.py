@@ -10,6 +10,7 @@
         "partner_multi_relation",
         "ps_account",
         "ps_timesheet_invoicing",
+        "account_invoice_merge",
     ],
     "data": [
         "data/res_partner_relation_type.xml",

@@ -34,3 +34,25 @@ class TestPsPartnerMultiRelation(TransactionCase):
             partner18_invoice.amount_total, partner12_invoice.amount_total * 2
         )
         self.assertEqual(invoice.state, "cancel")
+
+        to_merge_invoices = child_invoices
+        for invoice in child_invoices:
+            to_merge_invoices += invoice.copy()
+        action = (
+            self.env["invoice.merge"]
+            .with_context(
+                active_model="account.move",
+                active_ids=to_merge_invoices.ids,
+            )
+            .create({})
+            .merge_invoices()
+        )
+        all_invoices = self.env["account.move"].browse(action["domain"][0][2])
+        merged_invoices = all_invoices - to_merge_invoices
+        self.assertEqual(set(to_merge_invoices.mapped("state")), {"cancel"})
+        self.assertItemsEqual(
+            merged_invoices.mapped("partner_id"),
+            self.env.ref("base.res_partner_2")
+            + self.env.ref("base.res_partner_12")
+            + self.env.ref("base.res_partner_18"),
+        )

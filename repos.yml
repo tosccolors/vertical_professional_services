@@ -13,6 +13,8 @@ account-invoicing:
     oca: https://github.com/OCA/account-invoicing
   merges:
     - oca 14.0
+    # merge invoice line names
+    - oca refs/pull/1402/head
 account-payment:
   remotes:
     oca: https://github.com/OCA/account-payment
