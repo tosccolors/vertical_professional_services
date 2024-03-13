@@ -13,7 +13,7 @@ class Task(models.Model):
     def parse_description(self):
         for this in self:
             this.parsed_description = this.description and "".join(
-                etree.fromstring(this.description).itertext()
+                etree.fromstring(this.description, etree.HTMLParser()).itertext()
             )
 
     standby = fields.Boolean("Standby")
