@@ -47,7 +47,6 @@
         "report/overtime_balance_report.xml",
         "report/crm_pipeline_actuals_report.xml",
         "views/hr_timesheet_sheet_view.xml",
-        "views/hr_timesheet_views_orig.xml",
         "views/hr_views_orig.xml",
         "views/project_timesheet_view.xml",
         "views/project_view.xml",
