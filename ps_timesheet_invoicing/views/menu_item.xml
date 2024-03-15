@@ -2,7 +2,7 @@
 <odoo>
     <!-- Top menu item -->
     <menuitem
-        name="PS Invoicing"
+        name="Project Invoicing"
         id="menu_ps_invoicing"
         sequence="40"
         web_icon="ps_timesheet_invoicing,static/description/icon.png"
