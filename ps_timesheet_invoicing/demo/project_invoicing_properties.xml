@@ -8,4 +8,13 @@
         <field name="actual_time_spent" eval="True" />
         <field name="specs_invoice_report" eval="True" />
     </record>
+    <record
+        id="project_invoicing_property_time_spent_grouped"
+        model="project.invoicing.properties"
+    >
+        <field name="name">Time spent (grouped)</field>
+        <field name="actual_time_spent" eval="True" />
+        <field name="specs_invoice_report" eval="True" />
+        <field name="group_invoice" eval="True" />
+    </record>
 </odoo>

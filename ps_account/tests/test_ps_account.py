@@ -2,15 +2,9 @@ from odoo.addons.ps_timesheet_invoicing.tests import test_ps_timesheet_invoicing
 
 
 class TestPsAccount(test_ps_timesheet_invoicing.TestPsTimesheetInvoicing):
-    # squelch all tests but the invoicing one
-    def test_00_timesheet(self):
-        pass
-
-    def test_01_invoicing2(self):
-        pass
-
-    def test_02_change_chargecode(self):
-        pass
-
-    def test_03_invoicing_properties(self):
-        pass
+    def test_01_invoicing(self):
+        ps_invoice = super().test_01_invoicing()
+        report_html, _type = self.env.ref("account.account_invoices")._render_qweb_pdf(
+            ps_invoice.invoice_id.ids
+        )
+        return ps_invoice

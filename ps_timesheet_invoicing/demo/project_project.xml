@@ -13,4 +13,14 @@
         <field name="chargeable" eval="True" />
         <field name="correction_charge" eval="True" />
     </record>
+    <record id="project.project_project_1" model="project.project">
+        <field
+            name="invoice_properties"
+            ref="project_invoicing_property_time_spent_grouped"
+        />
+        <field name="partner_id" ref="base.res_partner_12" />
+        <field name="invoice_address" ref="base.res_partner_12" />
+        <field name="chargeable" eval="True" />
+        <field name="correction_charge" eval="True" />
+    </record>
 </odoo>

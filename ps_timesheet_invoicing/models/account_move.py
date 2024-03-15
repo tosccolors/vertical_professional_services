@@ -33,7 +33,7 @@ class AccountMove(models.Model):
         try:
             if self.amount_untaxed != self.target_invoice_amount:
                 self.reset_target_invoice_amount()
-                factor = self.target_invoice_amount / self.amount_untaxed
+                factor = self.target_invoice_amount / (self.amount_untaxed or 1)
                 discount = (1.0 - factor) * 100
                 with Form(self) as invoice_form:
                     for i in range(len(self.invoice_line_ids)):

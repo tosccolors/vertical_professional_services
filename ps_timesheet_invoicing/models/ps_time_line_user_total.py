@@ -18,30 +18,31 @@ class TimelineUserTotal(models.Model):
         """
         task_user = self.env["task.user"]
         # get task-user out of first ptline
-        ptline = self.detail_ids and self.detail_ids[0]
-        task_user |= task_user.search(
-            [
-                ("id", "in", self.ps_invoice_id.task_user_ids.ids),
-                ("task_id", "=", self.task_id.id),
-                ("from_date", "<=", ptline.date),
-                ("user_id", "=", self.user_id.id),
-            ]
-        )
-        if task_user:
-            task_user = task_user.search(
-                [("id", "in", task_user.ids)], limit=1, order="from_date Desc"
+        for this in self:
+            ptline = this.detail_ids[:1]
+            task_user |= task_user.search(
+                [
+                    ("id", "in", this.ps_invoice_id.task_user_ids.ids),
+                    ("task_id", "=", this.task_id.id),
+                    ("from_date", "<=", ptline.date),
+                    ("user_id", "=", this.user_id.id),
+                ]
             )
-            self.fee_rate = fr = task_user.fee_rate
-            self.ic_fee_rate = ic_fr = task_user.ic_fee_rate
-        else:
-            self.fee_rate = fr = ptline.get_fee_rate(
-                self.task_id.id, self.user_id.id, ptline.date
-            )[0]
-            self.ic_fee_rate = ic_fr = ptline.get_fee_rate(
-                self.task_id.id, self.user_id.id, ptline.date
-            )[1]
-        self.amount = -self.unit_amount * fr
-        self.ic_amount = -self.unit_amount * ic_fr
+            if task_user:
+                task_user = task_user.search(
+                    [("id", "in", task_user.ids)], limit=1, order="from_date Desc"
+                )
+                this.fee_rate = fr = task_user.fee_rate
+                this.ic_fee_rate = ic_fr = task_user.ic_fee_rate
+            else:
+                this.fee_rate = fr = ptline.get_fee_rate(
+                    this.task_id.id, this.user_id.id, ptline.date
+                )[0]
+                this.ic_fee_rate = ic_fr = ptline.get_fee_rate(
+                    this.task_id.id, this.user_id.id, ptline.date
+                )[1]
+            this.amount = -this.unit_amount * fr
+            this.ic_amount = -this.unit_amount * ic_fr
 
     def _compute_time_line(self):
         for aut in self:
