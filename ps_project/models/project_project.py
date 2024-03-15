@@ -46,7 +46,8 @@ class Project(models.Model):
         ),
         string="Invoicing period",
         help="Select a frequency by which to invoice. This causes a selection of time "
-        "lines to be put into invoices per selected period. Leave empty for no grouping.",
+        "lines to be put into invoices per selected period.",
+        required=True,
     )
     ps_fixed_hours = fields.Float(
         "Contracted hours", help="Fill in the amount of hours to invoice per period."

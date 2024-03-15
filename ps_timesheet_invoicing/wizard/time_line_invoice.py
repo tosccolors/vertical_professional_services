@@ -89,7 +89,7 @@ class TimeLineStatus(models.TransientModel):
                 analytic_account_ids = res[0]
                 partner_id = res[1]
                 partner = self.env["res.partner"].browse(partner_id)
-                month_id = res[2]
+                period_id = res[2]
                 project_operating_unit_id = res[3]
 
                 if link_project:
@@ -105,7 +105,7 @@ class TimeLineStatus(models.TransientModel):
                     ("account_analytic_ids", "in", analytic_account_ids),
                     ("project_operating_unit_id", "=", project_operating_unit_id),
                     ("state", "not in", ("invoiced", "re_confirmed")),
-                    ("month_id", "=", month_id),
+                    ("period_id", "=", period_id),
                 ]
                 if link_project:
                     search_domain += [("project_id", "=", project_id)]
@@ -117,15 +117,12 @@ class TimeLineStatus(models.TransientModel):
                 if ps_invobj:
                     ctx = self.env.context.copy()
                     ctx.update({"active_invoice_id": ps_invobj.id})
-                    ps_invobj.with_context(ctx).partner_id = partner_id
-                    # ps_invobj.with_context(ctx).month_id = month_id
-                    # ps_invobj.with_context(ctx).project_operating_unit_id =
-                    # project_operating_unit_id
+                    ps_invobj.with_context(ctx).recompute(["user_total_ids"], ps_invobj)
                 else:
                     data = {
                         "partner_id": partner_id,
                         "move_type": "out_invoice",
-                        "month_id": month_id,
+                        "period_id": period_id,
                         "project_operating_unit_id": project_operating_unit_id,
                         "operating_unit_id": project_operating_unit_id,
                         "link_project": False,
@@ -176,10 +173,10 @@ class TimeLineStatus(models.TransientModel):
             self.env.cr.execute(
                 """
                 SELECT
-                array_agg(account_id), partner_id, month_id, project_operating_unit_id
+                array_agg(account_id), partner_id, period_id, project_operating_unit_id
                 FROM ps_time_line
                 WHERE id IN %s AND date_of_last_wip IS NULL
-                GROUP BY partner_id, month_id, project_operating_unit_id
+                GROUP BY partner_id, period_id, project_operating_unit_id
                 """,
                 (tuple(entries_ids),),
             )
@@ -209,11 +206,11 @@ class TimeLineStatus(models.TransientModel):
             self.env.cr.execute(
                 """
                 SELECT
-                    array_agg(account_id), partner_id, month_id, project_operating_unit_id,
+                    array_agg(account_id), partner_id, period_id, project_operating_unit_id,
                     project_id
                 FROM ps_time_line
                 WHERE id IN %s AND date_of_last_wip IS NULL
-                GROUP BY partner_id, month_id, project_operating_unit_id, project_id
+                GROUP BY partner_id, period_id, project_operating_unit_id, project_id
                 """,
                 (tuple(sep_entries.ids),),
             )
@@ -432,7 +429,7 @@ class TimeLineStatus(models.TransientModel):
                     account_move |= move
 
                     first_of_next_month_date = date_end + timedelta(days=1)
-                    wip_month_id = time_line_obj[0].find_daterange_month(
+                    wip_month_id = time_line_obj[0]._find_daterange_month(
                         first_of_next_month_date
                     )
 

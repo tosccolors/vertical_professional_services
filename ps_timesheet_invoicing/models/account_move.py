@@ -12,13 +12,13 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     @api.depends("invoice_line_ids")
-    def _compute_month_id(self):
+    def _compute_period_id(self):
         ps_invoice_id = self.invoice_line_ids.mapped("ps_invoice_id")[:1]
-        self.month_id = ps_invoice_id.month_id
+        self.period_id = ps_invoice_id.period_id
 
     target_invoice_amount = fields.Monetary("Target Invoice Amount")
-    month_id = fields.Many2one(
-        "date.range", compute="_compute_month_id", string="Invoicing Period"
+    period_id = fields.Many2one(
+        "date.range", compute="_compute_period_id", string="Invoicing Period"
     )
     wip_move_id = fields.Many2one(
         "account.move",
@@ -89,7 +89,7 @@ class AccountMove(models.Model):
             ps_invoice_id = invoice.invoice_line_ids.mapped("ps_invoice_id")
             if ps_invoice_id and invoice.move_type != "out_refund":
                 # if invoicing period doesn't lie in same month
-                period_date = ps_invoice_id.month_id.date_start
+                period_date = ps_invoice_id.period_id.date_start
                 cur_date = datetime.now().date()
                 inv_date = invoice.date or invoice.invoice_date or cur_date
                 if inv_date.timetuple()[:2] != period_date.timetuple()[:2]:
@@ -110,7 +110,7 @@ class AccountMove(models.Model):
                 or inv.wip_move_id
             ):
                 continue
-            date_end = inv.month_id.date_end
+            date_end = inv.period_id.date_end
             new_name = sequence.with_context(ir_sequence_date=date_end).next_by_id()
             account = inv.line_ids.filtered(
                 lambda x: x.account_internal_type in ("receivable", "payable")

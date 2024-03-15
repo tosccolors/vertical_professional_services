@@ -13,4 +13,5 @@ from . import hr_department
 from . import hr_employee
 from . import res_company
 from . import ps_time_line
+from . import ps_time_line_user_total
 from . import task_user

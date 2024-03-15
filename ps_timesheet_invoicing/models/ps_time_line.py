@@ -41,15 +41,15 @@ class TimeLine(models.Model):
             lambda line: line.task_id and line.product_uom_id.id == uom_hrs
         ):
             # all ps_time lines need a project_operating_unit_id and
-            # for all ps_time lines day_name, week_id and month_id are computed
+            # for all ps_time lines day_name, week_id are computed
             date = line.date
             line.project_operating_unit_id = line.account_id.operating_unit_ids[:1]
             line.day_name = "%s (%s)" % (
                 date.strftime("%m/%d/%Y"),
                 date.strftime("%a"),
             )
-            line.week_id = line.find_daterange_week(date)
-            line.month_id = var_month_id = line.find_daterange_month(date)
+            line.week_id = line._find_daterange_week(date)
+            var_month_id = line._find_daterange_month(date)
             # only when project_id these fields are computed
             if line.project_id:
                 line.chargeable = line.project_id.chargeable
@@ -57,6 +57,11 @@ class TimeLine(models.Model):
                 line.project_mgr = line.project_id.user_id or False
                 if line.project_id.invoice_properties:
                     line.expenses = line.project_id.invoice_properties.expenses
+                line.period_id = self._find_daterange(
+                    date,
+                    line.project_id.ps_date_range_type_id,
+                    raise_not_found=True,
+                )
             else:
                 line.project_mgr = line.account_id.project_ids.user_id or False
             task = line.task_id
@@ -111,38 +116,23 @@ class TimeLine(models.Model):
     def _default_user(self):
         return self.env.context.get("user_id", self.env.user.id)
 
-    def find_daterange_week(self, date):
-        """
-        try to find a date range with type 'week'
-        with @param:date contained in its date_start/date_end interval
-        """
-        date_range_type_cw_id = self.env.ref(
-            "ps_date_range_week.date_range_calender_week"
-        ).id
-        s_args = [
-            ("type_id", "=", date_range_type_cw_id),
-            ("date_start", "<=", date),
-            ("date_end", ">=", date),
-            "|",
-            ("company_id", "=", self.company_id.id),
-            ("company_id", "=", False),
-        ]
-        date_range = self.env["date.range"].search(
-            s_args, limit=1, order="company_id asc"
+    def _find_daterange_week(self, date):
+        return self._find_daterange(
+            date, self.env.ref("ps_date_range_week.date_range_calender_week")
         )
-        return date_range
 
-    def find_daterange_month(self, date):
+    def _find_daterange_month(self, date):
+        return self._find_daterange(
+            date, self.env.ref("account_fiscal_month.date_range_fiscal_month")
+        )
+
+    def _find_daterange(self, date, range_type, raise_not_found=False):
         """
-        try to find a date range with type 'month'
+        try to find a date range with type range_type
         with @param:date contained in its date_start/date_end interval
         """
-        date_range_type_fm_id = self.env.ref(
-            "account_fiscal_month.date_range_fiscal_month"
-        ).id
-
         s_args = [
-            ("type_id", "=", date_range_type_fm_id),
+            ("type_id", "=", range_type.id),
             ("date_start", "<=", date),
             ("date_end", ">=", date),
             "|",
@@ -194,6 +184,12 @@ class TimeLine(models.Model):
         "date.range",
         compute=_compute_time_line,
         string="Month",
+        store=True,
+    )
+    period_id = fields.Many2one(
+        "date.range",
+        compute=_compute_time_line,
+        string="Period",
         store=True,
     )
     wip_month_id = fields.Many2one(
@@ -400,7 +396,7 @@ class TimeLine(models.Model):
             )
             self.date = dt - timedelta(days=dt.weekday())
             self.company_id = self.env.user.company_id
-            date = self.find_daterange_week(self.date)
+            date = self._find_daterange_week(self.date)
             self.week_id = date.id
         elif (
             self.sheet_id

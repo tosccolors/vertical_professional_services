@@ -74,21 +74,6 @@
         <field name="model">ps.time.line</field>
         <field name="arch" type="xml">
             <search string="Search Time Lines">
-                <!-- <filter string="My Projects"
-                                domain="[
-                                '|',
-                                ('project_id.user_id.id', '=', uid),
-                                ('account_id.project_ids.user_id.id', '=', uid)
-                                ]"
-                                context="{u'pivot_column_groupby': [u'month_id'],
-                                  u'pivot_row_groupby': [u'account_id', u'user_id'],
-                                  u'pivot_measures': [u'unit_amount', u'amount']}"/>
-                        <filter string="All Projects"
-                                context="{u'pivot_column_groupby': [u'month_id'],
-                                  u'pivot_row_groupby': [u'project_mgr',u'account_id', u'user_id'],
-                                  u'pivot_measures': [u'unit_amount', u'amount']}"/>
-                        <separator /> -->
-                <!-- error comming because of context -->
                 <filter
                     name="hours"
                     string="Hours"

@@ -160,10 +160,10 @@
                                         <br />
                                         <t t-if="analytic_invoice_id and not sale_inv">
                                             <span
-                                                t-field="analytic_invoice_id[0].month_id.calendar_name"
+                                                t-field="analytic_invoice_id[0].period_id.calendar_name"
                                             />
                                             <span
-                                                t-esc="time.strftime('%Y', time.strptime(str(analytic_invoice_id[0].month_id.date_start),'%Y-%m-%d'))"
+                                                t-esc="time.strftime('%Y', time.strptime(str(analytic_invoice_id[0].period_id.date_start),'%Y-%m-%d'))"
                                             />
                                         </t>
                                         <br />

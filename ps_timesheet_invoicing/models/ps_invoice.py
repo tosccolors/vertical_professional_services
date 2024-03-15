@@ -16,14 +16,14 @@ class PSInvoice(models.Model):
     _order = "date_to desc"
     _rec_name = "partner_id"
 
-    @api.depends("account_analytic_ids", "month_id")
+    @api.depends("account_analytic_ids", "period_id")
     def _compute_ps_time_lines(self):
         if len(self.account_analytic_ids) > 0:
             account_analytic_ids = self.account_analytic_ids.ids
             hrs = self.env.ref("uom.product_uom_hour").id
             domain = [("account_id", "in", account_analytic_ids)]
-            if self.month_id:
-                domain += self.month_id.get_domain("date")
+            if self.period_id:
+                domain += self.period_id.get_domain("date")
             time_domain = domain + [
                 ("product_uom_id", "=", hrs),
                 ("state", "in", ["invoiceable", "invoiced"]),
@@ -46,7 +46,11 @@ class PSInvoice(models.Model):
             self.revenue_line_ids = []
 
     @api.depends(
-        "month_id", "gb_week", "project_operating_unit_id", "project_id", "link_project"
+        "period_id",
+        "gb_week",
+        "project_operating_unit_id",
+        "project_id",
+        "link_project",
     )
     def _compute_objects(self):
         """
@@ -136,9 +140,9 @@ class PSInvoice(models.Model):
                 ("line_fee_rate", "=", vals["line_fee_rate"]),
             ]
             if reconfirmed_entries:
-                ptl_domain += [("month_of_last_wip", "=", vals["gb_month_id"])]
+                ptl_domain += [("month_of_last_wip", "=", vals["gb_period_id"])]
             else:
-                ptl_domain += [("month_id", "=", vals["gb_month_id"])]
+                ptl_domain += [("period_id", "=", vals["gb_period_id"])]
                 if vals["gb_week_id"]:
                     ptl_domain += [("week_id", "=", vals["gb_week_id"])]
 
@@ -222,8 +226,8 @@ class PSInvoice(models.Model):
         if ptl_ids:
             time_domain += [("id", "not in", ptl_ids.ids)]
         time_domain_regular = time_domain + [("month_of_last_wip", "=", False)]
-        if self.month_id:
-            time_domain_regular += self.month_id.get_domain("date")
+        if self.period_id:
+            time_domain_regular += self.period_id.get_domain("date")
         time_domain_reconfirm = time_domain + [("month_of_last_wip", "!=", False)]
         return time_domain_regular, time_domain_reconfirm
 
@@ -248,8 +252,8 @@ class PSInvoice(models.Model):
             "operating_unit_id",
             "project_operating_unit_id",
         ]
-        reg_fields_grouped = fields_grouped + ["month_id", "week_id"]
-        reg_grouped_by = grouped_by + ["month_id"]
+        reg_fields_grouped = fields_grouped + ["period_id", "week_id"]
+        reg_grouped_by = grouped_by + ["period_id"]
         if self.gb_week:
             reg_grouped_by.append("week_id")
         reconfirmed_fields_grouped = fields_grouped + ["month_of_last_wip"]
@@ -289,7 +293,7 @@ class PSInvoice(models.Model):
         if reconfirmed_entries:
             vals.update(
                 {
-                    "gb_month_id": item.get("month_of_last_wip")[0]
+                    "gb_period_id": item.get("month_of_last_wip")[0]
                     if item.get("month_of_last_wip")
                     else False
                 }
@@ -297,8 +301,8 @@ class PSInvoice(models.Model):
         else:
             vals.update(
                 {
-                    "gb_month_id": item.get("month_id")[0]
-                    if item.get("month_id")
+                    "gb_period_id": item.get("period_id")[0]
+                    if item.get("period_id")
                     else False,
                     "gb_week_id": item.get("week_id")[0]
                     if self.gb_week and item.get("week_id")
@@ -388,7 +392,6 @@ class PSInvoice(models.Model):
             self.invoice_properties = self.project_id.invoice_properties.id
 
     name = fields.Char(string="Name")
-
     account_analytic_ids = fields.Many2many(
         "account.analytic.account",
         compute="_compute_objects",
@@ -433,10 +436,9 @@ class PSInvoice(models.Model):
         string="User Total Line",
         store=True,
     )
-    month_id = fields.Many2one("date.range", domain=_get_fiscal_month_domain)
-    date_from = fields.Date(related="month_id.date_start", string="Date From")
-    date_to = fields.Date(related="month_id.date_end", string="Date To", store=True)
-    gb_task = fields.Boolean("Group By Task", default=False)
+    period_id = fields.Many2one("date.range")
+    date_from = fields.Date(related="period_id.date_start", string="Date From")
+    date_to = fields.Date(related="period_id.date_end", string="Date To", store=True)
     gb_week = fields.Boolean("Group By Week", default=False)
     gb_month = fields.Boolean("Group By Month", default=True)
     state = fields.Selection(
@@ -636,7 +638,7 @@ class PSInvoice(models.Model):
                 "id",
                 "project_id",
                 "user_id",
-                "month_id",
+                "period_id",
                 "line_fee_rate",
                 "unit_amount",
                 "amount",
@@ -648,7 +650,7 @@ class PSInvoice(models.Model):
 
             if data[1]:
                 grouped_by += [
-                    "month_id",
+                    "period_id",
                 ]
             if data[2]:
                 grouped_by += [
@@ -672,8 +674,8 @@ class PSInvoice(models.Model):
                 fee_rate = item.get("line_fee_rate")
                 amount = item.get("amount")
                 month = (
-                    self.env["date.range"].browse(item.get("month_id")[0])
-                    if item.get("month_id", False)
+                    self.env["date.range"].browse(item.get("period_id")[0])
+                    if item.get("period_id", False)
                     else "null"
                 )
                 gb_fee_rate = abs(fee_rate) if data[2] else "null"
@@ -787,7 +789,7 @@ class PSInvoice(models.Model):
                 "id",
                 "project_id",
                 "task_id",
-                "month_id",
+                "period_id",
                 "line_fee_rate",
                 "unit_amount",
             ]
@@ -798,7 +800,7 @@ class PSInvoice(models.Model):
 
             if data[1]:
                 grouped_by += [
-                    "month_id",
+                    "period_id",
                 ]
             if data[2]:
                 grouped_by += [
@@ -821,8 +823,8 @@ class PSInvoice(models.Model):
                 unit_amount = item.get("unit_amount")
                 fee_rate = item.get("line_fee_rate")
                 month = (
-                    self.env["date.range"].browse(item.get("month_id")[0])
-                    if item.get("month_id", False)
+                    self.env["date.range"].browse(item.get("period_id")[0])
+                    if item.get("period_id", False)
                     else "null"
                 )
 
@@ -857,140 +859,3 @@ class PSInvoice(models.Model):
                         "unit_amount": unit_amount
                     }
         return result
-
-
-class TimelineUserTotal(models.Model):
-    _name = "ps.time.line.user.total"
-    _description = "Timeline User Total"
-
-    @api.depends("unit_amount", "user_id", "task_id", "ps_invoice_id.task_user_ids")
-    def _compute_fee_rate(self):
-        """
-            First, look get fee rate from task_user_ids from analytic invoice.
-            Else, get fee rate from method get_fee_rate()
-        :return:
-        """
-        task_user = self.env["task.user"]
-        # get task-user out of first ptline
-        ptline = self.detail_ids and self.detail_ids[0]
-        task_user |= task_user.search(
-            [
-                ("id", "in", self.ps_invoice_id.task_user_ids.ids),
-                ("task_id", "=", self.task_id.id),
-                ("from_date", "<=", ptline.date),
-                ("user_id", "=", self.user_id.id),
-            ]
-        )
-        if task_user:
-            task_user = task_user.search(
-                [("id", "in", task_user.ids)], limit=1, order="from_date Desc"
-            )
-            self.fee_rate = fr = task_user.fee_rate
-            self.ic_fee_rate = ic_fr = task_user.ic_fee_rate
-        else:
-            self.fee_rate = fr = ptline.get_fee_rate(
-                self.task_id.id, self.user_id.id, ptline.date
-            )[0]
-            self.ic_fee_rate = ic_fr = ptline.get_fee_rate(
-                self.task_id.id, self.user_id.id, ptline.date
-            )[1]
-        self.amount = -self.unit_amount * fr
-        self.ic_amount = -self.unit_amount * ic_fr
-
-    def _compute_time_line(self):
-        for aut in self:
-            aut.count_time_line = str(len(aut.detail_ids)) + " (records)"
-
-    @api.model
-    def _default_user(self):
-        return self.env.context.get("user_id", self.env.user.id)
-
-    ps_invoice_id = fields.Many2one("ps.invoice")
-    fee_rate = fields.Float(compute=_compute_fee_rate, string="Fee Rate")
-    ic_fee_rate = fields.Float(
-        compute=_compute_fee_rate, string="Intercompany Fee Rate"
-    )
-    amount = fields.Float(compute=_compute_fee_rate, string="Amount")
-    ic_amount = fields.Float(compute=_compute_fee_rate, string="Intercompany Amount")
-    detail_ids = fields.One2many(
-        "ps.time.line",
-        "user_total_id",
-        string="Detail Time Lines",
-        readonly=True,
-        copy=False,
-    )
-    count_time_line = fields.Char(
-        compute=_compute_time_line, string="# Detail Time Lines"
-    )
-    gb_week_id = fields.Many2one(
-        "date.range",
-        string="Week",
-    )
-    gb_month_id = fields.Many2one(
-        "date.range",
-        string="Month",
-    )
-    name = fields.Char("Description", required=True)
-    state = fields.Selection(
-        [
-            ("draft", "Draft"),
-            ("open", "Confirmed"),
-            ("delayed", "Delayed"),
-            ("invoiceable", "To be Invoiced"),
-            ("progress", "In Progress"),
-            ("invoice_created", "Invoice Created"),
-            ("invoiced", "Invoiced"),
-            ("write-off", "Write-Off"),
-            ("change-chargecode", "Change-Chargecode"),
-            ("re_confirmed", "Re-Confirmed"),
-            ("invoiced-by-fixed", "Invoiced by Fixed"),
-            ("expense-invoiced", "Expense Invoiced"),
-        ],
-        string="Status",
-        readonly=True,
-        copy=False,
-        index=True,
-        tracking=True,
-        default="draft",
-    )
-    account_id = fields.Many2one(
-        "account.analytic.account",
-        "Analytic Account",
-        required=True,
-        ondelete="restrict",
-    )
-    partner_id = fields.Many2one(
-        "res.partner",
-        #        related='account_id.partner_id',
-        string="Partner",
-        #        store=True,
-        #        readonly=True
-    )
-    user_id = fields.Many2one("res.users", string="User", default=_default_user)
-    company_id = fields.Many2one(
-        related="account_id.company_id", string="Company", store=True, readonly=True
-    )
-    department_id = fields.Many2one(
-        "hr.department",
-        "Department",
-        related="user_id.employee_ids.department_id",
-        store=True,
-        readonly=True,
-    )
-    product_id = fields.Many2one("product.product", string="Product")
-    task_id = fields.Many2one("project.task", "Task")
-    project_id = fields.Many2one(
-        "project.project", "Project", domain=[("allow_timesheets", "=", True)]
-    )
-    product_uom_id = fields.Many2one("uom.uom", string="Unit of Measure")
-    unit_amount = fields.Float("Quantity", default=0.0)
-    operating_unit_id = fields.Many2one(
-        "operating.unit", string="Operating Unit", store=True
-    )
-    project_operating_unit_id = fields.Many2one(
-        "operating.unit", string="Project Operating Unit", store=True
-    )
-    date = fields.Date(
-        "Date", required=True, index=True, default=fields.Date.context_today
-    )
-    line_fee_rate = fields.Float()

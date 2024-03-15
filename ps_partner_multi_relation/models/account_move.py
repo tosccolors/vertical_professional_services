@@ -59,8 +59,8 @@ class AccountMove(models.Model):
 
         # Analytic Invoice invoicing period is doesn't lies in same month update with
         # property_account_wip_id
-        if line.ps_invoice_id.month_id:
-            period_date = line.ps_invoice_id.month_id.date_start.strftime("%Y-%m")
+        if line.ps_invoice_id.period_id:
+            period_date = line.ps_invoice_id.period_id.date_start.strftime("%Y-%m")
             invoice_date = (
                 line.ps_invoice_id.date or line.ps_invoice_id.invoice_id.invoice_date
             )

@@ -63,7 +63,7 @@
                                 attrs="{'readonly': [('state','in',('open','invoiced'))]}"
                             />
                             <field
-                                name="month_id"
+                                name="period_id"
                                 string="Invoicing Period"
                                 attrs="{'readonly': [('state','in',('open','invoiced'))]}"
                             />
@@ -199,7 +199,7 @@
                                             >
                                                 <field name="user_id" />
                                                 <field name="task_id" />
-                                                <field name="gb_month_id" />
+                                                <field name="gb_period_id" />
                                                 <field name="gb_week_id" />
                                                 <field name="count_time_line" />
                                                 <field name="name" />
@@ -265,7 +265,7 @@
                         name="project_id"
                         attrs="{'invisible': [('project_id','=', False)]}"
                     />
-                    <field name="month_id" string="Invoicing Period" />
+                    <field name="period_id" string="Invoicing Period" />
                     <field name="state" />
                 </tree>
             </field>
@@ -276,7 +276,7 @@
             <field name="arch" type="xml">
                 <search string="PS Invoice Search">
                     <field name="partner_id" string="Customer" />
-                    <field name="month_id" />
+                    <field name="period_id" />
                     <filter
                         name="draft"
                         string="Draft"
@@ -314,11 +314,11 @@
                             context="{'group_by':'partner_id'}"
                         />
                         <filter
-                            name="month"
-                            string="Month"
+                            name="period"
+                            string="Period"
                             icon="terp-go-today"
                             domain="[]"
-                            context="{'group_by':'month_id'}"
+                            context="{'group_by':'period_id'}"
                         />
                     </group>
                 </search>

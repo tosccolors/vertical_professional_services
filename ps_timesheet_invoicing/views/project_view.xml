@@ -79,7 +79,7 @@
                     <field name="group_by_month" />
                 </field>
                 <group position="after">
-                    <group name="invoice_line_grouping" string="Invoice line grouping">
+                    <group name="invoice_line_grouping" string="Invoice grouping">
                         <field name="group_invoice" />
                     </group>
                 </group>

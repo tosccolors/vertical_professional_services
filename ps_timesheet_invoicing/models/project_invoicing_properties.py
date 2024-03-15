@@ -8,9 +8,18 @@ class ProjectInvoicingProperties(models.Model):
     _inherit = "project.invoicing.properties"
 
     invoice_mileage = fields.Boolean("Invoice Mileage")
-    group_invoice = fields.Boolean("Group Invoice")
-    group_by_fee_rate = fields.Boolean("Group By Fee Rate")
-    group_by_month = fields.Boolean("Group By Month")
+    group_invoice = fields.Boolean(
+        "Group Invoices By Project",
+        help="Enabling this creates one invoice per project, in addition to per partner,"
+        "period and operating unit",
+    )
+    group_by_fee_rate = fields.Boolean(
+        "Group By Fee Rate",
+        help="Enabling this groups the specs attachment by fee rates",
+    )
+    group_by_month = fields.Boolean(
+        "Group By Month", help="Enabling this groups the specs attachment by period"
+    )
 
     @api.onchange("invoice_mileage")
     def onchange_invoice_mileage(self):
