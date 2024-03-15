@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="edit_project_ps" model="ir.ui.view">
+        <field name="name">project.project.form</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="domain">[('is_company','=',True)]</attribute>
+            </field>
+            <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <group>
+                    <group>
+                        <field name="analytic_account_related" readonly="1" />
+                        <field name="linked_operating_unit" />
+                        <field
+                            name="operating_unit_ids"
+                            widget="many2many_tags"
+                            readonly="0"
+                        />
+                    </group>
+                </group>
+            </xpath>
+            <field name="name" position="before">
+                <field name="code" class="oe_inline" placeholder="Code" />
+                <span>-</span>
+            </field>
+            <field name="name" position="attributes">
+                <attribute name="class">oe_inline</attribute>
+            </field>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field
+                    name="invoice_address"
+                    domain="[('parent_id', '=', partner_id), ('type', '=', 'invoice')]"
+                />
+                <field
+                    name="tag_ids"
+                    widget="many2many_tags"
+                    options="{'no_create_edit': True}"
+                />
+                <field name="po_number" />
+            </xpath>
+            <xpath expr="//notebook/page[@name='settings']" position="after">
+                <page
+                    name="ps_settings"
+                    string="PS Settings"
+                    attrs="{'invisible': [('allow_timesheets', '=', False)]}"
+                >
+                    <group name="ps_main">
+                        <group name="ps_flags" string="Flags">
+                            <field name="correction_charge" />
+                            <field name="chargeable" />
+                            <field name="wbso" />
+                        </group>
+                        <group name="ps_invoicing" string="Invoicing">
+                            <field
+                                name="invoice_properties"
+                                options="{'no_create_edit': True}"
+                            />
+                            <field
+                                name="invoice_properties_currency_id"
+                                invisible="True"
+                            />
+                            <field
+                                name="invoice_properties_fixed_amount"
+                                invisible="True"
+                            />
+                            <field
+                                name="invoice_properties_fixed_hours"
+                                invisible="True"
+                            />
+                            <field
+                                name="ps_date_range_type_id"
+                                attrs="{'required': ['|', ('invoice_properties_fixed_amount', '=', True), ('invoice_properties_fixed_hours', '=', True)]}"
+                            />
+                            <field
+                                name="ps_fixed_amount"
+                                attrs="{'invisible': [('invoice_properties_fixed_amount', '=', False)]}"
+                            />
+                            <field
+                                name="ps_fixed_hours"
+                                attrs="{'invisible': [('invoice_properties_fixed_hours', '=', False)]}"
+                                widget="float_time"
+                            />
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_project_project_filter_ps" model="ir.ui.view">
+        <field name="name">project.project.search</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project_project_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="code" string="Project Code" />
+            </xpath>
+        </field>
+    </record>
+    <record id="view_project_ps" model="ir.ui.view">
+        <field name="name">project.project.tree</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="code" string="Project Code" />
+            </xpath>
+            <field name="partner_id" position="after">
+                <field name="correction_charge" />
+                <field name="chargeable" />
+                <field name="invoice_properties" />
+            </field>
+        </field>
+    </record>
+    <record id="view_project_kanban_ps" model="ir.ui.view">
+        <field name="name">project.project.Kanban</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project_kanban" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="code" string="Project Code" />
+            </xpath>
+            <xpath expr="//div[hasclass('o_primary')]" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('o_primary')]" position="after">
+                <div class="o_primary">
+                    <span>
+                        <t t-esc="record.code.value" />
+                        <t t-if="record.code.value">-</t>
+                        <t t-esc="record.name.value" />
+                    </span>
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

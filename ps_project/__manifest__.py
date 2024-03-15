@@ -14,11 +14,14 @@
         "analytic",
         "hr_timesheet_sheet",
         "invoice_line_revenue_distribution_operating_unit",
+        "account_fiscal_month",
     ],
     "data": [
         "security/ps_security.xml",
         "security/ir.model.access.csv",
-        "views/project_views.xml",
+        "views/project_invoicing_properties.xml",
+        "views/project_project.xml",
+        "views/project_task.xml",
         "views/menuitem.xml",
     ],
     "demo": [

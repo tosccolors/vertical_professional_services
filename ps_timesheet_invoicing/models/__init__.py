@@ -4,6 +4,8 @@ from . import account_journal
 from . import ps_invoice
 from . import hr_timesheet_sheet
 from . import project
+from . import project_task
+from . import project_invoicing_properties
 from . import product
 from . import fleet
 from . import res_users

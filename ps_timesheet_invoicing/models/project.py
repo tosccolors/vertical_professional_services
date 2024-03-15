@@ -5,41 +5,6 @@ from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
 
-class Task(models.Model):
-    _inherit = "project.task"
-
-    @api.constrains("project_id", "standard")
-    def _check_project_standard(self):
-        task = self.env["project.task"].search(
-            [("project_id", "=", self.project_id.id), ("standard", "=", True)]
-        )
-        if len(task) > 1 and self.standard:
-            raise ValidationError(
-                _("You can have only one task with the standard as true per project!")
-            )
-
-    standard = fields.Boolean(string="Standard")
-    task_user_ids = fields.One2many(
-        "task.user",
-        "task_id",
-        string="Can register time",
-        tracking=True,
-    )
-
-    @api.model
-    def name_search(self, name, args=None, operator="ilike", limit=100):
-        args = args or []
-        recs = self.browse()
-        if name:
-            recs = self.search([("name", "=", name)] + args, limit=limit)
-        if not recs:
-            domain = [("name", operator, name)]
-            # if 'jira_compound_key' in self._fields:
-            #     domain = ['|'] + domain + [('jira_compound_key', operator, name)]
-            recs = self.search(domain + args, limit=limit)
-        return recs.name_get()
-
-
 class Project(models.Model):
     _inherit = "project.project"
 
@@ -109,37 +74,3 @@ class InvoiceScheduleLine(models.Model):
     project_id = fields.Many2one(
         "project.project",
     )
-
-
-class ProjectInvoicingProperties(models.Model):
-    _inherit = "project.invoicing.properties"
-
-    invoice_mileage = fields.Boolean("Invoice Mileage")
-    group_invoice = fields.Boolean("Group Invoice")
-    group_by_fee_rate = fields.Boolean("Group By Fee Rate")
-    group_by_month = fields.Boolean("Group By Month")
-
-    @api.onchange("invoice_mileage")
-    def onchange_invoice_mileage(self):
-        project_id = getattr(self, "_origin", self).id
-        project = self.env["project.project"].search(
-            [("invoice_properties", "=", project_id)]
-        )
-        if project:
-            ps_time_lines = self.env["ps.time.line"].search(
-                [
-                    ("project_id", "in", project.ids),
-                    ("product_uom_id", "=", self.env.ref("uom.product_uom_km").id),
-                ]
-            )
-            if ps_time_lines:
-                non_invoiceable_mileage = not self.invoice_mileage
-                self.env.cr.execute(
-                    """
-                    UPDATE ps_time_line SET non_invoiceable_mileage = %s WHERE id IN %s
-                """,
-                    (
-                        non_invoiceable_mileage,
-                        tuple(ps_time_lines.ids),
-                    ),
-                )

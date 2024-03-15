@@ -22,9 +22,9 @@
                         />
                     </group>
                 </xpath>
-                <xpath expr="//field[@name='specs_invoice_report']" position="after">
+                <group name="specs" position="inside">
                     <field name="specs_on_task_level" />
-                </xpath>
+                </group>
             </field>
         </record>
         <!--<record model="ir.ui.view" id="view_task_form2_ps_account">

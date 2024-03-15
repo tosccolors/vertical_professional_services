@@ -8,17 +8,10 @@
             <field name="inherit_id" ref="hr_timesheet.project_invoice_form" />
             <field name="priority">24</field>
             <field name="arch" type="xml">
-                <xpath expr="//label[@for='allow_timesheets']" position="after">
-                    <separator />
-                    <field name="overtime" class="oe_inline" string="Overtime Taken" />
-                    <label for="overtime" />
-                    <field
-                        name="overtime_hrs"
-                        class="oe_inline"
-                        string="Overtime hours"
-                    />
-                    <label for="overtime_hrs" />
-                </xpath>
+                <group name="ps_flags" position="inside">
+                    <field name="overtime" string="Overtime Taken" />
+                    <field name="overtime_hrs" string="Overtime hours" />
+                </group>
             </field>
         </record>
         <!-- Task -->
@@ -78,12 +71,18 @@
                 ref="ps_project.project_invoicing_Period_form_view"
             />
             <field name="arch" type="xml">
-                <field name="fixed_fee_capped" position="after">
+                <field name="expenses" position="after">
                     <field name="invoice_mileage" />
-                    <field name="group_invoice" />
+                </field>
+                <field name="specs_type" position="after">
                     <field name="group_by_fee_rate" />
                     <field name="group_by_month" />
                 </field>
+                <group position="after">
+                    <group name="invoice_line_grouping" string="Invoice line grouping">
+                        <field name="group_invoice" />
+                    </group>
+                </group>
             </field>
         </record>
         <record id="edit_project_ps_timesheet_invoicing" model="ir.ui.view">

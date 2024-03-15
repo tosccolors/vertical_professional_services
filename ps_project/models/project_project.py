@@ -16,6 +16,15 @@ class Project(models.Model):
     invoice_properties = fields.Many2one(
         "project.invoicing.properties", "Invoice Properties"
     )
+    invoice_properties_currency_id = fields.Many2one(
+        related="invoice_properties.currency_id"
+    )
+    invoice_properties_fixed_amount = fields.Boolean(
+        related="invoice_properties.fixed_amount"
+    )
+    invoice_properties_fixed_hours = fields.Boolean(
+        related="invoice_properties.fixed_hours"
+    )
     analytic_account_related = fields.Many2one(
         related="analytic_account_id",
         string="Contract/Analytic",
@@ -29,6 +38,23 @@ class Project(models.Model):
         "operating.unit",
         string="Operating Units",
         related="analytic_account_id.operating_unit_ids",
+    )
+    ps_date_range_type_id = fields.Many2one(
+        "date.range.type",
+        default=lambda self: self.env.ref(
+            "account_fiscal_month.date_range_fiscal_month", False
+        ),
+        string="Invoicing period",
+        help="Select a frequency by which to invoice. This causes a selection of time "
+        "lines to be put into invoices per selected period. Leave empty for no grouping.",
+    )
+    ps_fixed_hours = fields.Float(
+        "Contracted hours", help="Fill in the amount of hours to invoice per period."
+    )
+    ps_fixed_amount = fields.Monetary(
+        "Contracted amount",
+        help="Fill in the amount to invoice per period",
+        currency_field="invoice_properties_currency_id",
     )
 
     def name_get(self):

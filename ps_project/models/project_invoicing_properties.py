@@ -15,8 +15,7 @@ class ProjectInvoicingProperties(models.Model):
     actual_expenses = fields.Boolean("Invoice Expenses")
     actual_costs = fields.Boolean("Invoice Costs")
     fixed_amount = fields.Boolean("Invoice Fixed Amount")
-    fixed_fee_capped = fields.Boolean("Invoice Fixed Fee Capped")
-    fixed_fee_limit = fields.Monetary("Fixed Fee Limit")
+    fixed_hours = fields.Boolean("Invoice Fixed Hours")
     currency_id = fields.Many2one(
         "res.currency",
         string="Currency",
