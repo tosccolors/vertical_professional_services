@@ -22,7 +22,6 @@ class TimeLine(models.Model):
         "project_id.chargeable",
         "project_id.correction_charge",
         "project_id.user_id",
-        "project_id.invoice_properties.expenses",
         "project_id.standard_task_id.task_user_ids",
         "account_id",
         "unit_amount",
@@ -55,8 +54,6 @@ class TimeLine(models.Model):
                 line.chargeable = line.project_id.chargeable
                 line.correction_charge = line.project_id.correction_charge
                 line.project_mgr = line.project_id.user_id or False
-                if line.project_id.invoice_properties:
-                    line.expenses = line.project_id.invoice_properties.expenses
                 line.period_id = self._find_daterange(
                     date,
                     line.project_id.ps_date_range_type_id,
@@ -237,11 +234,6 @@ class TimeLine(models.Model):
     chargeable = fields.Boolean(
         compute=_compute_time_line,
         string="Chargeable",
-        store=True,
-    )
-    expenses = fields.Boolean(
-        compute=_compute_time_line,
-        string="Expenses",
         store=True,
     )
     project_mgr = fields.Many2one(

@@ -16,14 +16,8 @@ class Project(models.Model):
     invoice_properties = fields.Many2one(
         "project.invoicing.properties", "Invoice Properties"
     )
-    invoice_properties_currency_id = fields.Many2one(
-        related="invoice_properties.currency_id"
-    )
     invoice_properties_fixed_amount = fields.Boolean(
         related="invoice_properties.fixed_amount"
-    )
-    invoice_properties_fixed_hours = fields.Boolean(
-        related="invoice_properties.fixed_hours"
     )
     analytic_account_related = fields.Many2one(
         related="analytic_account_id",
@@ -55,8 +49,9 @@ class Project(models.Model):
     ps_fixed_amount = fields.Monetary(
         "Contracted amount",
         help="Fill in the amount to invoice per period",
-        currency_field="invoice_properties_currency_id",
+        currency_field="partner_currency_id",
     )
+    partner_currency_id = fields.Many2one(related="partner_id.currency_id")
 
     def name_get(self):
         return [

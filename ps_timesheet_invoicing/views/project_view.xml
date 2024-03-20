@@ -71,7 +71,7 @@
                 ref="ps_project.project_invoicing_Period_form_view"
             />
             <field name="arch" type="xml">
-                <field name="expenses" position="after">
+                <field name="actual_costs" position="after">
                     <field name="invoice_mileage" />
                 </field>
                 <field name="specs_type" position="after">
@@ -79,7 +79,11 @@
                     <field name="group_by_month" />
                 </field>
                 <group position="after">
-                    <group name="invoice_line_grouping" string="Invoice grouping">
+                    <group
+                        name="invoice_line_grouping"
+                        string="Invoice grouping"
+                        attrs="{'invisible': [('fixed_amount', '=', True)]}"
+                    >
                         <field name="group_invoice" />
                     </group>
                 </group>

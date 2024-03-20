@@ -69,11 +69,10 @@ class TestPsTimesheetInvoicingGrouped(TestPsTimesheetInvoicingBase):
         )
         return super()._create_ps_invoice()
 
-    def test_01_invoicing(self):
+    def test_invoicing(self):
         ps_invoice = self.ps_invoice
         self.assertEqual(len(ps_invoice), 1)
         self.assertEqual(len(ps_invoice.user_total_ids), 2)
-        return ps_invoice
 
 
 class TestPsTimesheetInvoicingFixed(TestPsTimesheetInvoicingBase):
@@ -88,14 +87,30 @@ class TestPsTimesheetInvoicingFixed(TestPsTimesheetInvoicingBase):
             ]
         ).active = False
         self.project.ps_fixed_amount = 4242
+        self.project.ps_fixed_hours = 42
         return super()._create_ps_invoice()
 
-    def test_01_invoicing(self):
+    def test_invoicing(self):
         ps_invoice = self.ps_invoice
         invoice = ps_invoice.invoice_id
         self.assertEqual(self.ps_line.state, "invoice_created")
         self.assertEqual(invoice.amount_untaxed, self.project.ps_fixed_amount)
-        invoice.post()
+        invoice.action_post()
         invoice.flush()
         self.assertEqual(self.ps_line.state, "invoiced-by-fixed")
-        return ps_invoice
+        value_tag = self.env.ref(
+            "ps_timesheet_invoicing.analytic_tag_fixed_amount_value_difference"
+        )
+        value_line = invoice.invoice_line_ids.analytic_line_ids.filtered(
+            lambda x: x.tag_ids == value_tag
+        )
+        self.assertTrue(value_line)
+        self.env.ref(
+            "ps_timesheet_invoicing.analytic_tag_fixed_amount_hours_difference"
+        )
+        hours_line = invoice.invoice_line_ids.analytic_line_ids.filtered(
+            lambda x: x.tag_ids == value_tag
+        )
+        self.assertEqual(hours_line.unit_amount, 1)
+        ps_invoice.delete_invoice()
+        self.assertFalse((value_line + hours_line).exists())

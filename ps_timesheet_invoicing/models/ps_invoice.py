@@ -538,9 +538,7 @@ class PSInvoice(models.Model):
         invoice_line_vals.update(
             {
                 "analytic_account_id": line.account_id.id,
-                "price_unit": line.fee_rate
-                if line.operating_unit_id == line.project_operating_unit_id
-                else line.ic_fee_rate,
+                "price_unit": line.effective_fee_rate,
                 "ps_invoice_id": line.ps_invoice_id.id,
                 # TODO: no origin field any more, readd?
                 # 'origin': line.task_id.project_id.po_number
@@ -558,8 +556,9 @@ class PSInvoice(models.Model):
                 "quantity": 1,
                 "product_uom_id": self.env.ref("uom.product_uom_unit").id,
                 "price_unit": self.project_id.ps_fixed_amount,
-                "currency_id": self.project_id.invoice_properties_currency_id.id,
+                "currency_id": self.project_id.partner_currency_id.id,
                 "user_task_total_line_ids": [(6, 0, user_total_lines.ids)],
+                "ps_invoice_id": self.id,
             }
         ]
 
@@ -576,7 +575,7 @@ class PSInvoice(models.Model):
         invoice_lines = []
 
         props = self.invoice_properties
-        if props.fixed_amount or props.fixed_hours:
+        if props.fixed_amount:
             user_total = user_summary_lines
             invoice_lines = [(5, False)] + [
                 (0, 0, vals)

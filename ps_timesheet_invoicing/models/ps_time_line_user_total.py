@@ -43,6 +43,11 @@ class TimelineUserTotal(models.Model):
                 )[1]
             this.amount = -this.unit_amount * fr
             this.ic_amount = -this.unit_amount * ic_fr
+            this.effective_fee_rate = (
+                this.fee_rate
+                if this.operating_unit_id == this.project_operating_unit_id
+                else this.ic_fee_rate
+            )
 
     def _compute_time_line(self):
         for aut in self:
@@ -56,6 +61,9 @@ class TimelineUserTotal(models.Model):
     fee_rate = fields.Float(compute=_compute_fee_rate, string="Fee Rate")
     ic_fee_rate = fields.Float(
         compute=_compute_fee_rate, string="Intercompany Fee Rate"
+    )
+    effective_fee_rate = fields.Float(
+        compute=_compute_fee_rate, string="Effective Fee Rate"
     )
     amount = fields.Float(compute=_compute_fee_rate, string="Amount")
     ic_amount = fields.Float(compute=_compute_fee_rate, string="Intercompany Amount")

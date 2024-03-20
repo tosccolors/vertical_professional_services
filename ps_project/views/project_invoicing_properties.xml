@@ -16,17 +16,17 @@
             <form string="Invoicing Period">
                 <sheet>
                     <group col="4">
-                        <field name="name" />
-                        <field name="expenses" />
-                        <field name="actual_time_spent" />
+                        <field name="name" colspan="4" />
+                        <field
+                            name="actual_time_spent"
+                            attrs="{'invisible': [('fixed_amount', '=', True)]}"
+                        />
+                        <field
+                            name="fixed_amount"
+                            attrs="{'invisible': [('actual_time_spent', '=', True)]}"
+                        />
                         <field name="actual_expenses" />
                         <field name="actual_costs" />
-                        <field name="fixed_hours" />
-                        <field name="fixed_amount" />
-                        <field
-                            name="currency_id"
-                            attrs="{'invisible': [('fixed_amount', '=', False)], 'required': [('fixed_amount', '=', True)]}"
-                        />
                         <field name="specs_invoice_report" />
                     </group>
                     <group

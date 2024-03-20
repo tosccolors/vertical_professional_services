@@ -33,6 +33,7 @@
         "queue_job",
     ],
     "data": [
+        "data/account_analytic_tag.xml",
         "data/cron_data.xml",
         "data/data.xml",
         "data/date_range_type.xml",

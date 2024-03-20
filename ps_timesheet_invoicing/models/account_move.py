@@ -94,7 +94,62 @@ class AccountMove(models.Model):
                 inv_date = invoice.date or invoice.invoice_date or cur_date
                 if inv_date.timetuple()[:2] != period_date.timetuple()[:2]:
                     invoice.action_wip_move_create()
-                # TODO add analytic lines to compensate fixed price
+
+                if ps_invoice.invoice_properties.fixed_amount:
+                    invoice_line = invoice.invoice_line_ids[:1]
+                    self.env["account.analytic.line"].create(
+                        [
+                            {
+                                "name": _("Fixed amount value difference"),
+                                "date": invoice.date,
+                                "move_id": invoice_line.id,
+                                "tag_ids": [
+                                    (
+                                        6,
+                                        0,
+                                        self.env.ref(
+                                            "ps_timesheet_invoicing."
+                                            "analytic_tag_fixed_amount_value_difference"
+                                        ).ids,
+                                    )
+                                ],
+                                "unit_amount": 1,
+                                "account_id": ps_invoice.project_id.analytic_account_id.id,
+                                "amount": ps_invoice.project_id.ps_fixed_amount
+                                - sum(
+                                    line.unit_amount * line.effective_fee_rate
+                                    for line in invoice.mapped(
+                                        "invoice_line_ids.user_task_total_line_ids"
+                                    )
+                                ),
+                            },
+                            {
+                                "name": _("Fixed amount hour difference"),
+                                "date": invoice.date,
+                                "move_id": invoice_line.id,
+                                "tag_ids": [
+                                    (
+                                        6,
+                                        0,
+                                        self.env.ref(
+                                            "ps_timesheet_invoicing."
+                                            "analytic_tag_fixed_amount_hours_difference"
+                                        ).ids,
+                                    )
+                                ],
+                                "product_uom_id": self.env.ref(
+                                    "uom.product_uom_hour"
+                                ).id,
+                                "account_id": ps_invoice.project_id.analytic_account_id.id,
+                                "unit_amount": ps_invoice.project_id.ps_fixed_hours
+                                - sum(
+                                    invoice.mapped(
+                                        "invoice_line_ids.user_task_total_line_ids.unit_amount"
+                                    )
+                                ),
+                            },
+                        ]
+                    )
         return res
 
     def action_wip_move_create(self):

@@ -38,3 +38,12 @@ class TestPsProject(TransactionCase):
             "4", limit=None, args=[("name", "=", "nonexistent")]
         )
         self.assertFalse(result)
+
+    def test_project_invoicing_propertieds(self):
+        with Form(self.env["project.invoicing.properties"]) as form:
+            form.name = "test"
+            form.actual_time_spent = True
+            form.fixed_amount = True
+            self.assertFalse(form.actual_time_spent)
+            form.actual_time_spent = True
+            self.assertFalse(form.fixed_amount)
