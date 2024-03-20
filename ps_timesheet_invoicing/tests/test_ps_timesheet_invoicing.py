@@ -1,16 +1,16 @@
 from odoo.tests.common import Form, TransactionCase
 
 
-class TestPsTimesheetInvoicing(TransactionCase):
+class TestPsTimesheetInvoicingBase(TransactionCase):
     def setUp(self):
         super().setUp()
         self.project = self.env.ref("project.project_project_2")
         self.ps_line = self.env.ref(
             "ps_timesheet_invoicing.time_line_demo_user_2023_12_18"
         )
+        self._create_ps_invoice()
 
-    def test_01_invoicing(self):
-        """Test invocing time lines"""
+    def _create_ps_invoice(self, generate=True):
         wizard = (
             self.env["time.line.status"]
             .with_context(
@@ -21,11 +21,20 @@ class TestPsTimesheetInvoicing(TransactionCase):
             .create({"name": "invoiceable"})
         )
         wizard.ps_invoice_lines()
-        ps_invoice = self.env["ps.invoice"].search(
+        self.ps_invoice = self.env["ps.invoice"].search(
             [("user_total_ids.detail_ids", "in", self.ps_line.ids)]
         )
+        if generate:
+            self.ps_invoice.generate_invoice()
+
+
+class TestPsTimesheetInvoicing(TestPsTimesheetInvoicingBase):
+    def test_01_invoicing(self):
+        """Test invocing time lines"""
+        ps_invoice = self.ps_invoice
         self.assertTrue(ps_invoice)
         ps_invoice.generate_invoice()
+        self.assertEqual(self.ps_line.state, "invoice_created")
         self.assertEqual(ps_invoice.state, "open")
         ps_invoice.invoice_id.target_invoice_amount = 40
         ps_invoice.invoice_id.compute_target_invoice_amount()
@@ -34,7 +43,7 @@ class TestPsTimesheetInvoicing(TransactionCase):
         )
         ps_invoice.invoice_id.action_post()
         self.assertEqual(ps_invoice.state, "invoiced")
-
+        self.assertEqual(self.ps_line.state, "invoiced")
         return ps_invoice
 
     def test_02_delete_invoice(self):
@@ -49,9 +58,8 @@ class TestPsTimesheetInvoicing(TransactionCase):
         self.assertEqual(ps_invoice.user_total_ids.detail_ids, self.ps_line)
 
 
-class TestPsTimesheetInvoicingGrouped(TestPsTimesheetInvoicing):
-    def setUp(self):
-        super().setUp()
+class TestPsTimesheetInvoicingGrouped(TestPsTimesheetInvoicingBase):
+    def _create_ps_invoice(self):
         self.project.invoice_properties = self.env.ref(
             "project.project_project_1"
         ).invoice_properties
@@ -59,9 +67,35 @@ class TestPsTimesheetInvoicingGrouped(TestPsTimesheetInvoicing):
         self.ps_line += self.env.ref(
             "ps_timesheet_invoicing.time_line_demo_user_2023_12_19"
         )
+        return super()._create_ps_invoice()
 
     def test_01_invoicing(self):
-        ps_invoice = super().test_01_invoicing()
+        ps_invoice = self.ps_invoice
         self.assertEqual(len(ps_invoice), 1)
         self.assertEqual(len(ps_invoice.user_total_ids), 2)
+        return ps_invoice
+
+
+class TestPsTimesheetInvoicingFixed(TestPsTimesheetInvoicingBase):
+    def _create_ps_invoice(self):
+        self.project.invoice_properties = self.env.ref(
+            "ps_timesheet_invoicing." "project_invoicing_property_fixed_amount"
+        )
+        self.env["account.analytic.account"].search(
+            [
+                ("id", "!=", self.project.analytic_account_id.id),
+                ("partner_id", "=", self.project.partner_id.id),
+            ]
+        ).active = False
+        self.project.ps_fixed_amount = 4242
+        return super()._create_ps_invoice()
+
+    def test_01_invoicing(self):
+        ps_invoice = self.ps_invoice
+        invoice = ps_invoice.invoice_id
+        self.assertEqual(self.ps_line.state, "invoice_created")
+        self.assertEqual(invoice.amount_untaxed, self.project.ps_fixed_amount)
+        invoice.post()
+        invoice.flush()
+        self.assertEqual(self.ps_line.state, "invoiced-by-fixed")
         return ps_invoice

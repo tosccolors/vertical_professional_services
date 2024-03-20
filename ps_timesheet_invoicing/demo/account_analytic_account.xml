@@ -8,10 +8,12 @@
     </record>
     <function name="write" model="account.analytic.account">
         <function name="search" model="account.analytic.account">
-            <value eval="[('project_ids', '=', ref('project.project_project_2'))]" />
+            <value
+                eval="[('project_ids', 'in', [ref('project.project_project_1'), ref('project.project_project_2')])]"
+            />
         </function>
         <value
-            eval="{'operating_unit_ids': [(4, ref('operating_unit.main_operating_unit'))]}"
+            eval="{'operating_unit_ids': [(4, ref('operating_unit.main_operating_unit'))], 'partner_id': ref('base.res_partner_12')}"
         />
     </function>
 </odoo>

@@ -86,14 +86,15 @@ class AccountMove(models.Model):
         #    supplier_invoices.fill_trading_partner_code_supplier_invoice()
         res = super()._post(soft=soft)
         for invoice in to_process_invoices:
-            ps_invoice_id = invoice.invoice_line_ids.mapped("ps_invoice_id")
-            if ps_invoice_id and invoice.move_type != "out_refund":
+            ps_invoice = invoice.invoice_line_ids.mapped("ps_invoice_id")
+            if ps_invoice and invoice.move_type != "out_refund":
                 # if invoicing period doesn't lie in same month
-                period_date = ps_invoice_id.period_id.date_start
+                period_date = ps_invoice.period_id.date_start
                 cur_date = datetime.now().date()
                 inv_date = invoice.date or invoice.invoice_date or cur_date
                 if inv_date.timetuple()[:2] != period_date.timetuple()[:2]:
                     invoice.action_wip_move_create()
+                # TODO add analytic lines to compensate fixed price
         return res
 
     def action_wip_move_create(self):

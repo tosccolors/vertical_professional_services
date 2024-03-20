@@ -318,9 +318,13 @@ class PSInvoice(models.Model):
             "UPDATE %s SET state = %s WHERE id IN %s",
             (AsIs(self_obj._table), status, tuple(self_obj.ids)),
         )
+        self_obj.invalidate_cache(fnames=["state"], ids=self_obj.ids)
 
     @api.depends("invoice_id.state", "invoice_id.line_ids")
     def _compute_state(self):
+        # TODO: comput functions shouldn't have side effects, this can lead to
+        # nasty and hard to debug bugs. Move this to compute functions for the
+        # state fields involved
         for ai in self:
             if not ai.invoice_id:
                 ai.state = "draft"
@@ -352,11 +356,14 @@ class PSInvoice(models.Model):
 
             elif ai.invoice_id.state == "posted":
                 ai.state = "invoiced"
+                line_state = "invoiced"
+                if ai.invoice_properties.fixed_amount:
+                    line_state = "invoiced-by-fixed"
                 for line in ai.invoice_line_ids:
                     self._sql_update(
-                        line.user_task_total_line_id.detail_ids, "invoiced"
+                        line.user_task_total_line_id.detail_ids, line_state
                     )
-                    self._sql_update(line.user_task_total_line_id, "invoiced")
+                    self._sql_update(line.user_task_total_line_id, line_state)
 
     @api.model
     def _get_fiscal_month_domain(self):
@@ -508,7 +515,6 @@ class PSInvoice(models.Model):
             analytic_lines.write({"state": "invoiceable"})
         return super().unlink()
 
-    @api.model
     def _prepare_invoice_line(self, line, invoice_id):
         ctx = self.env.context.copy()
         ctx.update(
@@ -550,27 +556,53 @@ class PSInvoice(models.Model):
 
         return invoice_line_vals
 
+    def _prepare_invoice_lines_fixed_amount(self, user_summary_lines):
+        return [
+            {
+                "name": self.project_id.name,
+                "quantity": 1,
+                "product_uom_id": self.env.ref("uom.product_uom_unit").id,
+                "price_unit": self.project_id.ps_fixed_amount,
+                "currency_id": self.project_id.invoice_properties_currency_id.id,
+            }
+        ] + [
+            {
+                "display_type": "line_note",
+                "name": line.name,
+                "user_task_total_line_id": line.id,
+            }
+            for line in user_summary_lines
+        ]
+
     def generate_invoice(self):
+        self.ensure_one()
         if self.invoice_id.state == "cancel":
             raise UserError(
                 _("Can't generate invoice, kindly re-set invoice to draft'")
             )
-        invoices = {}
         user_summary_lines = self.user_total_ids.filtered(lambda x: x.state == "draft")
         ptl_from_summary = self.env["ps.time.line"]
         user_total = self.env["ps.time.line.user.total"]
 
-        invoices["lines"] = []
+        invoice_lines = []
 
-        for line in user_summary_lines:
-            inv_line_vals = self._prepare_invoice_line(line, self.invoice_id.id)
-            inv_line_vals["user_task_total_line_id"] = line.id
-            invoices["lines"].append((0, 0, inv_line_vals))
-            ptl_from_summary |= line.detail_ids
-            user_total |= line
+        props = self.invoice_properties
+        if props.fixed_amount or props.fixed_hours:
+            user_total = user_summary_lines
+            invoice_lines = [(5, False)] + [
+                (0, 0, vals)
+                for vals in self._prepare_invoice_lines_fixed_amount(user_summary_lines)
+            ]
+        else:
+            for line in user_summary_lines:
+                inv_line_vals = self._prepare_invoice_line(line, self.invoice_id.id)
+                inv_line_vals["user_task_total_line_id"] = line.id
+                invoice_lines.append((0, 0, inv_line_vals))
+                ptl_from_summary |= line.detail_ids
+                user_total |= line
 
-        if invoices["lines"]:
-            self.write({"invoice_line_ids": invoices["lines"]})
+        if invoice_lines:
+            self.write({"invoice_line_ids": invoice_lines})
 
         if self.state == "draft" and ptl_from_summary:
             self.state = "open"

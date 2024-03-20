@@ -17,4 +17,20 @@
         <field name="specs_invoice_report" eval="True" />
         <field name="group_invoice" eval="True" />
     </record>
+    <record
+        id="project_invoicing_property_fixed_hours"
+        model="project.invoicing.properties"
+    >
+        <field name="name">Fixed hours</field>
+        <field name="specs_invoice_report" eval="True" />
+        <field name="fixed_hours" eval="True" />
+    </record>
+    <record
+        id="project_invoicing_property_fixed_amount"
+        model="project.invoicing.properties"
+    >
+        <field name="name">Fixed amount</field>
+        <field name="specs_invoice_report" eval="True" />
+        <field name="fixed_amount" eval="True" />
+    </record>
 </odoo>
