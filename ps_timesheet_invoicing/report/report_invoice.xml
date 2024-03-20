@@ -8,7 +8,7 @@
             <xpath expr="//div[@id='total']/.." position="after">
                 <t
                     t-set="project_ids"
-                    t-value="o.invoice_line_ids.mapped('user_task_total_line_id.project_id')"
+                    t-value="o.invoice_line_ids.mapped('user_task_total_line_ids.project_id')"
                 />
                 <t
                     t-set="add_specs_invoice_report"

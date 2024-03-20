@@ -2,6 +2,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import json
+from collections import defaultdict
+from itertools import chain
 
 from psycopg2.extensions import AsIs
 
@@ -325,45 +327,38 @@ class PSInvoice(models.Model):
         # TODO: comput functions shouldn't have side effects, this can lead to
         # nasty and hard to debug bugs. Move this to compute functions for the
         # state fields involved
+        state2ps_line = defaultdict(lambda: self.env["ps.time.line"])
+        state2user_total = defaultdict(lambda: self.env["ps.time.line.user.total"])
         for ai in self:
             if not ai.invoice_id:
                 ai.state = "draft"
-                user_tot_objs = ai.user_total_ids.filtered(
-                    lambda ut: ut.state != "draft"
-                )
-                for user_tot in user_tot_objs:
-                    self._sql_update(user_tot.detail_ids, "progress")
-                    self._sql_update(user_tot, "draft")
+                user_totals = ai.user_total_ids.filtered(lambda ut: ut.state != "draft")
+                state2ps_line["progress"] += user_totals.mapped("detail_ids")
+                state2user_total["draft"] += user_totals
 
             elif ai.invoice_id.state == "cancel":
                 ai.state = "draft"
-                for line in ai.invoice_line_ids:
-                    self._sql_update(
-                        line.user_task_total_line_id.detail_ids, "progress"
-                    )
-                    self._sql_update(line.user_task_total_line_id, "draft")
+                user_totals = ai.mapped("invoice_line_ids.user_task_total_line_ids")
+                state2ps_line["progress"] += user_totals.mapped("detail_ids")
+                state2user_total["draft"] += user_totals
 
             elif ai.invoice_id.state == "draft":
-                if ai.state == "invoiced":
-                    ai.state = "open"
-                else:
-                    ai.state = "open"
-                for line in ai.invoice_line_ids:
-                    self._sql_update(
-                        line.user_task_total_line_id.detail_ids, "invoice_created"
-                    )
-                    self._sql_update(line.user_task_total_line_id, "invoice_created")
+                ai.state = "open"
+                user_totals = ai.mapped("invoice_line_ids.user_task_total_line_ids")
+                state2ps_line["invoice_created"] += user_totals.mapped("detail_ids")
+                state2user_total["invoice_created"] += user_totals
 
             elif ai.invoice_id.state == "posted":
                 ai.state = "invoiced"
                 line_state = "invoiced"
                 if ai.invoice_properties.fixed_amount:
                     line_state = "invoiced-by-fixed"
-                for line in ai.invoice_line_ids:
-                    self._sql_update(
-                        line.user_task_total_line_id.detail_ids, line_state
-                    )
-                    self._sql_update(line.user_task_total_line_id, line_state)
+                user_totals = ai.mapped("invoice_line_ids.user_task_total_line_ids")
+                state2ps_line[line_state] += user_totals.mapped("detail_ids")
+                state2user_total[line_state] += user_totals
+
+        for state, records in chain(state2ps_line.items(), state2user_total.items()):
+            self._sql_update(records, state)
 
     @api.model
     def _get_fiscal_month_domain(self):
@@ -556,7 +551,7 @@ class PSInvoice(models.Model):
 
         return invoice_line_vals
 
-    def _prepare_invoice_lines_fixed_amount(self, user_summary_lines):
+    def _prepare_invoice_lines_fixed_amount(self, user_total_lines):
         return [
             {
                 "name": self.project_id.name,
@@ -564,14 +559,8 @@ class PSInvoice(models.Model):
                 "product_uom_id": self.env.ref("uom.product_uom_unit").id,
                 "price_unit": self.project_id.ps_fixed_amount,
                 "currency_id": self.project_id.invoice_properties_currency_id.id,
+                "user_task_total_line_ids": [(6, 0, user_total_lines.ids)],
             }
-        ] + [
-            {
-                "display_type": "line_note",
-                "name": line.name,
-                "user_task_total_line_id": line.id,
-            }
-            for line in user_summary_lines
         ]
 
     def generate_invoice(self):
@@ -596,7 +585,7 @@ class PSInvoice(models.Model):
         else:
             for line in user_summary_lines:
                 inv_line_vals = self._prepare_invoice_line(line, self.invoice_id.id)
-                inv_line_vals["user_task_total_line_id"] = line.id
+                inv_line_vals["user_task_total_line_ids"] = [(6, 0, line.ids)]
                 invoice_lines.append((0, 0, inv_line_vals))
                 ptl_from_summary |= line.detail_ids
                 user_total |= line

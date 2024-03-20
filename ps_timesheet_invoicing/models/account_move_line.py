@@ -12,8 +12,9 @@ class AccountMoveLine(models.Model):
         "ps.invoice", string="Invoice Reference", ondelete="cascade", index=True
     )
     user_id = fields.Many2one("res.users", "Timesheet User", index=True)
-    user_task_total_line_id = fields.Many2one(
-        "ps.time.line.user.total",
+    user_task_total_line_ids = fields.Many2many(
+        comodel_name="ps.time.line.user.total",
+        relation="account_move_line_user_total_rel",
         string="Grouped PS Time line",
         ondelete="cascade",
         index=True,
