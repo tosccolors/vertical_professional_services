@@ -6,6 +6,7 @@
     >
         <field name="name">Time spent</field>
         <field name="actual_time_spent" eval="True" />
+        <field name="actual_expenses" eval="True" />
         <field name="specs_invoice_report" eval="True" />
     </record>
     <record
@@ -14,6 +15,7 @@
     >
         <field name="name">Time spent (grouped)</field>
         <field name="actual_time_spent" eval="True" />
+        <field name="actual_expenses" eval="True" />
         <field name="specs_invoice_report" eval="True" />
         <field name="group_invoice" eval="True" />
     </record>
@@ -22,6 +24,7 @@
         model="project.invoicing.properties"
     >
         <field name="name">Fixed amount</field>
+        <field name="actual_expenses" eval="True" />
         <field name="specs_invoice_report" eval="True" />
         <field name="fixed_amount" eval="True" />
     </record>

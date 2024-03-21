@@ -19,7 +19,6 @@ class TimeLineStatus(models.TransientModel):
             ("delayed", "Delayed"),
             ("write-off", "Write-Off"),
             ("open", "Confirmed"),
-            ("expense-invoiced", "Expense Invoiced"),
         ],
         string="Lines to be",
     )
@@ -47,13 +46,6 @@ class TimeLineStatus(models.TransientModel):
             "change-chargecode",
         ]
         entries = ptl_lines.filtered(lambda a: a.state not in not_lookup_states)
-        expense_entries = ptl_lines.filtered(
-            lambda a: not a.project_id
-            and not a.task_id
-            and not a.sheet_id
-            and a.state == "draft"
-        )
-        entries = entries + expense_entries
         no_invoicing_property_entries = entries.filtered(
             lambda al: not al.project_id.invoice_properties
         )

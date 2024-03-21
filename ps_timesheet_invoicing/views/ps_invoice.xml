@@ -161,62 +161,26 @@
                         </field>
                         <notebook>
                             <page string="Time Lines" name="time_line">
-                                <group>
-                                    <group invisible="1">
-                                        <field name="time_line_ids">
-                                            <tree
-                                                string="Time lines"
-                                                create="true"
-                                                edit="false"
-                                                delete="true"
-                                                copy="false"
-                                            >
-                                                <field name="user_id" />
-                                                <field name="date" />
-                                                <field
-                                                    name="product_id"
-                                                    context="{'partner_id': parent.partner_id}"
-                                                />
-                                                <field name="name" />
-                                                <field
-                                                    name="company_id"
-                                                    invisible="1"
-                                                />
-                                                <field name="unit_amount" />
-                                                <field name="account_id" />
-                                                <field name="amount" />
-                                            </tree>
-                                        </field>
-                                    </group>
-                                    <group>
-                                        <field name="user_total_ids">
-                                            <tree
-                                                string="Total Time"
-                                                create="true"
-                                                edit="false"
-                                                delete="true"
-                                                copy="false"
-                                            >
-                                                <field name="user_id" />
-                                                <field name="task_id" />
-                                                <field name="gb_period_id" />
-                                                <field name="gb_week_id" />
-                                                <field name="count_time_line" />
-                                                <field name="name" />
-                                                <field
-                                                    name="unit_amount"
-                                                    sum="Total Hours"
-                                                />
-                                                <field name="fee_rate" />
-                                                <!--                                            <field name="ic_fee_rate" />-->
-                                                <field
-                                                    name="amount"
-                                                    sum="Total Amount"
-                                                />
-                                            </tree>
-                                        </field>
-                                    </group>
-                                </group>
+                                <field name="user_total_ids">
+                                    <tree
+                                        string="Total Time"
+                                        create="true"
+                                        edit="false"
+                                        delete="true"
+                                        copy="false"
+                                    >
+                                        <field name="user_id" />
+                                        <field name="task_id" />
+                                        <field name="gb_period_id" />
+                                        <field name="gb_week_id" />
+                                        <field name="count_time_line" />
+                                        <field name="name" />
+                                        <field name="unit_amount" sum="Total Hours" />
+                                        <field name="fee_rate" />
+                                        <!--<field name="ic_fee_rate" />-->
+                                        <field name="amount" sum="Total Amount" />
+                                    </tree>
+                                </field>
                             </page>
                             <page string="Analytic Cost Lines" name="cost_line">
                                 <field name="cost_line_ids">
@@ -241,6 +205,32 @@
                                         <field name="amount" />
                                     </tree>
                                 </field>
+                            </page>
+                            <page
+                                name="expense_line_ids"
+                                string="Expenses"
+                                attrs="{'invisible': [('actual_expenses', '=', False)]}"
+                                create="False"
+                            >
+                                <field
+                                    name="expense_line_ids"
+                                    domain="expense_line_ids_domain"
+                                    widget="many2many"
+                                >
+                                    <tree>
+                                        <field name="user_id" />
+                                        <field name="date" />
+                                        <field name="product_id" />
+                                        <field name="general_account_id" />
+                                        <field name="name" />
+                                        <field name="company_id" invisible="1" />
+                                        <field name="unit_amount" />
+                                        <field name="account_id" />
+                                        <field name="amount" />
+                                    </tree>
+                                </field>
+                                <field name="actual_expenses" invisible="1" />
+                                <field name="expense_line_ids_domain" invisible="1" />
                             </page>
                         </notebook>
                     </sheet>

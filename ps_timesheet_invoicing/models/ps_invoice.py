@@ -120,6 +120,12 @@ class PSInvoice(models.Model):
             for total_line in user_total_invoiced_lines:
                 user_total_data.append((4, total_line.id))
             self.user_total_ids = user_total_data
+            if self.invoice_properties.actual_expenses and self.period_id:
+                expense_domain = json.loads(self.expense_line_ids_domain)
+                self.expense_line_ids = [
+                    (4, line.id)
+                    for line in self.env["account.analytic.line"].search(expense_domain)
+                ]
 
     def _calculate_data(self, result, time_domain, reconfirmed_entries=False):
         """
@@ -388,11 +394,6 @@ class PSInvoice(models.Model):
             }
         return res
 
-    @api.depends("account_analytic_ids", "project_id")
-    def _compute_invoice_properties(self):
-        if len(self.account_analytic_ids.ids) == 1 and self.project_id:
-            self.invoice_properties = self.project_id.invoice_properties.id
-
     name = fields.Char(string="Name")
     account_analytic_ids = fields.Many2many(
         "account.analytic.account",
@@ -415,6 +416,15 @@ class PSInvoice(models.Model):
         readonly=True,
         ondelete="restrict",
         index=True,
+    )
+    expense_line_ids = fields.One2many(
+        "account.analytic.line",
+        "ps_invoice_id",
+        string="Expenses",
+        store=True,
+    )
+    expense_line_ids_domain = fields.Char(
+        compute="_compute_expense_line_ids_domain",
     )
     time_line_ids = fields.Many2many(
         "ps.time.line",
@@ -469,10 +479,30 @@ class PSInvoice(models.Model):
     )
     invoice_properties = fields.Many2one(
         "project.invoicing.properties",
-        compute="_compute_invoice_properties",
+        related="project_id.invoice_properties",
         string="Invoice Properties",
         store=True,
     )
+    actual_expenses = fields.Boolean(related="invoice_properties.actual_expenses")
+
+    @api.depends("account_analytic_ids")
+    def _compute_expense_line_ids_domain(self):
+        account_types = self.env.ref(
+            "account.data_account_type_expenses"
+        ) + self.env.ref("account.data_account_type_direct_costs")
+        for this in self:
+            this.expense_line_ids_domain = json.dumps(
+                [
+                    ("ps_invoice_id", "=", False),
+                    ("ps_invoice_line_id", "=", False),
+                    ("account_id", "in", this.account_analytic_ids.ids),
+                    ("general_account_id.user_type_id", "in", account_types.ids),
+                ]
+                + [
+                    (field, operator, fields.Date.to_string(date))
+                    for (field, operator, date) in this.period_id.get_domain("date")
+                ]
+            )
 
     def unlink_rec(self):
         user_total_ids = self.env["ps.time.line.user.total"].search(
@@ -562,6 +592,20 @@ class PSInvoice(models.Model):
             }
         ]
 
+    def _prepare_expense_invoice_line(self):
+        return (
+            [
+                {
+                    "name": _("Expenses"),
+                    "quantity": 1,
+                    "price_unit": -sum(self.expense_line_ids.mapped("amount")),
+                    "ps_analytic_line_ids": [(6, 0, self.expense_line_ids.ids)],
+                }
+            ]
+            if self.expense_line_ids.mapped("amount")
+            else []
+        )
+
     def generate_invoice(self):
         self.ensure_one()
         if self.invoice_id.state == "cancel":
@@ -588,6 +632,17 @@ class PSInvoice(models.Model):
                 invoice_lines.append((0, 0, inv_line_vals))
                 ptl_from_summary |= line.detail_ids
                 user_total |= line
+
+        if self.actual_expenses:
+            invoice_lines += [
+                (3, line.id)
+                for line in self.invoice_id.invoice_line_ids.filtered(
+                    "ps_analytic_line_ids"
+                )
+            ]
+            invoice_lines += [
+                (0, 0, vals) for vals in self._prepare_expense_invoice_line()
+            ]
 
         if invoice_lines:
             self.write({"invoice_line_ids": invoice_lines})

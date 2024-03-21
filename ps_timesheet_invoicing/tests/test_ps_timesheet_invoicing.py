@@ -34,6 +34,10 @@ class TestPsTimesheetInvoicing(TestPsTimesheetInvoicingBase):
         ps_invoice = self.ps_invoice
         self.assertTrue(ps_invoice)
         ps_invoice.generate_invoice()
+        self.assertTrue(ps_invoice.expense_line_ids)
+        self.assertTrue(
+            ps_invoice.invoice.invoice_line_ids.filtered("ps_analytic_line_ids")
+        )
         self.assertEqual(self.ps_line.state, "invoice_created")
         self.assertEqual(ps_invoice.state, "open")
         ps_invoice.invoice_id.target_invoice_amount = 40

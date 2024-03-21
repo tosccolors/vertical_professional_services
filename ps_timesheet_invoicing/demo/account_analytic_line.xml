@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="expense_line_demo_user_2023_12_18" model="account.analytic.line">
+        <field name="user_id" ref="base.user_demo" />
+        <field name="project_id" ref="project.project_project_2" />
+        <field name="name">Expense on 2023-12-18</field>
+        <field name="unit_amount">1</field>
+        <field name="amount">42</field>
+        <field name="date">2023-12-18</field>
+        <field
+            name="account_id"
+            search="[('project_ids', '=', ref('project.project_project_2'))]"
+        />
+        <field name="partner_id" ref="base.res_partner_12" />
+        <field
+            name="move_id"
+            search="[('account_id.user_type_id', 'in', [ref('account.data_account_type_expenses'), ref('account.data_account_type_direct_costs')])]"
+        />
+    </record>
+</odoo>

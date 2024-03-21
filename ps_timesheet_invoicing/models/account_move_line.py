@@ -19,6 +19,10 @@ class AccountMoveLine(models.Model):
         ondelete="cascade",
         index=True,
     )
+    ps_analytic_line_ids = fields.One2many(
+        "account.analytic.line",
+        "ps_invoice_line_id",
+    )
     # wip_percentage=fields.Float("WIP percentage")
 
     @api.constrains("operating_unit_id", "analytic_account_id", "user_id")
