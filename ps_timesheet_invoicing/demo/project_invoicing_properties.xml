@@ -24,7 +24,6 @@
         model="project.invoicing.properties"
     >
         <field name="name">Fixed amount</field>
-        <field name="actual_expenses" eval="True" />
         <field name="specs_invoice_report" eval="True" />
         <field name="fixed_amount" eval="True" />
     </record>
