@@ -30,6 +30,27 @@ class Project(models.Model):
     standard_task_id = fields.Many2one(
         "project.task", compute=_compute_standard, string="Standard Task", store=True
     )
+    invoice_properties_invoice_mileage = fields.Boolean(
+        related="invoice_properties.invoice_mileage"
+    )
+    ps_mileage_product_id = fields.Many2one(
+        "product.product",
+        string="Mileage product",
+        domain=lambda self: [
+            (
+                "categ_id",
+                "=",
+                self.env.ref("ps_timesheet_invoicing.product_category_mileage").id,
+            ),
+            ("uom_id", "=", self.env.ref("uom.product_uom_km").id),
+        ],
+        context=lambda env: {
+            "default_categ_id": env.ref(
+                "ps_timesheet_invoicing.product_category_mileage"
+            ).id,
+            "default_uom_id": env.ref("uom.product_uom_km").id,
+        },
+    )
 
     @api.constrains("overtime", "overtime_hrs")
     def _check_project_overtime(self):

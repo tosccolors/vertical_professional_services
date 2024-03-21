@@ -664,7 +664,8 @@ class HrTimesheetSheet(models.Model):
              ON hss.id = ptl.sheet_id
              LEFT JOIN date_range dr
              ON (
-                dr.type_id = 2 and dr.date_start <= ptl.date +7 and
+                dr.type_id = %(date_range_type_calendar_week)s and
+                dr.date_start <= ptl.date + 7 and
                 dr.date_end >= ptl.date + 7
              )
              LEFT JOIN hr_employee he
@@ -692,6 +693,9 @@ class HrTimesheetSheet(models.Model):
                 "week_id_ptl": self.week_id.id,
                 "sheet_select": last_week_timesheet_id,
                 "sheet_ptl": self.id,
+                "date_range_type_calendar_week": self.env.ref(
+                    "ps_date_range_week.date_range_calender_week"
+                ).id,
             },
         )
         self.env.cache.invalidate()
@@ -745,7 +749,7 @@ class HrTimesheetSheet(models.Model):
                 ptl.account_id as account_id,
                 ptl.company_id as company_id,
                 ptl.write_uid as write_uid,
-                ptl.amount as amount,
+                ptl.kilometers * mileage_pt.list_price as amount,
                 ptl.kilometers as unit_amount,
                 ptl.date as date,
                 %(create)s as create_date,
@@ -757,7 +761,7 @@ class HrTimesheetSheet(models.Model):
                 ptl.ref as ref,
                 ptl.general_account_id as general_account_id,
                 ptl.move_id as move_id,
-                ptl.product_id as product_id,
+                pp.ps_mileage_product_id as product_id,
                 -- ptl.amount_currency as amount_currency,
                 ptl.project_id as project_id,
                 ptl.department_id as department_id,
@@ -791,11 +795,6 @@ class HrTimesheetSheet(models.Model):
              ON ip.id = pp.invoice_properties
              RIGHT JOIN hr_timesheet_sheet hss
              ON hss.id = ptl.sheet_id
-             LEFT JOIN date_range dr
-             ON (
-                dr.type_id = 2 and dr.date_start <= ptl.date +7 and
-                dr.date_end >= ptl.date + 7
-             )
              LEFT JOIN hr_employee he
              ON (hss.employee_id = he.id)
              LEFT JOIN task_user tu
@@ -803,6 +802,10 @@ class HrTimesheetSheet(models.Model):
                 tu.task_id = ptl.task_id and tu.user_id = ptl.user_id and
                 ptl.date >= tu.from_date
              )
+             LEFT JOIN product_product mileage_pp
+             ON pp.ps_mileage_product_id=mileage_pp.id
+             LEFT JOIN product_template mileage_pt
+             ON mileage_pp.product_tmpl_id=mileage_pt.id
         WHERE hss.id = %(sheet_select)s
              AND ptl.ref_id IS NULL
              AND ptl.kilometers > 0 ;

@@ -232,6 +232,23 @@
                                 <field name="actual_expenses" invisible="1" />
                                 <field name="expense_line_ids_domain" invisible="1" />
                             </page>
+                            <page
+                                name="mileage_line_ids"
+                                string="Mileage"
+                                attrs="{'invisible': [('invoice_mileage', '=', False)]}"
+                                create="False"
+                            >
+                                <field name="mileage_line_ids">
+                                    <tree>
+                                        <field name="user_id" />
+                                        <field name="date" />
+                                        <field name="product_id" />
+                                        <field name="unit_amount" />
+                                        <field name="amount" />
+                                    </tree>
+                                </field>
+                                <field name="invoice_mileage" invisible="1" />
+                            </page>
                         </notebook>
                     </sheet>
                 </form>

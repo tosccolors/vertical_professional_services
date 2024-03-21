@@ -37,6 +37,7 @@
         "data/cron_data.xml",
         "data/data.xml",
         "data/date_range_type.xml",
+        "data/product_product.xml",
         "security/ps_security.xml",
         "security/ir.model.access.csv",
         "wizard/time_line_invoice_view.xml",

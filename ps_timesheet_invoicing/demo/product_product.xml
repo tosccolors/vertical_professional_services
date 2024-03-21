@@ -10,4 +10,7 @@
             search="[('deprecated', '=', False), ('user_type_id.internal_group','=','income'), ('is_off_balance', '=', False)]"
         />
     </record>
+    <record id="product_mileage" model="product.product">
+        <field name="lst_price">4.2</field>
+    </record>
 </odoo>

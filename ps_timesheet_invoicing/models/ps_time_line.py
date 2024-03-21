@@ -36,9 +36,7 @@ class TimeLine(models.Model):
     )
     def _compute_time_line(self):
         uom_hrs = self.env.ref("uom.product_uom_hour").id
-        for line in self.filtered(
-            lambda line: line.task_id and line.product_uom_id.id == uom_hrs
-        ):
+        for line in self:
             # all ps_time lines need a project_operating_unit_id and
             # for all ps_time lines day_name, week_id are computed
             date = line.date
@@ -61,53 +59,57 @@ class TimeLine(models.Model):
                 )
             else:
                 line.project_mgr = line.account_id.project_ids.user_id or False
-            task = line.task_id
             user = line.user_id
+            if not user:
+                continue
+            uou = user._get_operating_unit_id()
+            line.operating_unit_id = uou
+            if line.planned:
+                line.planned_qty = line.unit_amount
+                line.actual_qty = 0.0
+                continue
+            if line.month_of_last_wip:
+                line.wip_month_id = line.month_of_last_wip
+            else:
+                line.wip_month_id = var_month_id
+            task = line.task_id
             date = line.date
-            # only if task_id the remaining fields are computed
-            if task and user:
-                uou = user._get_operating_unit_id()
-                if uou:
-                    line.operating_unit_id = uou
-                    if line.planned:
-                        line.planned_qty = line.unit_amount
-                        line.actual_qty = 0.0
-                    else:
-                        if line.month_of_last_wip:
-                            line.wip_month_id = line.month_of_last_wip
-                        else:
-                            line.wip_month_id = var_month_id
-                        if line.product_uom_id.id == uom_hrs:
-                            if date and line.state in [
-                                "new",
-                                "draft",
-                                "open",
-                                "delayed",
-                                "invoiceable",
-                                "progress",
-                                "re_confirmed",
-                            ]:
-                                task_user = self.env["task.user"].get_task_user_obj(
-                                    task.id, user.id, date
-                                )[:1]
-                                if task_user:
-                                    line.task_user_id = task_user
-                                # check standard task for fee earners
-                                else:
-                                    if line.project_id:
-                                        standard_task = line.project_id.standard_task_id
-                                    if len(standard_task) == 1:
-                                        line.task_user_id = (
-                                            self.env["task.user"].get_task_user_obj(
-                                                standard_task.id, user.id, date
-                                            )
-                                            or False
-                                        )
-                                line.line_fee_rate = line.get_fee_rate()[0]
-                                line.amount = line.get_fee_rate_amount()
-                                line.product_id = line.get_task_user_product()
-                        line.actual_qty = line.unit_amount
-                        line.planned_qty = 0.0
+            if (
+                task
+                and date
+                and line.product_uom_id.id == uom_hrs
+                and line.state
+                in [
+                    "new",
+                    "draft",
+                    "open",
+                    "delayed",
+                    "invoiceable",
+                    "progress",
+                    "re_confirmed",
+                ]
+            ):
+                task_user = self.env["task.user"].get_task_user_obj(
+                    task.id, user.id, date
+                )[:1]
+                if task_user:
+                    line.task_user_id = task_user
+                # check standard task for fee earners
+                else:
+                    if line.project_id:
+                        standard_task = line.project_id.standard_task_id
+                    if len(standard_task) == 1:
+                        line.task_user_id = (
+                            self.env["task.user"].get_task_user_obj(
+                                standard_task.id, user.id, date
+                            )
+                            or False
+                        )
+                line.line_fee_rate = line.get_fee_rate()[0]
+                line.amount = line.get_fee_rate_amount()
+                line.product_id = line.get_task_user_product()
+            line.actual_qty = line.unit_amount
+            line.planned_qty = 0.0
 
     @api.model
     def _default_user(self):
@@ -271,7 +273,6 @@ class TimeLine(models.Model):
             ("change-chargecode", "Change-Chargecode"),
             ("re_confirmed", "Re-Confirmed"),
             ("invoiced-by-fixed", "Invoiced by Fixed"),
-            ("expense-invoiced", "Expense Invoiced"),
         ],
         string="Status",
         readonly=True,

@@ -29,6 +29,12 @@ class TestPsTimesheetInvoicingBase(TransactionCase):
 
 
 class TestPsTimesheetInvoicing(TestPsTimesheetInvoicingBase):
+    def _create_ps_invoice(self):
+        self.ps_line += self.env.ref(
+            "ps_timesheet_invoicing.time_line_demo_user_2023_12_18_mileage"
+        )
+        return super()._create_ps_invoice()
+
     def test_01_invoicing(self):
         """Test invocing time lines"""
         ps_invoice = self.ps_invoice
@@ -38,7 +44,7 @@ class TestPsTimesheetInvoicing(TestPsTimesheetInvoicingBase):
         self.assertTrue(
             ps_invoice.invoice_id.invoice_line_ids.filtered("ps_analytic_line_ids")
         )
-        self.assertEqual(self.ps_line.state, "invoice_created")
+        self.assertEqual(set(self.ps_line.mapped("state")), {"invoice_created"})
         self.assertEqual(ps_invoice.state, "open")
         ps_invoice.invoice_id.target_invoice_amount = 40
         ps_invoice.invoice_id.compute_target_invoice_amount()
@@ -47,19 +53,22 @@ class TestPsTimesheetInvoicing(TestPsTimesheetInvoicingBase):
         )
         ps_invoice.invoice_id.action_post()
         self.assertEqual(ps_invoice.state, "invoiced")
-        self.assertEqual(self.ps_line.state, "invoiced")
+        self.assertEqual(set(self.ps_line.mapped("state")), {"invoiced"})
         return ps_invoice
 
     def test_02_delete_invoice(self):
         ps_invoice = self.test_01_invoicing()
         ps_invoice.delete_invoice()
-        self.assertEqual(ps_invoice.state, "draft")
+        self.assertEqual(set(self.ps_line.mapped("state")), {"progress"})
         with Form(ps_invoice) as ps_invoice_form:
             ps_invoice_form.project_id = self.env["project.project"].search(
                 [("id", "!=", ps_invoice_form.project_id.id)],
                 limit=1,
             )
-        self.assertEqual(ps_invoice.user_total_ids.detail_ids, self.ps_line)
+        self.assertEqual(
+            ps_invoice.user_total_ids.detail_ids + ps_invoice.mileage_line_ids,
+            self.ps_line,
+        )
 
 
 class TestPsTimesheetInvoicingGrouped(TestPsTimesheetInvoicingBase):

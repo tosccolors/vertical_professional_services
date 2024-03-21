@@ -66,66 +66,81 @@ class PSInvoice(models.Model):
         user_total_invoiced_lines, ptl_ids = self._existing_user_total_lines()
         # then we determine the analytic_account_ids, that will be invoiced in this
         # ps_invoice
-        analytic_accounts = self._determine_analytic_account_ids()
-        if analytic_accounts:
-            self.account_analytic_ids = [(6, 0, analytic_accounts)]
-            # we build the domains for the selection of ps_time_lines for both regular
-            # and reconfirmed ptl's
-            time_domain_regular, time_domain_reconfirm = self._calculate_domain(ptl_ids)
-            # we determine the grouping of ps_time_lines in the user_total_lines
-            (
-                reg_fields_grouped,
-                reg_grouped_by,
-                reconfirmed_fields_grouped,
-                reconfirmed_grouped_by,
-            ) = self._calculate_grouping()
-            # the actual reads of the selected ps_time_lines
-            result_regular = self.env["ps.time.line"].read_group(
-                time_domain_regular,
-                reg_fields_grouped,
-                reg_grouped_by,
-                offset=0,
-                limit=None,
-                orderby=False,
-                lazy=False,
+        analytic_accounts = (
+            self._determine_analytic_account_ids() or self.account_analytic_ids.ids
+        )
+        if not analytic_accounts:
+            return
+        self.account_analytic_ids = [(6, 0, analytic_accounts)]
+        # we build the domains for the selection of ps_time_lines for both regular
+        # and reconfirmed ptl's
+        time_domain_regular, time_domain_reconfirm = self._calculate_domain(ptl_ids)
+        # we determine the grouping of ps_time_lines in the user_total_lines
+        (
+            reg_fields_grouped,
+            reg_grouped_by,
+            reconfirmed_fields_grouped,
+            reconfirmed_grouped_by,
+        ) = self._calculate_grouping()
+        # the actual reads of the selected ps_time_lines
+        result_regular = self.env["ps.time.line"].read_group(
+            time_domain_regular,
+            reg_fields_grouped,
+            reg_grouped_by,
+            offset=0,
+            limit=None,
+            orderby=False,
+            lazy=False,
+        )
+        result_reconfirm = self.env["ps.time.line"].read_group(
+            time_domain_reconfirm,
+            reconfirmed_fields_grouped,
+            reconfirmed_grouped_by,
+            offset=0,
+            limit=None,
+            orderby=False,
+            lazy=False,
+        )
+        # we calculate the task_user_ids and user_total_ids from the read_group
+        # above
+        if len(result_regular) > 0:
+            task_user_regular, user_total_regular = self._calculate_data(
+                result_regular, time_domain_regular
             )
-            result_reconfirm = self.env["ps.time.line"].read_group(
-                time_domain_reconfirm,
-                reconfirmed_fields_grouped,
-                reconfirmed_grouped_by,
-                offset=0,
-                limit=None,
-                orderby=False,
-                lazy=False,
+            task_user_ids += task_user_regular
+            user_total_data += user_total_regular
+        if len(result_reconfirm) > 0:
+            task_user_reconfirm, user_total_reconfirm = self._calculate_data(
+                result_reconfirm, time_domain_reconfirm, True
             )
-            # we calculate the task_user_ids and user_total_ids from the read_group
-            # above
-            if len(result_regular) > 0:
-                task_user_regular, user_total_regular = self._calculate_data(
-                    result_regular, time_domain_regular
+            task_user_ids += task_user_reconfirm
+            user_total_data += user_total_reconfirm
+        if task_user_ids:
+            self.task_user_ids = [(6, 0, task_user_ids)]
+        else:
+            self.task_user_ids = [(6, 0, [])]
+        # add user_total_lines already present in the invoice
+        for total_line in user_total_invoiced_lines:
+            user_total_data.append((4, total_line.id))
+        self.user_total_ids = user_total_data
+        if self.invoice_properties.actual_expenses and self.period_id:
+            expense_domain = json.loads(self.expense_line_ids_domain)
+            self.expense_line_ids = [
+                (4, line.id)
+                for line in self.env["account.analytic.line"].search(expense_domain)
+            ]
+        if self.invoice_properties.invoice_mileage and self.period_id:
+            self.mileage_line_ids = [
+                (4, line.id)
+                for line in self.env["ps.time.line"].search(
+                    [
+                        ("account_id", "in", analytic_accounts),
+                        ("product_uom_id", "=", self.env.ref("uom.product_uom_km").id),
+                        ("state", "=", "invoiceable"),
+                    ]
+                    + self.period_id.get_domain("date")
                 )
-                task_user_ids += task_user_regular
-                user_total_data += user_total_regular
-            if len(result_reconfirm) > 0:
-                task_user_reconfirm, user_total_reconfirm = self._calculate_data(
-                    result_reconfirm, time_domain_reconfirm, True
-                )
-                task_user_ids += task_user_reconfirm
-                user_total_data += user_total_reconfirm
-            if task_user_ids:
-                self.task_user_ids = [(6, 0, task_user_ids)]
-            else:
-                self.task_user_ids = [(6, 0, [])]
-            # add user_total_lines already present in the invoice
-            for total_line in user_total_invoiced_lines:
-                user_total_data.append((4, total_line.id))
-            self.user_total_ids = user_total_data
-            if self.invoice_properties.actual_expenses and self.period_id:
-                expense_domain = json.loads(self.expense_line_ids_domain)
-                self.expense_line_ids = [
-                    (4, line.id)
-                    for line in self.env["account.analytic.line"].search(expense_domain)
-                ]
+            ]
 
     def _calculate_data(self, result, time_domain, reconfirmed_entries=False):
         """
@@ -340,18 +355,21 @@ class PSInvoice(models.Model):
                 ai.state = "draft"
                 user_totals = ai.user_total_ids.filtered(lambda ut: ut.state != "draft")
                 state2ps_line["progress"] += user_totals.mapped("detail_ids")
+                state2ps_line["progress"] += ai.mileage_line_ids
                 state2user_total["draft"] += user_totals
 
             elif ai.invoice_id.state == "cancel":
                 ai.state = "draft"
                 user_totals = ai.mapped("invoice_line_ids.user_task_total_line_ids")
                 state2ps_line["progress"] += user_totals.mapped("detail_ids")
+                state2ps_line["progress"] += ai.mileage_line_ids
                 state2user_total["draft"] += user_totals
 
             elif ai.invoice_id.state == "draft":
                 ai.state = "open"
                 user_totals = ai.mapped("invoice_line_ids.user_task_total_line_ids")
                 state2ps_line["invoice_created"] += user_totals.mapped("detail_ids")
+                state2ps_line["invoice_created"] += ai.mileage_line_ids
                 state2user_total["invoice_created"] += user_totals
 
             elif ai.invoice_id.state == "posted":
@@ -361,6 +379,7 @@ class PSInvoice(models.Model):
                     line_state = "invoiced-by-fixed"
                 user_totals = ai.mapped("invoice_line_ids.user_task_total_line_ids")
                 state2ps_line[line_state] += user_totals.mapped("detail_ids")
+                state2ps_line["invoiced"] += ai.mileage_line_ids
                 state2user_total[line_state] += user_totals
 
         for state, records in chain(state2ps_line.items(), state2user_total.items()):
@@ -426,6 +445,13 @@ class PSInvoice(models.Model):
     expense_line_ids_domain = fields.Char(
         compute="_compute_expense_line_ids_domain",
     )
+    mileage_line_ids = fields.Many2many(
+        comodel_name="ps.time.line",
+        relation="ps_invoice_mileage_time_line_rel",
+        string="Mileage",
+        store=True,
+        readonly=True,
+    )
     time_line_ids = fields.Many2many(
         "ps.time.line",
         compute="_compute_ps_time_lines",
@@ -484,6 +510,7 @@ class PSInvoice(models.Model):
         store=True,
     )
     actual_expenses = fields.Boolean(related="invoice_properties.actual_expenses")
+    invoice_mileage = fields.Boolean(related="invoice_properties.invoice_mileage")
 
     @api.depends("account_analytic_ids")
     def _compute_expense_line_ids_domain(self):
@@ -538,6 +565,7 @@ class PSInvoice(models.Model):
         analytic_lines = self.mapped("user_total_ids.detail_ids")
         if analytic_lines:
             analytic_lines.write({"state": "invoiceable"})
+        self._sql_update(self.mileage_line_ids, "invoiceable")
         return super().unlink()
 
     def _prepare_invoice_line(self, line, invoice_id):
@@ -602,7 +630,27 @@ class PSInvoice(models.Model):
                     "ps_analytic_line_ids": [(6, 0, self.expense_line_ids.ids)],
                 }
             ]
-            if self.expense_line_ids.mapped("amount")
+            if sum(self.expense_line_ids.mapped("amount"))
+            else []
+        )
+
+    def _prepare_mileage_invoice_line(self):
+        product = self.project_id.ps_mileage_product_id
+        return (
+            [
+                {
+                    "name": product.name or "/",
+                    "quantity": sum(self.mileage_line_ids.mapped("unit_amount")),
+                    "price_unit": product.lst_price,
+                    "product_uom_id": product.uom_id.id,
+                    "analytic_account_id": self.mileage_line_ids.mapped("account_id")[
+                        :1
+                    ].id,
+                    "operating_unit_id": self.project_operating_unit_id.id,
+                    "product_id": product.id,
+                }
+            ]
+            if sum(self.mileage_line_ids.mapped("unit_amount"))
             else []
         )
 
@@ -644,6 +692,17 @@ class PSInvoice(models.Model):
                 (0, 0, vals) for vals in self._prepare_expense_invoice_line()
             ]
 
+        if self.invoice_mileage:
+            invoice_lines += [
+                (3, line.id)
+                for line in self.invoice_id.invoice_line_ids.filtered(
+                    lambda x: x.product_id == self.project_id.ps_mileage_product_id
+                )
+            ]
+            invoice_lines += [
+                (0, 0, vals) for vals in self._prepare_mileage_invoice_line()
+            ]
+
         if invoice_lines:
             self.write({"invoice_line_ids": invoice_lines})
 
@@ -653,17 +712,18 @@ class PSInvoice(models.Model):
             self._sql_update(ptl_from_summary, "invoice_created")
         if user_total:
             self._sql_update(user_total, "invoice_created")
+        self._sql_update(self.mileage_line_ids, "invoice_created")
         return True
 
     def delete_invoice(self):
         self.mapped("invoice_id").button_draft()
         self.mapped("invoice_id.line_ids").unlink()
 
-        if not self.invoice_line_ids:
-            self.state = "draft"
-            for user_total in self.user_total_ids:
-                self._sql_update(user_total.detail_ids, "progress")
-                self._sql_update(user_total, "draft")
+        self.state = "draft"
+        for user_total in self.user_total_ids:
+            self._sql_update(user_total.detail_ids, "progress")
+            self._sql_update(user_total, "draft")
+        self._sql_update(self.mileage_line_ids, "progress")
 
     def action_view_invoices(self):
         self.ensure_one()

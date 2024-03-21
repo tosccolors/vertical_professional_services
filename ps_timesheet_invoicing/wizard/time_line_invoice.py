@@ -108,7 +108,7 @@ class TimeLineStatus(models.TransientModel):
                 if ps_invobj:
                     ctx = self.env.context.copy()
                     ctx.update({"active_invoice_id": ps_invobj.id})
-                    ps_invobj.with_context(ctx).recompute(["user_total_ids"], ps_invobj)
+                    ps_invobj.with_context(ctx)._compute_objects()
                 else:
                     data = {
                         "partner_id": partner_id,

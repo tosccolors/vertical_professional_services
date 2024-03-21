@@ -7,6 +7,7 @@
         <field name="name">Time spent</field>
         <field name="actual_time_spent" eval="True" />
         <field name="actual_expenses" eval="True" />
+        <field name="invoice_mileage" eval="True" />
         <field name="specs_invoice_report" eval="True" />
     </record>
     <record

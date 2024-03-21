@@ -12,6 +12,13 @@
                     <field name="overtime" string="Overtime Taken" />
                     <field name="overtime_hrs" string="Overtime hours" />
                 </group>
+                <field name="ps_date_range_type_id" position="before">
+                    <field name="invoice_properties_invoice_mileage" invisible="True" />
+                    <field
+                        name="ps_mileage_product_id"
+                        attrs="{'invisible': [('invoice_properties_invoice_mileage', '=', False)], 'required': [('invoice_properties_invoice_mileage', '=', True)]}"
+                    />
+                </field>
             </field>
         </record>
         <!-- Task -->
