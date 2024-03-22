@@ -6,6 +6,7 @@
         id="menu_ps_invoicing"
         sequence="40"
         web_icon="ps_timesheet_invoicing,static/description/icon.png"
+        groups="ps_project.group_ps_invoicing"
     />
     <menuitem
         id="menu_ps"

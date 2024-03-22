@@ -42,7 +42,6 @@ class StatusTimeReport(models.Model):
     external = fields.Boolean(string="External", readonly=True)
 
     def init(self):
-        """ """
         drcw = self.env.ref("ps_date_range_week.date_range_calender_week").id
         tools.drop_view_if_exists(self.env.cr, "status_time_report")
         self.env.cr.execute(
