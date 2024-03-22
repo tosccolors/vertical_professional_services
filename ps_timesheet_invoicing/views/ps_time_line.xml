@@ -535,6 +535,24 @@
         />
         <field name="context">{"search_default_today":1}</field>
     </record>
+    <record
+        id="hr_timesheet.timesheet_action_report_by_project"
+        model="ir.actions.act_window"
+    >
+        <field name="res_model">ps.time.line</field>
+    </record>
+    <record
+        id="hr_timesheet.timesheet_action_report_by_task"
+        model="ir.actions.act_window"
+    >
+        <field name="res_model">ps.time.line</field>
+    </record>
+    <record
+        id="sale_timesheet.timesheet_action_billing_report"
+        model="ir.actions.act_window"
+    >
+        <field name="res_model">ps.time.line</field>
+    </record>
     <record id="act_hr_timesheet_line" model="ir.actions.act_window">
         <field name="name">My Timelines</field>
         <field name="res_model">ps.time.line</field>
