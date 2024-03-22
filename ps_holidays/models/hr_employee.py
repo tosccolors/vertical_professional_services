@@ -28,3 +28,22 @@ class HrEmployeeBase(models.AbstractModel):
             this.current_leave_state = "written"
             this.is_absent = True
         return result
+
+    def _get_remaining_leaves(self):
+        HrLeave = self.env["hr.leave"]
+        result = super()._get_remaining_leaves()
+        for this_id, _days in list(result.items()):
+            self.browse(this_id)
+            result[this_id] -= sum(
+                HrLeave.search(
+                    [
+                        ("employee_id", "=", this_id),
+                        (
+                            "holiday_status_id.allocation_type",
+                            "in",
+                            ("fixed", "fixed_allocation"),
+                        ),
+                    ]
+                ).mapped("number_of_days")
+            )
+        return result
