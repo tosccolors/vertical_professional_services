@@ -6,4 +6,7 @@
         <field name="uom_id" ref="uom.product_uom_km" />
         <field name="uom_po_id" ref="uom.product_uom_km" />
     </record>
+    <record id="product_fixed_amount" model="product.product">
+        <field name="name">Fixed fee</field>
+    </record>
 </odoo>

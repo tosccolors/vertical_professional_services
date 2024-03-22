@@ -574,24 +574,29 @@ class PSInvoice(models.Model):
         self._sql_update(self.mileage_line_ids, "invoiceable")
         return super().unlink()
 
-    def _prepare_invoice_line(self, line, invoice_id):
-        ctx = self.env.context.copy()
-        ctx.update(
-            {
-                "active_model": "analytic.invoice",
-                "active_id": invoice_id,
-            }
-        )
+    def _prepare_invoice_line(
+        self,
+        product,
+        uom,
+        quantity,
+        user,
+        analytic_account,
+        price_unit,
+    ):
         invoice_line = (
             self.env["account.move.line"]
-            .with_context(ctx)
+            .with_context(
+                active_model="analytic.invoice",
+                active_id=self.invoice_id.id,
+                active_ids=self.invoice_id.ids,
+            )
             .new(
                 {
-                    "move_id": invoice_id,
-                    "product_id": line.product_id.id,
-                    "quantity": line.unit_amount,
-                    "product_uom_id": line.product_uom_id.id,
-                    "user_id": line.user_id.id,
+                    "move_id": self.invoice_id.id,
+                    "product_id": product.id,
+                    "quantity": quantity,
+                    "product_uom_id": uom.id,
+                    "user_id": user.id,
                 }
             )
         )
@@ -601,9 +606,10 @@ class PSInvoice(models.Model):
 
         invoice_line_vals.update(
             {
-                "analytic_account_id": line.account_id.id,
-                "price_unit": line.effective_fee_rate,
-                "ps_invoice_id": line.ps_invoice_id.id,
+                "analytic_account_id": analytic_account.id
+                or invoice_line.analytic_account_id.id,
+                "price_unit": price_unit,
+                "ps_invoice_id": self.id,
                 # TODO: no origin field any more, readd?
                 # 'origin': line.task_id.project_id.po_number
                 # if line.task_id and line.task_id.project_id.correction_charge
@@ -614,16 +620,21 @@ class PSInvoice(models.Model):
         return invoice_line_vals
 
     def _prepare_invoice_lines_fixed_amount(self, user_total_lines):
+        product = self.env.ref("ps_timesheet_invoicing.product_fixed_amount")
         return [
-            {
-                "name": self.project_id.name,
-                "quantity": 1,
-                "product_uom_id": self.env.ref("uom.product_uom_unit").id,
-                "price_unit": self.project_id.ps_fixed_amount,
-                "currency_id": self.project_id.partner_currency_id.id,
-                "user_task_total_line_ids": [(6, 0, user_total_lines.ids)],
-                "ps_invoice_id": self.id,
-            }
+            dict(
+                self._prepare_invoice_line(
+                    product,
+                    product.uom_id,
+                    1,
+                    self.env["res.users"],
+                    self.env["account.analytic.account"],
+                    self.project_id.ps_fixed_amount,
+                ),
+                name=self.project_id.name,
+                currency_id=self.project_id.partner_currency_id.id,
+                user_task_total_line_ids=[(6, 0, user_total_lines.ids)],
+            )
         ]
 
     def _prepare_expense_invoice_line(self):
@@ -641,20 +652,19 @@ class PSInvoice(models.Model):
         )
 
     def _prepare_mileage_invoice_line(self):
-        product = self.project_id.ps_mileage_product_id
+        product = self.project_id.ps_mileage_product_id or self.env.ref(
+            "ps_timesheet_invoicing.product_mileage"
+        )
         return (
             [
-                {
-                    "name": product.name or "/",
-                    "quantity": sum(self.mileage_line_ids.mapped("unit_amount")),
-                    "price_unit": product.lst_price,
-                    "product_uom_id": product.uom_id.id,
-                    "analytic_account_id": self.mileage_line_ids.mapped("account_id")[
-                        :1
-                    ].id,
-                    "operating_unit_id": self.project_operating_unit_id.id,
-                    "product_id": product.id,
-                }
+                self._prepare_invoice_line(
+                    product,
+                    product.uom_id,
+                    sum(self.mileage_line_ids.mapped("unit_amount")),
+                    self.env["res.users"],
+                    self.env["account.analytic.account"],
+                    self.project_id.ps_fixed_amount,
+                ),
             ]
             if sum(self.mileage_line_ids.mapped("unit_amount"))
             else []
@@ -681,7 +691,14 @@ class PSInvoice(models.Model):
             ]
         else:
             for line in user_summary_lines:
-                inv_line_vals = self._prepare_invoice_line(line, self.invoice_id.id)
+                inv_line_vals = self._prepare_invoice_line(
+                    line.product_id,
+                    line.product_uom_id,
+                    line.unit_amount,
+                    line.user_id,
+                    line.account_id,
+                    line.effective_fee_rate,
+                )
                 inv_line_vals["user_task_total_line_ids"] = [(6, 0, line.ids)]
                 invoice_lines.append((0, 0, inv_line_vals))
                 ptl_from_summary |= line.detail_ids
