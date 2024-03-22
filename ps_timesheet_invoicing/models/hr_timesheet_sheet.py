@@ -231,7 +231,7 @@ class HrTimesheetSheet(models.Model):
     starting_mileage = fields.Integer(
         compute="_compute_starting_mileage", string="Starting Mileage", store=False
     )
-    starting_mileage_editable = fields.Integer(string="Starting Mileage")
+    starting_mileage_editable = fields.Integer(string="Starting Mileage (editable)")
     vehicle = fields.Boolean(
         compute="_compute_starting_mileage", string="Vehicle", store=False
     )

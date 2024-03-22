@@ -278,7 +278,6 @@ class TimeLine(models.Model):
         readonly=True,
         copy=False,
         index=True,
-        tracking=True,
         default="draft",
     )
     user_total_id = fields.Many2one(

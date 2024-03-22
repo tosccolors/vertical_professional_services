@@ -106,7 +106,6 @@ class TimelineUserTotal(models.Model):
         readonly=True,
         copy=False,
         index=True,
-        tracking=True,
         default="draft",
     )
     account_id = fields.Many2one(

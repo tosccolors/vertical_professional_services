@@ -13,6 +13,7 @@ from odoo.exceptions import UserError
 
 class PSInvoice(models.Model):
     _name = "ps.invoice"
+    _inherit = "mail.thread"
     _inherits = {"account.move": "invoice_id"}
     _description = "PS Invoice"
     _order = "date_to desc"

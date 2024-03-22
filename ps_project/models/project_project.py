@@ -51,7 +51,9 @@ class Project(models.Model):
         help="Fill in the amount to invoice per period",
         currency_field="partner_currency_id",
     )
-    partner_currency_id = fields.Many2one(related="partner_id.currency_id")
+    partner_currency_id = fields.Many2one(
+        related="partner_id.currency_id", string="Partner currency"
+    )
 
     def name_get(self):
         return [

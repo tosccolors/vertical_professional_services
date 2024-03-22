@@ -56,6 +56,7 @@
                         />
                         <field
                             name="starting_mileage_editable"
+                            string="Starting Mileage"
                             attrs="{'invisible': [('vehicle', '=', True)]}"
                         />
                         <field name="vehicle" invisible="1" />
@@ -99,13 +100,6 @@
                     />
                     <group states="new,draft" />
                 </xpath>
-                <!-- Element '<xpath expr="//notebook/page[1]/widget[1]">' cannot be located in parent view so replaced as expr="//sheet/group[1]" -->
-                <!-- <xpath expr="//sheet/group[1]" position="before">
-          <div>
-              <label for="employee_id" class="oe_edit_only"/>
-              <h1><field name="employee_id" class="oe_inline" placeholder="Employee's Name"/></h1>
-          </div>
-        </xpath> -->
                 <xpath expr="//field[@name='employee_id']" position="attributes">
                     <attribute name="options">{'no_create': True}</attribute>
                     <attribute name="attrs">

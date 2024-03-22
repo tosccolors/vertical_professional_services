@@ -6,6 +6,7 @@ from odoo import api, fields, models
 
 class TaskUser(models.Model):
     _name = "task.user"
+    _description = "Mapping of task and user to fees, products per time"
 
     @api.depends("fee_rate", "ic_fee_rate")
     def _compute_margin(self):

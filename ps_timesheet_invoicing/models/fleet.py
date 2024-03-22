@@ -40,7 +40,7 @@ class FleetVehicleOdometer(models.Model):
         for odom in self:
             if odom.value_period_update > 0.0 and odom.value_update > 0.0:
                 raise UserError(
-                    _("You cannot enter both period value and " "ultimo value for %s!")
+                    _("You cannot enter both period value and ultimo value for %s!")
                     % (odom.date)
                 )
             older = self.sudo().search(
@@ -65,13 +65,13 @@ class FleetVehicleOdometer(models.Model):
 
     value_period = fields.Float(
         compute=_compute_odometer_value,
-        string="Odometer Period Value",
+        string="Odometer Period Value (computed)",
         group_operator="sum",
         store=True,
     )
     value = fields.Float(
         compute=_compute_odometer_value,
-        string="Odometer Value",
+        string="Odometer Value (computed)",
         group_operator="max",
         store=True,
     )
@@ -81,8 +81,6 @@ class FleetVehicleOdometer(models.Model):
     value_period_update = fields.Float(
         string="Odometer Period Value", group_operator="sum", store=True
     )
-    #    timestamp = fields.Datetime(
-    #    )
 
     @api.model
     def odo_newer(self):
