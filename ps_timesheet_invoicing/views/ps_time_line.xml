@@ -525,6 +525,16 @@
     <!--
             Menus and Actions
         -->
+    <record id="hr_timesheet.act_hr_timesheet_report" model="ir.actions.act_window">
+        <field name="res_model">ps.time.line</field>
+        <field
+            name="domain"
+            eval="str(
+                [('project_id', '!=', False), ('product_uom_id', '=', ref('uom.product_uom_hour')),
+                ('planned', '=', False)])"
+        />
+        <field name="context">{"search_default_today":1}</field>
+    </record>
     <record id="act_hr_timesheet_line" model="ir.actions.act_window">
         <field name="name">My Timelines</field>
         <field name="res_model">ps.time.line</field>

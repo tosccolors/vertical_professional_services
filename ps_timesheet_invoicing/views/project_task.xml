@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="view_task_form_ps">
+        <field name="name">project.task.form.ps</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="hr_timesheet.view_task_form2_inherited" />
+        <field name="groups_id" eval="[(4, ref('base.group_user'))]" />
+        <field name="arch" type="xml">
+            <field name="progress" position="after">
+                <field name="standard" />
+            </field>
+        </field>
+    </record>
+    <record id="view_task_form_inherit" model="ir.ui.view">
+        <field name="name">project.task.form</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="attributes">
+                <attribute name="domain">[('is_company','=',True)]</attribute>
+            </field>
+            <page name="description_page" position="before">
+                <page name="users" string="Fee Earners">
+                    <group colspan="4" col="2">
+                        <field
+                            name="task_user_ids"
+                            context="{'default_task_id':active_id}"
+                        >
+                            <tree
+                                string="Fee Earners"
+                                create="true"
+                                edit="true"
+                                delete="true"
+                                copy="false"
+                            >
+                                <field name="user_id" />
+                                <field name="from_date" />
+                                <field name="product_id" />
+                                <field name="fee_rate" />
+                                <field name="ic_fee_rate" />
+                                <field name="margin" />
+                            </tree>
+                            <form string="Fee Earners">
+                                <group>
+                                    <field name="user_id" invisible="0" />
+                                    <!--<field name="user_ids" widget="many2many_tags"/>-->
+                                    <field name="from_date" />
+                                    <field name="product_id" />
+                                    <field name="fee_rate" />
+                                    <field name="ic_fee_rate" />
+                                    <field name="cost_rate" />
+                                    <field name="margin" />
+                                </group>
+                            </form>
+                        </field>
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>
