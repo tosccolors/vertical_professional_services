@@ -346,9 +346,15 @@ class PSInvoice(models.Model):
 
     @api.depends("invoice_id.state", "invoice_id.line_ids")
     def _compute_state(self):
-        # TODO: comput functions shouldn't have side effects, this can lead to
+        state2ps_line, state2user_total = self._compute_state_updates()
+
+        # TODO: compute functions shouldn't have side effects, this can lead to
         # nasty and hard to debug bugs. Move this to compute functions for the
         # state fields involved
+        for state, records in chain(state2ps_line.items(), state2user_total.items()):
+            self._sql_update(records, state)
+
+    def _compute_state_updates(self):
         state2ps_line = defaultdict(lambda: self.env["ps.time.line"])
         state2user_total = defaultdict(lambda: self.env["ps.time.line.user.total"])
         for ai in self:
@@ -383,8 +389,7 @@ class PSInvoice(models.Model):
                 state2ps_line["invoiced"] += ai.mileage_line_ids
                 state2user_total[line_state] += user_totals
 
-        for state, records in chain(state2ps_line.items(), state2user_total.items()):
-            self._sql_update(records, state)
+        return state2ps_line, state2user_total
 
     @api.model
     def _get_fiscal_month_domain(self):
@@ -487,7 +492,7 @@ class PSInvoice(models.Model):
             ("invoiced", "Invoiced"),
         ],
         string="Status",
-        compute=_compute_state,
+        compute="_compute_state",
         copy=False,
         index=True,
         store=True,

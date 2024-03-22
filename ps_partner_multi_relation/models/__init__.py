@@ -2,4 +2,5 @@
 from . import res_partner_relation
 from . import res_partner_relation_all
 from . import project_invoicing_properties
+from . import ps_invoice
 from . import account_move

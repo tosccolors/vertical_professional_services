@@ -29,11 +29,11 @@ class TestPsTimesheetInvoicingBase(TransactionCase):
 
 
 class TestPsTimesheetInvoicing(TestPsTimesheetInvoicingBase):
-    def _create_ps_invoice(self):
+    def _create_ps_invoice(self, generate=True):
         self.ps_line += self.env.ref(
             "ps_timesheet_invoicing.time_line_demo_user_2023_12_18_mileage"
         )
-        return super()._create_ps_invoice()
+        return super()._create_ps_invoice(generate=generate)
 
     def test_01_invoicing(self):
         """Test invocing time lines"""
@@ -72,7 +72,7 @@ class TestPsTimesheetInvoicing(TestPsTimesheetInvoicingBase):
 
 
 class TestPsTimesheetInvoicingGrouped(TestPsTimesheetInvoicingBase):
-    def _create_ps_invoice(self):
+    def _create_ps_invoice(self, generate=True):
         self.project.invoice_properties = self.env.ref(
             "project.project_project_1"
         ).invoice_properties
@@ -80,16 +80,20 @@ class TestPsTimesheetInvoicingGrouped(TestPsTimesheetInvoicingBase):
         self.ps_line += self.env.ref(
             "ps_timesheet_invoicing.time_line_demo_user_2023_12_19"
         )
-        return super()._create_ps_invoice()
+        return super()._create_ps_invoice(generate=generate)
 
     def test_invoicing(self):
         ps_invoice = self.ps_invoice
         self.assertEqual(len(ps_invoice), 1)
         self.assertEqual(len(ps_invoice.user_total_ids), 2)
+        self.assertEqual(
+            ps_invoice.period_id.type_id,
+            self.env.ref("ps_timesheet_invoicing.date_range_quarter"),
+        )
 
 
 class TestPsTimesheetInvoicingFixed(TestPsTimesheetInvoicingBase):
-    def _create_ps_invoice(self):
+    def _create_ps_invoice(self, generate=True):
         self.project.invoice_properties = self.env.ref(
             "ps_timesheet_invoicing." "project_invoicing_property_fixed_amount"
         )
@@ -101,7 +105,7 @@ class TestPsTimesheetInvoicingFixed(TestPsTimesheetInvoicingBase):
         ).active = False
         self.project.ps_fixed_amount = 4242
         self.project.ps_fixed_hours = 42
-        return super()._create_ps_invoice()
+        return super()._create_ps_invoice(generate=generate)
 
     def test_invoicing(self):
         ps_invoice = self.ps_invoice

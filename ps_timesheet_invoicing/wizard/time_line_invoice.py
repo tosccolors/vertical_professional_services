@@ -84,12 +84,13 @@ class TimeLineStatus(models.TransientModel):
                 project_operating_unit_id = res[3]
 
                 if link_project:
-                    project_id = res[4]
+                    project = self.env["project.project"].browse(res[4])
+                    project_id = project.id
                     partner_id = (
-                        self.env["project.project"]
-                        .browse(project_id)
-                        .invoice_address.id
-                    )
+                        project.invoice_address
+                        or project.partner_id
+                        or project.analytic_account_id.partner_id
+                    ).id
 
                 search_domain = [
                     ("partner_id", "=", partner_id),

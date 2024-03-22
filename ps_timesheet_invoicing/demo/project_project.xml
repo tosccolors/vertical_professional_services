@@ -22,5 +22,9 @@
         <field name="invoice_address" ref="base.res_partner_12" />
         <field name="chargeable" eval="True" />
         <field name="correction_charge" eval="True" />
+        <field
+            name="ps_date_range_type_id"
+            ref="ps_timesheet_invoicing.date_range_quarter"
+        />
     </record>
 </odoo>

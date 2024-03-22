@@ -16,6 +16,7 @@ class AccountMove(models.Model):
     parent_id = fields.Many2one(
         comodel_name="account.move", string="Parent Invoice", index=True
     )
+    child_ids = fields.One2many("account.move", "parent_id")
 
     member_invoice_count = fields.Integer(
         "Member Invoices", compute="_compute_member_invoice"
@@ -66,9 +67,9 @@ class AccountMove(models.Model):
             )
             inv_date = invoice_date.strftime("%Y-%m")
             if inv_date != period_date:
-                fpos = invoice.fiscal_position_id
-                account = self.env["analytic.move"].get_product_wip_account(
-                    line.product_id, fpos
+                account = (
+                    line.product_id.property_account_wip_id
+                    or line.company_id.wip_journal_id.default_account_id
                 )
                 invoice_line_vals.update({"account_id": account.id})
 

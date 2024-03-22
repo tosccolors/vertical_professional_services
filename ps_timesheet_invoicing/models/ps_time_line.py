@@ -54,7 +54,8 @@ class TimeLine(models.Model):
                 line.project_mgr = line.project_id.user_id or False
                 line.period_id = self._find_daterange(
                     date,
-                    line.project_id.ps_date_range_type_id,
+                    line.project_id.ps_date_range_type_id
+                    or self.env.ref("account_fiscal_month.date_range_fiscal_month"),
                     raise_not_found=True,
                 )
             else:

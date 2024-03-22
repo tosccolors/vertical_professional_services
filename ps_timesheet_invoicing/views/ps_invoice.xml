@@ -10,17 +10,21 @@
                         <button
                             name="generate_invoice"
                             type="object"
-                            string="Generate Invoice"
-                            states="draft,open"
+                            string="Generate Invoice Lines"
+                            states="draft"
                         />
-                        <!--button name="generate_invoice" type="object" string="Re-Generate Invoice" states="open"/-->
+                        <button
+                            name="generate_invoice"
+                            type="object"
+                            string="Regenerate Invoice Lines"
+                            states="open"
+                        />
                         <button
                             name="delete_invoice"
                             type="object"
-                            string="Delete Invoice"
+                            string="Delete Invoice Lines"
                             states="open,invoiced"
                         />
-                        <!--button name="action_done" type="object" string="Invoiced" states="open"/-->
                         <field
                             name="state"
                             widget="statusbar"
