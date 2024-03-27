@@ -416,7 +416,7 @@ class TimeLine(models.Model):
 
     @api.onchange("product_id", "product_uom_id", "unit_amount", "currency_id")
     def on_change_unit_amount(self):
-        if self.product_uom_id == self.env.ref("uom.product_uom_hour").id:
+        if self.product_uom_id == self.env.ref("uom.product_uom_hour"):
             return {}
         return super().on_change_unit_amount()
 
