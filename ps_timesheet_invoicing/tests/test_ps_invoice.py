@@ -1,7 +1,7 @@
 from odoo.tests.common import Form, TransactionCase
 
 
-class TestPsTimesheetInvoicingBase(TransactionCase):
+class TestPsInvoiceBase(TransactionCase):
     def setUp(self):
         super().setUp()
         self.project = self.env.ref("project.project_project_2")
@@ -28,7 +28,7 @@ class TestPsTimesheetInvoicingBase(TransactionCase):
             self.ps_invoice.generate_invoice()
 
 
-class TestPsTimesheetInvoicing(TestPsTimesheetInvoicingBase):
+class TestPsInvoice(TestPsInvoiceBase):
     def _create_ps_invoice(self, generate=True):
         self.ps_line += self.env.ref(
             "ps_timesheet_invoicing.time_line_demo_user_2023_12_18_mileage"
@@ -71,7 +71,7 @@ class TestPsTimesheetInvoicing(TestPsTimesheetInvoicingBase):
         )
 
 
-class TestPsTimesheetInvoicingGrouped(TestPsTimesheetInvoicingBase):
+class TestPsInvoiceGrouped(TestPsInvoiceBase):
     def _create_ps_invoice(self, generate=True):
         self.project.invoice_properties = self.env.ref(
             "project.project_project_1"
@@ -92,7 +92,7 @@ class TestPsTimesheetInvoicingGrouped(TestPsTimesheetInvoicingBase):
         )
 
 
-class TestPsTimesheetInvoicingFixed(TestPsTimesheetInvoicingBase):
+class TestPsInvoiceFixed(TestPsInvoiceBase):
     def _create_ps_invoice(self, generate=True):
         self.project.invoice_properties = self.env.ref(
             "ps_timesheet_invoicing." "project_invoicing_property_fixed_amount"

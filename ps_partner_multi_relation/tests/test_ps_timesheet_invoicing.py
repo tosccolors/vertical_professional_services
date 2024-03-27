@@ -1,9 +1,7 @@
-from odoo.addons.ps_timesheet_invoicing.tests import test_ps_timesheet_invoicing
+from odoo.addons.ps_timesheet_invoicing.tests import test_ps_invoice
 
 
-class TestPsTimesheetInvoicing(
-    test_ps_timesheet_invoicing.TestPsTimesheetInvoicingBase
-):
+class TestPsInvoice(test_ps_invoice.TestPsInvoiceBase):
     def _create_ps_invoice(self, generate=True):
         self.partner = self.env.ref("ps_partner_multi_relation.partner_consortium")
         (

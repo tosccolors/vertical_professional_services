@@ -1,7 +1,7 @@
-from odoo.addons.ps_timesheet_invoicing.tests import test_ps_timesheet_invoicing
+from odoo.addons.ps_timesheet_invoicing.tests import test_ps_invoice
 
 
-class TestPsAccount(test_ps_timesheet_invoicing.TestPsTimesheetInvoicing):
+class TestPsInvoice(test_ps_invoice.TestPsInvoice):
     def test_01_invoicing(self):
         ps_invoice = super().test_01_invoicing()
         report_html, _type = self.env.ref("account.account_invoices")._render_qweb_pdf(
