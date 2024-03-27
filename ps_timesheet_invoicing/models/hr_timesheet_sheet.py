@@ -749,7 +749,7 @@ class HrTimesheetSheet(models.Model):
                 ptl.account_id as account_id,
                 ptl.company_id as company_id,
                 ptl.write_uid as write_uid,
-                ptl.kilometers * mileage_pt.list_price as amount,
+                coalesce(ptl.kilometers * mileage_pt.list_price, 0) as amount,
                 ptl.kilometers as unit_amount,
                 ptl.date as date,
                 %(create)s as create_date,
