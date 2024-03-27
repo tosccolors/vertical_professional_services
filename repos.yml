@@ -78,8 +78,10 @@ server-ux:
 timesheet:
   remotes:
     oca: https://github.com/OCA/timesheet
+    hbrunn: https://github.com/hbrunn/hr-timesheet
   merges:
     - oca 14.0
+    - hbrunn 14.0-hr_timesheet_sheet-no-merge-in-onchange
 web:
   remotes:
     oca: https://github.com/OCA/web
