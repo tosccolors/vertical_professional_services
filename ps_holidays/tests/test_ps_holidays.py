@@ -1,6 +1,3 @@
-from datetime import timedelta
-
-from odoo import fields
 from odoo.tests.common import Form, TransactionCase
 
 
@@ -37,40 +34,47 @@ class TestPsHolidays(TransactionCase):
             - leaves
         )
         self.assertTrue(sum(new_leaves.mapped("number_of_days")), 7)
+        self.assertEqual(self.user.employee_id.allocation_used_count, 7)
         self.timesheet.sudo().action_timesheet_draft()
         self.assertFalse(new_leaves.exists())
         self.leave_type.refresh()
         self.assertEqual(self.leave_type.with_user(self.user).leaves_taken, 0)
 
-    def test_ps_holidays_merge(self):
+    def test_ps_holidays_replace(self):
         """Test standard flow with preexisting leave"""
-        self.env["hr.leave"].create(
+        self.env["hr.leave"].with_context(leave_skip_state_check=True).create(
             {
                 "employee_id": self.user.employee_id.id,
                 "date_from": "2023-01-01",
                 "date_to": "2023-01-01",
                 "holiday_status_id": self.leave_type.id,
-                "state": "written",
+                "state": "validate",
             }
         )
         self.test_ps_holidays()
 
-    def test_employee_absence(self):
-        """Test that a leave of type written makes the employee absent"""
-        self.env.cr.execute("delete from hr_leave")
-        self.assertFalse(self.user.employee_id.is_absent)
-        self.env["hr.leave"].create(
-            {
-                "employee_id": self.user.employee_id.id,
-                "date_from": fields.Date.today(),
-                "date_to": fields.Date.today() + timedelta(days=1),
-                "holiday_status_id": self.leave_type.id,
-                "state": "written",
-            }
+    def test_ps_holidays_merge(self):
+        """Test standard flow with preexisting leave"""
+        self.leave_type.validity_start = "2022-12-31"
+        self.env["hr.leave"].with_context(leave_skip_state_check=True).create(
+            [
+                {
+                    "employee_id": self.user.employee_id.id,
+                    "date_from": "2022-12-31",
+                    "date_to": "2022-12-31",
+                    "holiday_status_id": self.leave_type.id,
+                    "state": "validate",
+                },
+                {
+                    "employee_id": self.user.employee_id.id,
+                    "date_from": "2023-01-01",
+                    "date_to": "2023-01-01",
+                    "holiday_status_id": self.leave_type.id,
+                    "state": "validate",
+                },
+            ]
         )
-        self.user.employee_id.refresh()
-        self.assertEqual(self.user.employee_id.current_leave_state, "written")
-        self.assertTrue(self.user.employee_id.is_absent)
+        self.test_ps_holidays()
 
     def test_wizard(self):
         """Test the allocation via wizard"""
