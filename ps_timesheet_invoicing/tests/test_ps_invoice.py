@@ -70,6 +70,8 @@ class TestPsInvoice(TestPsInvoiceBase):
             ps_invoice.user_total_ids.detail_ids + ps_invoice.mileage_line_ids,
             self.ps_line,
         )
+        ps_invoice.unlink()
+        self.assertEqual(set(self.ps_line.mapped("state")), {"invoiceable"})
 
     def test_03_amend_invoice(self):
         ps_line1, mileage_line = self.ps_line

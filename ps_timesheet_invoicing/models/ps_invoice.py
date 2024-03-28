@@ -526,10 +526,8 @@ class PSInvoice(models.Model):
         reset analytic line state to invoiceable
         :return:
         """
-        analytic_lines = self.mapped("user_total_ids.detail_ids")
-        if analytic_lines:
-            analytic_lines.write({"state": "invoiceable"})
-        self._sql_update(self.mileage_line_ids, "invoiceable")
+        self._sql_update(self.mapped("user_total_ids.detail_ids"), "invoiceable")
+        self._sql_update(self.mapped("mileage_line_ids"), "invoiceable")
         return super().unlink()
 
     def _prepare_invoice_line(
