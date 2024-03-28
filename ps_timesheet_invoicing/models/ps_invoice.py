@@ -19,35 +19,6 @@ class PSInvoice(models.Model):
     _order = "date_to desc"
     _rec_name = "partner_id"
 
-    @api.depends("account_analytic_ids", "period_id")
-    def _compute_ps_time_lines(self):
-        if len(self.account_analytic_ids) > 0:
-            account_analytic_ids = self.account_analytic_ids.ids
-            hrs = self.env.ref("uom.product_uom_hour").id
-            domain = [("account_id", "in", account_analytic_ids)]
-            if self.period_id:
-                domain += self.period_id.get_domain("date")
-            time_domain = domain + [
-                ("product_uom_id", "=", hrs),
-                ("state", "in", ["invoiceable", "invoiced"]),
-            ]
-            cost_domain = domain + [("product_uom_id", "!=", hrs), ("amount", "<", 0)]
-            revenue_domain = domain + [
-                ("product_uom_id", "!=", hrs),
-                ("amount", ">", 0),
-            ]
-            self.time_line_ids = self.env["ps.time.line"].search(time_domain).ids
-            self.cost_line_ids = (
-                self.env["account.analytic.line"].search(cost_domain).ids
-            )
-            self.revenue_line_ids = (
-                self.env["account.analytic.line"].search(revenue_domain).ids
-            )
-        else:
-            self.time_line_ids = []
-            self.cost_line_ids = []
-            self.revenue_line_ids = []
-
     @api.depends(
         "period_id",
         "gb_week",
@@ -458,21 +429,6 @@ class PSInvoice(models.Model):
         string="Mileage",
         store=True,
         readonly=True,
-    )
-    time_line_ids = fields.Many2many(
-        "ps.time.line",
-        compute="_compute_ps_time_lines",
-        string="Time Line",
-    )
-    cost_line_ids = fields.Many2many(
-        "account.analytic.line",
-        compute="_compute_ps_time_lines",
-        string="Cost Line",
-    )
-    revenue_line_ids = fields.Many2many(
-        "account.analytic.line",
-        compute="_compute_ps_time_lines",
-        string="Revenue Line",
     )
     user_total_ids = fields.One2many(
         "ps.time.line.user.total",

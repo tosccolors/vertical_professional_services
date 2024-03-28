@@ -186,30 +186,6 @@
                                     </tree>
                                 </field>
                             </page>
-                            <page string="Analytic Cost Lines" name="cost_line">
-                                <field name="cost_line_ids">
-                                    <tree
-                                        string="Cost Lines"
-                                        create="true"
-                                        edit="false"
-                                        delete="true"
-                                        copy="false"
-                                    >
-                                        <field name="user_id" />
-                                        <field name="date" />
-                                        <field
-                                            name="product_id"
-                                            context="{'partner_id': parent.partner_id}"
-                                        />
-                                        <field name="general_account_id" />
-                                        <field name="name" />
-                                        <field name="company_id" invisible="1" />
-                                        <field name="unit_amount" />
-                                        <field name="account_id" />
-                                        <field name="amount" />
-                                    </tree>
-                                </field>
-                            </page>
                             <page
                                 name="expense_line_ids"
                                 string="Expenses"
