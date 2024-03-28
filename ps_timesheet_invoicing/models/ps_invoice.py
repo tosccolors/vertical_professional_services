@@ -285,6 +285,7 @@ class PSInvoice(models.Model):
             if item.get("project_operating_unit_id", False)
             else False,
             "line_fee_rate": item.get("line_fee_rate"),
+            "period_id": self.period_id.id,
         }
         if reconfirmed_entries:
             vals.update(
@@ -585,7 +586,7 @@ class PSInvoice(models.Model):
                     product.uom_id,
                     1,
                     self.env["res.users"],
-                    self.env["account.analytic.account"],
+                    self.account_analytic_ids[:1],
                     self.project_id.ps_fixed_amount,
                 ),
                 name=self.project_id.name,

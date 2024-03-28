@@ -145,6 +145,10 @@ class TestPsInvoiceFixed(TestPsInvoiceBase):
             lambda x: x.tag_ids == value_tag
         )
         self.assertEqual(hours_line.unit_amount, 1)
+        self.assertEqual(
+            invoice.invoice_line_ids.analytic_account_id,
+            ps_invoice.account_analytic_ids,
+        )
         ps_invoice.delete_invoice()
         self.assertFalse((value_line + hours_line).exists())
 
