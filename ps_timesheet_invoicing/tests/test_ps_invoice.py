@@ -8,7 +8,7 @@ class TestPsInvoiceBase(TransactionCase):
         self.ps_line = self.env.ref(
             "ps_timesheet_invoicing.time_line_demo_user_2023_12_18"
         )
-        self._create_ps_invoice()
+        self.ps_invoice = self._create_ps_invoice()
 
     def _create_ps_invoice(self, generate=True):
         wizard = (
@@ -21,11 +21,12 @@ class TestPsInvoiceBase(TransactionCase):
             .create({"name": "invoiceable"})
         )
         wizard.ps_invoice_lines()
-        self.ps_invoice = self.env["ps.invoice"].search(
+        ps_invoice = self.env["ps.invoice"].search(
             [("user_total_ids.detail_ids", "in", self.ps_line.ids)]
         )
         if generate:
-            self.ps_invoice.generate_invoice()
+            ps_invoice.generate_invoice()
+        return ps_invoice
 
 
 class TestPsInvoice(TestPsInvoiceBase):
@@ -69,6 +70,21 @@ class TestPsInvoice(TestPsInvoiceBase):
             ps_invoice.user_total_ids.detail_ids + ps_invoice.mileage_line_ids,
             self.ps_line,
         )
+
+    def test_03_amend_invoice(self):
+        ps_line1, mileage_line = self.ps_line
+        ps_line2 = ps_line1.copy({"state": "open"})
+        self.ps_line = ps_line2
+        ps_invoice = self._create_ps_invoice()
+        self.assertEqual(ps_invoice, self.ps_invoice)
+        self.assertEqual(ps_invoice.user_total_ids.detail_ids, ps_line1 + ps_line2)
+        self.assertEqual(ps_line1.state, "invoice_created")
+        self.assertEqual(ps_line2.state, "invoice_created")
+        self.assertEqual(mileage_line.state, "invoice_created")
+        ps_invoice.invoice_id.action_post()
+        self.assertEqual(ps_line1.state, "invoiced")
+        self.assertEqual(ps_line2.state, "invoiced")
+        self.assertEqual(mileage_line.state, "invoiced")
 
 
 class TestPsInvoiceGrouped(TestPsInvoiceBase):
@@ -131,3 +147,16 @@ class TestPsInvoiceFixed(TestPsInvoiceBase):
         self.assertEqual(hours_line.unit_amount, 1)
         ps_invoice.delete_invoice()
         self.assertFalse((value_line + hours_line).exists())
+
+    def test_03_amend_invoice(self):
+        ps_line1 = self.ps_line
+        ps_line2 = ps_line1.copy({"state": "open"})
+        self.ps_line = ps_line2
+        ps_invoice = self._create_ps_invoice()
+        self.assertEqual(ps_invoice, self.ps_invoice)
+        self.assertEqual(ps_invoice.user_total_ids.detail_ids, ps_line1 + ps_line2)
+        self.assertEqual(ps_line1.state, "invoice_created")
+        self.assertEqual(ps_line2.state, "invoice_created")
+        ps_invoice.invoice_id.action_post()
+        self.assertEqual(ps_line1.state, "invoiced-by-fixed")
+        self.assertEqual(ps_line2.state, "invoiced-by-fixed")

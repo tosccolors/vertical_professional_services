@@ -193,10 +193,11 @@ class PSInvoice(models.Model):
         if not current_ref:
             return [], []
         # get all invoiced user total objs using current reference
+        invoiced_states = ("invoice_created", "invoiced", "invoice-by-fixed")
         user_total_invoiced_lines = self.env["ps.time.line.user.total"].search(
             [
                 ("ps_invoice_id", "=", current_ref),
-                ("state", "in", ("invoice_created", "invoiced")),
+                ("state", "in", invoiced_states),
             ]
         )
         # don't look for ps_time lines which have been already added to other analytic
@@ -204,7 +205,7 @@ class PSInvoice(models.Model):
         other_lines = self.env["ps.time.line.user.total"].search(
             [
                 ("ps_invoice_id", "!=", current_ref),
-                ("state", "not in", ("invoice_created", "invoiced")),
+                ("state", "not in", invoiced_states),
             ]
         )
         for t in other_lines:

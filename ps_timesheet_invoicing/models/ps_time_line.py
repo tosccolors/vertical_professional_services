@@ -284,6 +284,7 @@ class TimeLine(models.Model):
     user_total_id = fields.Many2one(
         "ps.time.line.user.total",
         string="Summary Reference",
+        copy=False,
     )
     date_of_last_wip = fields.Date("Date Of Last WIP")
     date_of_next_reconfirmation = fields.Date("Date Of Next Reconfirmation")
