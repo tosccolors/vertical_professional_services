@@ -15,11 +15,8 @@ class TestHrTimesheet(TransactionCase):
         """Test creating and submitting timesheets"""
         task = self.project.task_ids[:1]
         task.standard = True
-        sheet = (
-            self.env["hr_timesheet.sheet"]
-            .with_user(self.env.ref("base.user_demo"))
-            .create({})
-        )
+        user = self.env.ref("base.user_demo")
+        sheet = self.env["hr_timesheet.sheet"].with_user(user).create({})
         sheet.add_line_project_id = self.project
         sheet.onchange_add_project_id()
         self.assertEqual(sheet.add_line_task_id, task)
@@ -50,6 +47,10 @@ class TestHrTimesheet(TransactionCase):
         self.assertEqual(sheet.overtime_hours_delta, 18)
         next_sheet = sheet.create({})
         next_sheet.duplicate_last_week()
+        self.assertEqual(next_sheet.employee_id, user.employee_id)
+        self.assertEqual(
+            next_sheet.mapped("timesheet_ids.employee_id"), user.employee_id
+        )
         with Form(next_sheet) as sheet_form:
             for i in range(7):
                 with sheet_form.line_ids.edit(i) as day_line:

@@ -626,7 +626,8 @@ class HrTimesheetSheet(models.Model):
                 kilometers,
                 state,
                 non_invoiceable_mileage,
-                product_uom_id )
+                product_uom_id,
+                employee_id)
         SELECT  DISTINCT ON (task_id)
                 ptl.create_uid as create_uid,
                 ptl.user_id as user_id,
@@ -669,7 +670,8 @@ class HrTimesheetSheet(models.Model):
                   WHEN ip.invoice_mileage IS NULL THEN true
                   ELSE ip.invoice_mileage
                 END AS non_invoiceable_mileage,
-                ptl.product_uom_id as product_uom_id
+                ptl.product_uom_id as product_uom_id,
+                ptl.employee_id
         FROM ps_time_line ptl
              LEFT JOIN project_project pp
              ON pp.id = ptl.project_id
