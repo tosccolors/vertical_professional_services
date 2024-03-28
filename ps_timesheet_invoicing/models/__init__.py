@@ -8,7 +8,8 @@ from . import project
 from . import project_task
 from . import project_invoicing_properties
 from . import product
-from . import fleet
+from . import fleet_vehicle
+from . import fleet_vehicle_odometer
 from . import res_users
 from . import hr_department
 from . import hr_employee

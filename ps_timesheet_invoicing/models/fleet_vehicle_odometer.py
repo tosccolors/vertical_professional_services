@@ -5,25 +5,6 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 
 
-class FleetVehicle(models.Model):
-    _inherit = "fleet.vehicle"
-
-    _sql_constraints = [
-        ("driver_uniq", "unique (driver_id)", "The driver already owns a vehicle.")
-    ]
-
-    def _set_odometer(self):
-        for record in self:
-            if record.odometer:
-                date = fields.Date.context_today(record)
-                data = {
-                    "value_update": record.odometer,
-                    "date": date,
-                    "vehicle_id": record.id,
-                }
-                self.env["fleet.vehicle.odometer"].create(data)
-
-
 class FleetVehicleOdometer(models.Model):
     _inherit = "fleet.vehicle.odometer"
 
@@ -31,7 +12,7 @@ class FleetVehicleOdometer(models.Model):
         (
             "date_uniq",
             "unique (date, vehicle_id)",
-            "Odometer records have to have " "a unique date.",
+            "Odometer records have to have a unique date.",
         )
     ]
 
@@ -98,7 +79,7 @@ class FleetVehicleOdometer(models.Model):
 
     @api.model
     def create(self, data):
-        res = super(FleetVehicleOdometer, self).create(data)
+        res = super().create(data)
         if (
             res.date
             < self.sudo()

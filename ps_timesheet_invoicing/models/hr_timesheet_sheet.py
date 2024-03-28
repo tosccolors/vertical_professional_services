@@ -367,6 +367,16 @@ class HrTimesheetSheet(models.Model):
                 )
             )
         res = super().action_timesheet_draft()
+        self._ps_reset_timesheet()
+        return res
+
+    def action_timesheet_refuse(self):
+        result = super().action_timesheet_refuse()
+        self._ps_reset_timesheet()
+        return result
+
+    def _ps_reset_timesheet(self):
+        """Reset PS specific values"""
         if self.timesheet_ids:
             ids = tuple(self.timesheet_ids.ids)
             self.env.cr.execute(
@@ -381,7 +391,6 @@ class HrTimesheetSheet(models.Model):
             self.sudo().odo_log_id.unlink()
         if self.overtime_line_id:
             self.overtime_line_id.unlink()
-        return res
 
     def action_timesheet_confirm(self):
         self._check_end_mileage()
@@ -390,7 +399,7 @@ class HrTimesheetSheet(models.Model):
             self.odo_log_id = self.env["fleet.vehicle.odometer"].create(
                 {
                     "value_period_update": self.business_mileage + self.private_mileage,
-                    "date": self.week_id.date_end or fields.Date.context_today(self),
+                    "date": self.week_id.date_end,
                     "vehicle_id": vehicle.id,
                 }
             )
