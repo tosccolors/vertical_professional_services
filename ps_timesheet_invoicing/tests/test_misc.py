@@ -72,3 +72,11 @@ class TestMisc(TransactionCase):
         )
         self.assertEqual(reversed_move.reversed_entry_id, move)
         self.assertEqual(move.reversal_move_id, reversed_move)
+
+    def test_task_user(self):
+        """Test creating task.user objects"""
+        task_user = self.env.ref("ps_timesheet_invoicing.task_user_task_11")
+        task_user += task_user[:1].copy({"from_date": "2023-01-02"})
+        task_user += task_user[:1].copy({"from_date": "2023-01-03"})
+        task_user._compute_last_valid_fee_rate()
+        self.assertEqual(task_user.filtered("last_valid_fee_rate"), task_user[-1:])

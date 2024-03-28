@@ -11,6 +11,7 @@ access_ps_time_line_user_total_manager,ps_time_line_user_total_manager,model_ps_
 access_ps_time_line_user_total_user,access_ps_time_line_user_total_user,model_ps_time_line_user_total,base.group_user,1,0,0,0
 access_ps_time_line_user,access_ps_time_line_user,model_ps_time_line,base.group_user,1,1,1,1
 access_task_user,access_task_user,model_task_user,base.group_user,1,0,0,0
+access_task_user_manager,access_task_user,model_task_user,ps_project.group_ps_invoicing,1,1,1,1
 access_time_line_status,access_time_line_status,model_time_line_status,base.group_user,1,1,1,1
 access_change_chargecode,access_change_chargecode,model_change_chargecode,group_chargecode_time_admin,1,1,1,1
 access_hr_timesheet_current_open,access_hr_timesheet_current_open,model_hr_timesheet_current_open,base.group_user,1,1,1,1

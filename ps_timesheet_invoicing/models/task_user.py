@@ -30,17 +30,15 @@ class TaskUser(models.Model):
 
     @api.depends("task_id", "user_id", "from_date")
     def _compute_last_valid_fee_rate(self):
-        task_id = self.task_id.id
-        user_id = self.user_id.id
-        task_user = self.search(
-            [("task_id", "=", task_id), ("user_id", "=", user_id)],
-            order="from_date desc",
-            limit=1,
-        )
-        if task_user == self:
-            self.last_valid_fee_rate = True
-        else:
-            self.last_valid_fee_rate = False
+        for this in self:
+            task_id = this.task_id.id
+            user_id = this.user_id.id
+            task_user = self.search(
+                [("task_id", "=", task_id), ("user_id", "=", user_id)],
+                order="from_date desc",
+                limit=1,
+            )
+            this.last_valid_fee_rate = task_user == this
 
     project_id = fields.Many2one(
         related="task_id.project_id",
