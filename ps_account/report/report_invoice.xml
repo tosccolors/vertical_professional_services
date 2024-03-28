@@ -486,7 +486,7 @@
                                         </div>
                                         <t t-foreach="feeLines_value" t-as="proLines">
                                             <t
-                                                t-if="proLines.invoice_properties and proLines.invoice_properties.specs_invoice_report"
+                                                t-if="proLines.invoice_properties.specs_invoice_report"
                                             >
                                                 <div width="85%">
                                                     <strong>
@@ -539,7 +539,7 @@
                                                         t-as="userLine"
                                                     >
                                                         <tr
-                                                            t-if="userLine not in ('amt_tot','hrs_tot')"
+                                                            t-if="not isinstance(userLine, str)"
                                                             style='border-top:none;'
                                                         >
                                                             <td

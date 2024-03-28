@@ -298,6 +298,14 @@ class HrTimesheetSheet(models.Model):
                         )
                     )
 
+    def _check_overlapping_sheets(self):
+        # handled above
+        pass
+
+    def _check_start_end_dates(self):
+        # implicitly handled by those being readonly related fields to period
+        pass
+
     def duplicate_last_week(self):
         if self.week_id and self.employee_id:
             ds = self.week_id.date_start
