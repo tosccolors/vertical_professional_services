@@ -146,12 +146,18 @@
                 <field name="user_id" />
                 <field name="task_id" />
                 <field name="tag_ids" />
+                <field name="period_id" />
                 <filter string="Date" name="date" date="date" />
                 <group string="Group By..." expand="0" name="groupby">
                     <filter
                         string="Analytic Account"
                         name="account_id"
                         context="{'group_by': 'account_id'}"
+                    />
+                    <filter
+                        string="Period"
+                        name="group_period"
+                        context="{'group_by': 'period_id'}"
                     />
                     <filter
                         string="Date"
