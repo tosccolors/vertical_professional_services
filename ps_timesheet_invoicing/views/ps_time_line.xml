@@ -140,6 +140,7 @@
                     domain="[('state','=','change-chargecode')]"
                 />
                 <field name="account_id" />
+                <field name="project_id" />
                 <field name="project_mgr" />
                 <field name="name" />
                 <field name="date" />
