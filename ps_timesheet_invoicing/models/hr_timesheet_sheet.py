@@ -522,53 +522,6 @@ class HrTimesheetSheet(models.Model):
         self.generate_km_lines()
         return res
 
-    def _recompute_timesheet(self, fields):
-        """Recompute this sheet and its lines.
-        This function is called asynchronically after create/write"""
-        for this in self:
-            this.modified(fields)
-            if "timesheet_ids" not in fields:
-                continue
-            this.mapped("timesheet_ids").modified(
-                self.env["ps.time.line"]._fields.keys()
-            )
-        self.recompute()
-
-    def _queue_recompute_timesheet(self, fields):
-        """Queue a recomputation if appropriate"""
-        if not fields or not self:
-            return
-        return self.with_delay(
-            description=" ".join(
-                [self.employee_id.name, self.display_name, str(self.date_start.month)]
-            ),
-            identity_key=self._name
-            + ","
-            + ",".join(map(str, self.ids))
-            + ","
-            + ",".join(fields),
-        )._recompute_timesheet(fields)
-
-    @api.model
-    def create(self, vals):
-        result = super().create(vals)
-        result._queue_recompute_timesheet(["timesheet_ids"])
-        return result
-
-    def write(self, vals):
-        result = super().write(vals)
-        self.env["ps.time.line"].search(
-            [
-                ("sheet_id", "=", self.id),
-                "|",
-                ("unit_amount", ">", 24),
-                ("unit_amount", "<", 0),
-            ]
-        ).write({"unit_amount": 0})
-        if "timesheet_ids" in vals:
-            self._queue_recompute_timesheet(["timesheet_ids"])
-        return result
-
     def action_view_overtime_entry(self):
         self.ensure_one()
         action = self.env.ref("analytic.account_analytic_line_action").sudo()
