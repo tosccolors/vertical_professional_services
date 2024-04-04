@@ -1,0 +1,14 @@
+<odoo>
+    <record
+        id="analytic_tag_fixed_amount_hours_difference"
+        model="account.analytic.tag"
+    >
+        <field name="name">Fixed amount hours difference</field>
+    </record>
+    <record
+        id="analytic_tag_fixed_amount_value_difference"
+        model="account.analytic.tag"
+    >
+        <field name="name">Fixed amount value difference</field>
+    </record>
+</odoo>

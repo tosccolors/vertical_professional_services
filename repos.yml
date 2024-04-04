@@ -8,6 +8,15 @@ account-financial-tools:
     oca: https://github.com/OCA/account-financial-tools
   merges:
     - oca 14.0
+account-invoicing:
+  remotes:
+    oca: https://github.com/OCA/account-invoicing
+  merges:
+    - oca 14.0
+    # merge invoice line names
+    - oca refs/pull/1402/head
+    # fix dirty check
+    - oca refs/pull/1696/head
 account-payment:
   remotes:
     oca: https://github.com/OCA/account-payment
@@ -21,6 +30,11 @@ bank-payment:
 community-data-files:
   remotes:
     oca: https://github.com/OCA/community-data-files
+  merges:
+    - oca 14.0
+contract:
+  remotes:
+    oca: https://github.com/OCA/contract
   merges:
     - oca 14.0
 crm:
@@ -48,6 +62,11 @@ queue:
     oca: https://github.com/OCA/queue
   merges:
     - oca 14.0
+reporting-engine:
+  remotes:
+    oca: https://github.com/OCA/reporting-engine
+  merges:
+    - oca 14.0
 server-backend:
   remotes:
     oca: https://github.com/OCA/server-backend
@@ -61,8 +80,10 @@ server-ux:
 timesheet:
   remotes:
     oca: https://github.com/OCA/timesheet
+    hbrunn: https://github.com/hbrunn/hr-timesheet
   merges:
     - oca 14.0
+    - hbrunn 14.0-hr_timesheet_sheet-no-merge-in-onchange
 web:
   remotes:
     oca: https://github.com/OCA/web

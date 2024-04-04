@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="view_department_form_operating_unit" model="ir.ui.view">
+            <field name="name">hr.department</field>
+            <field name="model">hr.department</field>
+            <field name="inherit_id" ref="ps_crm.view_department_form_operating_unit" />
+            <field name="arch" type="xml">
+                <field name="operating_unit_id" position="after">
+                    <field name="no_ott_check" />
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,7 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <record id="project_invoicing_property_time_spent" model="project.invoicing.properties">
+    <record
+        id="project_invoicing_property_time_spent"
+        model="project.invoicing.properties"
+    >
         <field name="name">Time spent</field>
         <field name="actual_time_spent" eval="True" />
+        <field name="actual_expenses" eval="True" />
+        <field name="invoice_mileage" eval="True" />
+        <field name="specs_invoice_report" eval="True" />
+    </record>
+    <record
+        id="project_invoicing_property_time_spent_grouped"
+        model="project.invoicing.properties"
+    >
+        <field name="name">Time spent (grouped)</field>
+        <field name="actual_time_spent" eval="True" />
+        <field name="actual_expenses" eval="True" />
+        <field name="specs_invoice_report" eval="True" />
+        <field name="group_invoice" eval="True" />
+    </record>
+    <record
+        id="project_invoicing_property_fixed_amount"
+        model="project.invoicing.properties"
+    >
+        <field name="name">Fixed amount</field>
+        <field name="specs_invoice_report" eval="True" />
+        <field name="fixed_amount" eval="True" />
     </record>
 </odoo>

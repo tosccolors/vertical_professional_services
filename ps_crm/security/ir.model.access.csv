@@ -30,4 +30,3 @@ access_account_tax_group_sale_manager_mgs,account.tax.group sale manager,account
 access_crm_monthly_revenue_reg_usr,crm.monthly.revenue.manager,model_crm_monthly_revenue,ps_crm.group_sale_regular_user,1,1,1,1
 access_crm_revenue_split_reg_usr,crm.revenue.split,model_crm_revenue_split,ps_crm.group_sale_regular_user,1,1,1,1
 access_crm_lead_mgs,sale.order,crm.model_crm_lead,ps_crm.group_sale_regular_user,1,1,1,1
-

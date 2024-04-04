@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record
+        id="ps_timesheet_invoicing.project_invoicing_property_time_spent"
+        model="project.invoicing.properties"
+    >
+        <field name="specs_on_task_level" eval="True" />
+    </record>
+</odoo>

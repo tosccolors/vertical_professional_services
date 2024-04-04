@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record model="ir.ui.view" id="project_invoicing_period_tree_view">
+        <field name="name">Invoicing Properties</field>
+        <field name="model">project.invoicing.properties</field>
+        <field name="arch" type="xml">
+            <tree string="Invoicing Period">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="project_invoicing_Period_form_view">
+        <field name="name">Invoicing Properties</field>
+        <field name="model">project.invoicing.properties</field>
+        <field name="arch" type="xml">
+            <form string="Invoicing Period">
+                <sheet>
+                    <group col="4">
+                        <field name="name" colspan="4" />
+                        <field
+                            name="actual_time_spent"
+                            attrs="{'invisible': [('fixed_amount', '=', True)]}"
+                        />
+                        <field
+                            name="fixed_amount"
+                            attrs="{'invisible': [('actual_time_spent', '=', True)]}"
+                        />
+                        <field name="actual_expenses" />
+                        <field name="actual_costs" />
+                        <field name="specs_invoice_report" />
+                    </group>
+                    <group
+                        name="specs"
+                        string="Specifications"
+                        attrs="{'invisible':[('specs_invoice_report','=',False)]}"
+                    >
+                        <field
+                            name="specs_type"
+                            attrs="{'required':[('specs_invoice_report','=',True)]}"
+                        />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="project_invoicing_properties_action" model="ir.actions.act_window">
+        <field name="name">Invoicing Properties</field>
+        <field name="res_model">project.invoicing.properties</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+                Click to add a new project invoicing properties.
+            </p>
+        </field>
+    </record>
+</odoo>

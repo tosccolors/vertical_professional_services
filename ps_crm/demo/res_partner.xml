@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="lead_main_partner" model="res.partner">
+        <field name="name">Lead</field>
+    </record>
+    <record id="lead_main_partner_contact" model="res.partner">
+        <field name="name">Contact</field>
+        <field name="type">contact</field>
+        <field name="parent_id" ref="lead_main_partner" />
+    </record>
+</odoo>

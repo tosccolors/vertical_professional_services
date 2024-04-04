@@ -1,15 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="time_line_demo_user_2023_12_18" model="ps.time.line">
         <field name="user_id" ref="base.user_demo" />
         <field name="project_id" ref="project.project_project_2" />
         <field name="task_id" ref="project.project_task_11" />
-        <field name="name">/</field>
+        <field name="name">Timeline for 2023-12-18</field>
         <field name="unit_amount">1</field>
         <field name="amount">42</field>
         <field name="date">2023-12-18</field>
         <field name="state">open</field>
-        <field name="account_id" ref="analytic.analytic_nebula" />
+        <field
+            name="account_id"
+            search="[('project_ids', '=', ref('project.project_project_2'))]"
+        />
+        <field name="partner_id" ref="base.res_partner_12" />
+    </record>
+    <record id="time_line_demo_user_2023_12_18_mileage" model="ps.time.line">
+        <field name="user_id" ref="base.user_demo" />
+        <field name="project_id" ref="project.project_project_2" />
+        <field name="task_id" ref="project.project_task_11" />
+        <field name="name">Mileage</field>
+        <field name="product_id" ref="product_mileage" />
+        <field name="product_uom_id" ref="uom.product_uom_km" />
+        <field name="unit_amount">100</field>
+        <field name="amount">4.2</field>
+        <field name="date">2023-12-18</field>
+        <field name="state">open</field>
+        <field
+            name="account_id"
+            search="[('project_ids', '=', ref('project.project_project_2'))]"
+        />
+        <field name="partner_id" ref="base.res_partner_12" />
+    </record>
+    <record id="time_line_demo_user_2023_12_19" model="ps.time.line">
+        <field name="user_id" ref="base.user_demo" />
+        <field name="project_id" ref="project.project_project_1" />
+        <field name="task_id" ref="project.project_task_1" />
+        <field name="name">Timeline for 2023-12-19</field>
+        <field name="unit_amount">1</field>
+        <field name="amount">42</field>
+        <field name="date">2023-12-19</field>
+        <field name="state">open</field>
+        <field
+            name="account_id"
+            search="[('project_ids', '=', ref('project.project_project_2'))]"
+        />
         <field name="partner_id" ref="base.res_partner_12" />
     </record>
 </odoo>

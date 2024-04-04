@@ -1,0 +1,5 @@
+<odoo>
+    <record id="project.project_project_2" model="project.project">
+        <field name="code">42</field>
+    </record>
+</odoo>

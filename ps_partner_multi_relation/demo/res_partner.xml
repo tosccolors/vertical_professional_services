@@ -1,0 +1,6 @@
+<odoo>
+    <record id="partner_consortium" model="res.partner">
+        <field name="name">Demo consortium</field>
+        <field name="is_company" eval="True" />
+    </record>
+</odoo>

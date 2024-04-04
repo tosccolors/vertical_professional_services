@@ -42,11 +42,6 @@ msgid "Datum regel naar SLAM"
 msgstr ""
 
 #. module: ps_account
-#: model:ir.model.fields,field_description:ps_account.field_account_invoice_invoice_description
-msgid "Description"
-msgstr "Omschrijving"
-
-#. module: ps_account
 #: model:ir.model.fields,help:ps_account.field_account_journal_slam_relevant
 msgid "If the journal entries of theis journal should be exported to SLAM"
 msgstr ""
@@ -180,3 +175,4 @@ msgstr "aan"
 #: model:ir.ui.view,arch_db:ps_account.report_invoice_document_ps_account
 msgid "PROFORMA INVOICE"
 msgstr "PROFORMA FACTUUR"
+

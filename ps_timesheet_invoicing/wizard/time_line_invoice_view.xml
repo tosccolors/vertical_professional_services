@@ -1,36 +1,51 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="view_time_line_status" model="ir.ui.view">
         <field name="name">Time Line Status</field>
         <field name="model">time.line.status</field>
         <field name="arch" type="xml">
             <form string="Time Line Status">
-                <p>
-                    All selected analytic entries will be marked as following.
-                </p>
-                <field name="name" col="4" colspan="6" required="True"/>
+                <p>All selected analytic entries will be marked as following.</p>
+                <field name="name" col="4" colspan="6" required="True" />
                 <group attrs="{'invisible':[('name','!=','delayed')]}">
-                    <field name="wip"/>
-                    <field name="wip_month_ids" widget="many2many_tags" readonly="1"/>
-                    <field name="wip_percentage" attrs="{'invisible':[('wip','=',False)], 'required':[('wip','=',True)]}"/>
-                    <field name="description" attrs="{'invisible':[('wip','=',False)], 'required':[('wip','=',True)]}"/>
+                    <field name="wip" />
+                    <field name="wip_month_ids" widget="many2many_tags" readonly="1" />
+                    <field
+                        name="wip_percentage"
+                        attrs="{'invisible':[('wip','=',False)], 'required':[('wip','=',True)]}"
+                    />
+                    <field
+                        name="description"
+                        attrs="{'invisible':[('wip','=',False)], 'required':[('wip','=',True)]}"
+                    />
                 </group>
                 <footer>
-                    <button name="ps_invoice_lines" string="Update Entries" type="object" class="oe_highlight"/>
-                    <button name="prepare_ps_invoice" string="Make PS invoice" type="object"
-                            class="oe_highlight" attrs="{'invisible':[('name','=','delayed')]}"/>
+                    <button
+                        name="ps_invoice_lines"
+                        string="Update Entries"
+                        type="object"
+                        class="oe_highlight"
+                    />
+                    <button
+                        name="prepare_ps_invoice"
+                        string="Make PS invoice"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible':[('name','=','delayed')]}"
+                    />
                     <button string="Cancel" class="oe_link" special="cancel" />
                 </footer>
             </form>
         </field>
     </record>
-
     <record model="ir.actions.act_window" id="time_line_status">
         <field name="name">Update Entries</field>
         <field name="res_model">time.line.status</field>
         <field name="view_mode">form</field>
-        <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="binding_model_id" ref="ps_timesheet_invoicing.model_ps_time_line" />
+        <field
+            name="binding_model_id"
+            ref="ps_timesheet_invoicing.model_ps_time_line"
+        />
     </record>
 </odoo>

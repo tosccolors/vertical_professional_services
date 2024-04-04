@@ -1,0 +1,5 @@
+<odoo>
+    <record id="base.main_company" model="res.company">
+        <field name="decl_journal_id" search="[('type', '=', 'purchase')]" />
+    </record>
+</odoo>

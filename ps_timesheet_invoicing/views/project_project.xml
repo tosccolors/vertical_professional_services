@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="project_invoice_form_inherited" model="ir.ui.view">
+        <field name="name">Inherit project form : Invoicing Data</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="hr_timesheet.project_invoice_form" />
+        <field name="priority">24</field>
+        <field name="arch" type="xml">
+            <group name="ps_flags" position="inside">
+                <field name="overtime" string="Overtime Taken" />
+                <field name="overtime_hrs" string="Overtime hours" />
+            </group>
+            <field name="ps_date_range_type_id" position="before">
+                <field name="invoice_properties_invoice_mileage" invisible="True" />
+                <field
+                    name="ps_mileage_product_id"
+                    attrs="{'invisible': [('invoice_properties_invoice_mileage', '=', False)], 'required': [('invoice_properties_invoice_mileage', '=', True)]}"
+                />
+            </field>
+        </field>
+    </record>
+    <record id="edit_project_ps_timesheet_invoicing" model="ir.ui.view">
+        <field name="name">project.project.form</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project" />
+        <field name="arch" type="xml">
+            <xpath expr="//button[last()]" position="after">
+                <div class="oe_button_box" name="button_box">
+                    <button
+                        name="action_view_invoice"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-pencil-square-o"
+                        string="Invoices"
+                    />
+                </div>
+            </xpath>
+        </field>
+    </record>
+</odoo>

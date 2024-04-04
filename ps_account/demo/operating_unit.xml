@@ -1,0 +1,9 @@
+<odoo>
+    <record id="operating_unit.main_operating_unit" model="operating.unit">
+        <field
+            name="report_background_image1"
+            file="ps_account/static/src/img/icon.png"
+            type="base64"
+        />
+    </record>
+</odoo>

@@ -1,0 +1,20 @@
+<odoo>
+    <record id="relation_azure" model="res.partner.relation">
+        <field name="left_partner_id" ref="partner_consortium" />
+        <field name="right_partner_id" ref="base.res_partner_12" />
+        <field name="type_id" ref="rel_type_consortium" />
+        <field name="distribution_key">1</field>
+    </record>
+    <record id="relation_deco_addict" model="res.partner.relation">
+        <field name="left_partner_id" ref="partner_consortium" />
+        <field name="right_partner_id" ref="base.res_partner_2" />
+        <field name="type_id" ref="rel_type_consortium" />
+        <field name="distribution_key">1</field>
+    </record>
+    <record id="relation_lumber_inc" model="res.partner.relation">
+        <field name="left_partner_id" ref="partner_consortium" />
+        <field name="right_partner_id" ref="base.res_partner_18" />
+        <field name="type_id" ref="rel_type_consortium" />
+        <field name="distribution_key">2</field>
+    </record>
+</odoo>

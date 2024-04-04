@@ -16,11 +16,13 @@ jobs:
       - name: Build docker image
         run: |
           git config --global init.defaultBranch main
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
           pip install git-aggregator
           cd _docker
           mkdir -p  odoo/local-src odoo/external-src data songs
           # TODO: once they are migrated, add more ps_* modules here
-          cp -r ../ps_{crm,date_range_week,hr,timesheet_invoicing,project} odoo/local-src
+          cp -r ../ps_{account,calendar,contract,crm,date_range_week,expense,fleet,landing_page,hr,holidays,timesheet_invoicing,partner_multi_relation,project} odoo/local-src
           cd odoo/external-src
           gitaggregate -c ../../../repos.yml
           cd ../..

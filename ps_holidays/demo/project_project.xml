@@ -1,0 +1,6 @@
+<odoo>
+    <record id="project_holidays" model="project.project">
+        <field name="name">Holidays project</field>
+        <field name="holiday_consumption" eval="True" />
+    </record>
+</odoo>

@@ -1,0 +1,6 @@
+<odoo>
+    <record id="task_holidays" model="project.task">
+        <field name="project_id" ref="project_holidays" />
+        <field name="name">Holidays task</field>
+    </record>
+</odoo>

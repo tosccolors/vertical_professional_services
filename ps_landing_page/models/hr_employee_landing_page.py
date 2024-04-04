@@ -1,258 +1,288 @@
-# -*- coding: utf-8 -*-
+from datetime import datetime
 
-from odoo import models, fields, api, _
-from datetime import datetime, timedelta, date
-
-
-class hr_employee_landing_page(models.TransientModel):
-	_name = 'hr.employee.landing_page'
-	_description = 'Employee landing page'
-	_rec_name = 'employee_id'
-
-	@api.depends('employee_id')
-	def _compute_all(self):
-
-		#current week
-		self.env.cr.execute("""SELECT * FROM date_range 
-								WHERE date_start <= NOW()::date 
-								AND date_end >=NOW()::date
-								AND type_id = (SELECT id FROM date_range_type WHERE calender_week = true)
-								LIMIT 1
-							""")
-		current_week_id = self.env.cr.fetchone()[0]
-
-		next_week_id = self.get_upcoming_week()
-		if current_week_id == next_week_id.id or current_week_id < next_week_id.id:
-			self.current_week = True
-		else:
-			self.current_week = False
-
-		if next_week_id:
-			self.next_week_id = next_week_id.name
-			self.next_week_id1 = next_week_id.name
-
-		#compute vaction balance
-		vacation_balance = 0
-		if self.employee_id:
-			self.env.cr.execute("""
-					SELECT allocated_leaves-leaves_taken FROM
-						(SELECT 
-							SUM(number_of_days) as allocated_leaves, employee_id
-							FROM hr_leave_allocation
-							WHERE employee_id = %s
-							  AND state = %s
-							GROUP BY employee_id) hr1
-						JOIN (SELECT 
-							SUM(number_of_days) as leaves_taken, employee_id
-							FROM hr_leave
-							WHERE employee_id = %s
-							  AND state != %s
-							GROUP BY employee_id ) hr2
-						on hr1.employee_id = hr2.employee_id
-			""", (self.employee_id.id, 'validate', self.employee_id.id, 'refuse'))
-			for x in self.env.cr.fetchall():
-				vacation_balance += x[0]
-
-		self.vacation_balance = vacation_balance
-
-		user_id = self.env.user.id
-		# compute overtime balance
-		self.env.cr.execute("""
-				SELECT overtime_hrs-overtime_taken FROM
-					(SELECT 
-						SUM(unit_amount) as overtime_hrs, user_id
-						FROM account_analytic_line
-						WHERE user_id = %s
-						  AND ot = true
-						  AND product_uom_id = 5
-						GROUP BY user_id) aa1
-					JOIN (SELECT 
-						SUM(unit_amount) as overtime_taken, user_id
-						FROM account_analytic_line
-						WHERE user_id = %s
-						  AND state != %s
-						  AND project_id IN (SELECT id FROM project_project WHERE overtime = true)
-						  AND product_uom_id = 5
-						GROUP BY user_id ) aa2
-					on aa1.user_id = aa2.user_id
-				""", (user_id, user_id, 'draft'))
-		overtime_balance = 0
-		for x in self.env.cr.fetchall():
-			overtime_balance += x[0]
-		self.overtime_balance = overtime_balance
+from odoo import _, api, fields, models
 
 
-		current_year = datetime.now()
-		first_date = str(current_year.year) + '-1-1'
-		last_date = str(current_year.year) + '-12-31'
-		hr_timesheet = self.env['hr_timesheet.sheet']
+class HrEmployeeLandingPage(models.TransientModel):
+    _name = "hr.employee.landing_page"
+    _description = "Employee landing page"
+    _rec_name = "employee_id"
 
-		# compute private milage, Note: private_mileage is an computed field can't be calulated through SQl
-		self.private_km_balance = sum(hr_timesheet.search([('employee_id', '=', self.employee_id.id),'&',('week_id.date_start','>=',first_date),('week_id.date_end','<=',last_date)]).mapped('private_mileage'))
+    @api.depends("employee_id")
+    def _compute_all(self):
 
+        # current week
+        self.env.cr.execute(
+            """SELECT * FROM date_range
+            WHERE date_start <= NOW()::date
+            AND date_end >=NOW()::date
+            AND type_id = (SELECT id FROM date_range_type WHERE calender_week = true)
+            LIMIT 1"""
+        )
+        current_week_id = self.env.cr.fetchone()[0]
 
-		#my timesheet status
-		timesheet_ids = []
-		if self.employee_id:
-			self.env.cr.execute("""SELECT 
-										id
-										FROM hr_timesheet_sheet
-										WHERE employee_id = %s
-										AND state IN %s
-										ORDER BY id DESC
-										LIMIT 10
-											""", (self.employee_id.id, ('draft', 'new', 'confirm'),))
-			timesheet_ids = [x[0] for x in self.env.cr.fetchall()]
-		self.emp_timesheet_status_ids = [(6, 0, timesheet_ids)]
+        next_week_id = self.get_upcoming_week()
+        if current_week_id == next_week_id.id or current_week_id < next_week_id.id:
+            self.current_week = True
+        else:
+            self.current_week = False
 
-		#to be approved timesheet
-		self.env.cr.execute("""SELECT 
-								id
-								FROM hr_timesheet_sheet
-								WHERE
-								state != 'done' AND
-								 id IN 
-									(SELECT hr_timesheet_sheet_id 
-									FROM hr_timesheet_sheet_res_users_rel 
-									WHERE res_users_id = %s)
-								 ORDER BY id DESC
-								  LIMIT 10 
-								""", (user_id,))
-		to_be_approved_sheets = [x[0] for x in self.env.cr.fetchall()]
-		self.emp_timesheet_to_be_approved_ids = [(6, 0, to_be_approved_sheets)]
+        if next_week_id:
+            self.next_week_id = next_week_id.name
+            self.next_week_id1 = next_week_id.name
 
-		# my expense status
-		expense_ids = []
-		if self.employee_id:
-			self.env.cr.execute("""SELECT 
-						id
-						FROM hr_expense_sheet
-						WHERE employee_id = %s
-						AND state NOT IN %s
-						ORDER BY id DESC
-						LIMIT 10 
-						""", (self.employee_id.id, ('post', 'done', 'cancel'),))
-			expense_ids = [x[0] for x in self.env.cr.fetchall()]
-		self.emp_expense_status_ids = [(6, 0, expense_ids)]
+        # compute vaction balance
+        vacation_balance = 0
+        if self.employee_id:
+            self.env.cr.execute(
+                """
+                SELECT allocated_leaves-leaves_taken FROM
+                    (SELECT
+                        SUM(number_of_days) as allocated_leaves, employee_id
+                        FROM hr_leave_allocation
+                        WHERE employee_id = %s
+                          AND state = %s
+                        GROUP BY employee_id) hr1
+                    JOIN (SELECT
+                        SUM(number_of_days) as leaves_taken, employee_id
+                        FROM hr_leave
+                        WHERE employee_id = %s
+                          AND state != %s
+                        GROUP BY employee_id ) hr2
+                    on hr1.employee_id = hr2.employee_id""",
+                (self.employee_id.id, "validate", self.employee_id.id, "refuse"),
+            )
+            for x in self.env.cr.fetchall():
+                vacation_balance += x[0]
 
-		to_be_approved_expense_ids = self.env['hr.expense.sheet'].search([('employee_id', '!=', self.employee_id.id),('state', '=', 'submit')], order='id Desc', limit=10)
-		self.emp_expense_to_be_approved_ids = [(6, 0, to_be_approved_expense_ids.ids)]
+        self.vacation_balance = vacation_balance
 
+        user_id = self.env.user.id
+        # compute overtime balance
+        self.env.cr.execute(
+            """
+            SELECT overtime_balanced FROM
+            overtime_balance_report
+            WHERE user_id=%s
+            """,
+            (user_id,),
+        )
+        overtime_balance = 0
+        for x in self.env.cr.fetchall():
+            overtime_balance += x[0]
+        self.overtime_balance = overtime_balance
 
-	def _default_employee(self):
-		emp_ids = self.env['hr.employee'].search([('user_id', '=', self.env.uid)])
-		return emp_ids and emp_ids[0] or False
+        current_year = datetime.now()
+        first_date = str(current_year.year) + "-1-1"
+        last_date = str(current_year.year) + "-12-31"
+        hr_timesheet = self.env["hr_timesheet.sheet"]
 
-	employee_id = fields.Many2one('hr.employee', string='Employee', default=_default_employee, required=True)
-	next_week_id = fields.Char(string="Week To Submit")
-	next_week_id1 = fields.Char(string="Week To Submit")
-	vacation_balance = fields.Integer(compute='_compute_all', string="Vacation Balance")
-	overtime_balance = fields.Integer(compute='_compute_all', string="Overtime Balance")
-	private_km_balance = fields.Integer(compute='_compute_all', string="Private Mileage Balance")
-	emp_timesheet_status_ids = fields.Many2many('hr_timesheet.sheet', compute='_compute_all', string="My Timesheet Status")
-	emp_timesheet_to_be_approved_ids = fields.Many2many('hr_timesheet.sheet', compute='_compute_all', string="Timesheet To Be Approved")
-	emp_expense_status_ids = fields.Many2many('hr.expense.sheet', compute='_compute_all', string="My Expense Status")
-	emp_expense_to_be_approved_ids = fields.Many2many('hr.expense.sheet', compute='_compute_all', string="Expense To Be Approved")
-	current_week = fields.Boolean(compute='_compute_all')
+        # compute private milage, Note: private_mileage is an computed field can't
+        # be calulated through SQl
+        self.private_km_balance = sum(
+            hr_timesheet.search(
+                [
+                    ("employee_id", "=", self.employee_id.id),
+                    "&",
+                    ("week_id.date_start", ">=", first_date),
+                    ("week_id.date_end", "<=", last_date),
+                ]
+            ).mapped("private_mileage")
+        )
 
+        # my timesheet status
+        timesheet_ids = []
+        if self.employee_id:
+            self.env.cr.execute(
+                """SELECT
+                id
+                FROM hr_timesheet_sheet
+                WHERE employee_id = %s
+                AND state IN %s
+                ORDER BY id DESC
+                LIMIT 10""",
+                (
+                    self.employee_id.id,
+                    ("draft", "new", "confirm"),
+                ),
+            )
+            timesheet_ids = [x[0] for x in self.env.cr.fetchall()]
+        self.emp_timesheet_status_ids = [(6, 0, timesheet_ids)]
 
-	def get_upcoming_week(self):
-		result = self.env['hr.timesheet.current.open'].open_timesheet()
-		hr_timesheet = self.env['hr_timesheet.sheet']
-		if 'res_id' in result:
-			return hr_timesheet.browse(result['res_id']).week_id
-		return hr_timesheet.get_week_to_submit()
+        # to be approved timesheet
+        self.env.cr.execute(
+            """SELECT
+            id
+            FROM hr_timesheet_sheet
+            WHERE
+            state != 'done' AND
+             id IN
+                (SELECT hr_timesheet_sheet_id
+                FROM hr_timesheet_sheet_res_users_rel
+                WHERE res_users_id = %s)
+             ORDER BY id DESC
+              LIMIT 10
+            """,
+            (user_id,),
+        )
+        to_be_approved_sheets = [x[0] for x in self.env.cr.fetchall()]
+        self.emp_timesheet_to_be_approved_ids = [(6, 0, to_be_approved_sheets)]
 
-	# @api.multi
-	def action_view_timesheet(self):
-		self.ensure_one()
-		return self.env['hr.timesheet.current.open'].open_timesheet()
+        # my expense status
+        expense_ids = []
+        if self.employee_id:
+            self.env.cr.execute(
+                """SELECT
+                id
+                FROM hr_expense_sheet
+                WHERE employee_id = %s
+                AND state NOT IN %s
+                ORDER BY id DESC
+                LIMIT 10
+                """,
+                (
+                    self.employee_id.id,
+                    ("post", "done", "cancel"),
+                ),
+            )
+            expense_ids = [x[0] for x in self.env.cr.fetchall()]
+        self.emp_expense_status_ids = [(6, 0, expense_ids)]
 
-	# @api.multi
-	def action_view_leaves_dashboard(self):
-		self.ensure_one()
-		ir_model_data = self.env['ir.model.data']
-		tree_res = ir_model_data.get_object_reference('ps_landing_page', 'view_holiday_landing_page')
-		tree_id = tree_res and tree_res[1] or False
-		self.env.cr.execute("""SELECT 
-									id
-									FROM hr_leave                               
-									WHERE employee_id = %s
-									AND (state = 'validate' OR state = 'written')                  
-									""", (self.employee_id.id,))
+        to_be_approved_expense_ids = self.env["hr.expense.sheet"].search(
+            [("employee_id", "!=", self.employee_id.id), ("state", "=", "submit")],
+            order="id Desc",
+            limit=10,
+        )
+        self.emp_expense_to_be_approved_ids = [(6, 0, to_be_approved_expense_ids.ids)]
 
-		holidays = [x[0] for x in self.env.cr.fetchall()]
-		return {
-			'name': _('Leaves'),
-			'type': 'ir.actions.act_window',
-			'view_type': 'form',
-			'view_mode': 'tree',
-			'res_model': 'hr.leave',
-			'views': [(tree_id, 'tree')],
-			'view_id': tree_id,
-			'target': 'current',
-			'domain': [('id', 'in', holidays)],
-			'context': {'search_default_year': 1, 'search_default_group_employee': 1},
-		}
+    def _default_employee(self):
+        emp_ids = self.env["hr.employee"].search([("user_id", "=", self.env.uid)])
+        return emp_ids and emp_ids[0] or False
 
-	# @api.multi
-	def action_view_timesheet_tree(self):
-		self.ensure_one()
-		ir_model_data = self.env['ir.model.data']
-		tree_res = ir_model_data.get_object_reference('hr_timesheet_sheet', 'hr_timesheet_sheet_tree')
-		tree_id = tree_res and tree_res[1] or False
-		return {
-			'name': _('Timesheet'),
-			'type': 'ir.actions.act_window',
-			'view_type': 'form',
-			'view_mode': 'tree',
-			'res_model': 'hr_timesheet.sheet',
-			'views': [(tree_id, 'tree')],
-			'view_id': tree_id,
-			'target': 'current',
-			'domain': [('employee_id.user_id', '=', self.env.uid)],
-		}
+    employee_id = fields.Many2one(
+        "hr.employee", string="Employee", default=_default_employee, required=True
+    )
+    next_week_id = fields.Char(string="Week To Submit")
+    next_week_id1 = fields.Char(string="Week To Submit")
+    vacation_balance = fields.Integer(compute="_compute_all", string="Vacation Balance")
+    overtime_balance = fields.Integer(compute="_compute_all", string="Overtime Balance")
+    private_km_balance = fields.Integer(
+        compute="_compute_all", string="Private Mileage Balance"
+    )
+    emp_timesheet_status_ids = fields.Many2many(
+        "hr_timesheet.sheet", compute="_compute_all", string="My Timesheet Status"
+    )
+    emp_timesheet_to_be_approved_ids = fields.Many2many(
+        "hr_timesheet.sheet", compute="_compute_all", string="Timesheet To Be Approved"
+    )
+    emp_expense_status_ids = fields.Many2many(
+        "hr.expense.sheet", compute="_compute_all", string="My Expense Status"
+    )
+    emp_expense_to_be_approved_ids = fields.Many2many(
+        "hr.expense.sheet", compute="_compute_all", string="Expense To Be Approved"
+    )
+    current_week = fields.Boolean(compute="_compute_all")
 
-	# @api.multi
-	def action_view_analytic_tree(self):
-		self.ensure_one()
-		ir_model_data = self.env['ir.model.data']
-		tree_res = ir_model_data.get_object_reference('ps_landing_page', 'view_account_analytic_line_landing_page_tree')
-		tree_id = tree_res and tree_res[1] or False
+    def get_upcoming_week(self):
+        result = self.env["hr.timesheet.current.open"].open_timesheet()
+        hr_timesheet = self.env["hr_timesheet.sheet"]
+        if "res_id" in result:
+            return hr_timesheet.browse(result["res_id"]).week_id
+        return hr_timesheet.get_week_to_submit()
 
-		user_id = self.env.user.id
-		self.env.cr.execute("""
-					SELECT aa1.id, aa2.id FROM
-						(SELECT 
-							id, user_id
-							FROM account_analytic_line                               
-							WHERE user_id = %s
-							  AND ot = true
-							) aa1
-						JOIN (SELECT id, user_id
-							FROM account_analytic_line                               
-							WHERE user_id = %s
-							  AND state != %s
-							  AND project_id IN (SELECT id FROM project_project WHERE overtime = true)
-							 ) aa2
-						on aa1.user_id = aa2.user_id
-					""", (user_id, user_id, 'draft'))
+    def action_view_timesheet(self):
+        self.ensure_one()
+        return self.env["hr.timesheet.current.open"].open_timesheet()
 
-		entries = [t for item in self.env.cr.fetchall() for t in item]
-		entries = list(set(entries))
+    def action_view_leaves_dashboard(self):
+        self.ensure_one()
+        ir_model_data = self.env["ir.model.data"]
+        tree_res = ir_model_data.get_object_reference(
+            "hr_holidays", "hr_leave_view_tree"
+        )
+        tree_id = tree_res and tree_res[1] or False
+        self.env.cr.execute(
+            """SELECT
+            id
+            FROM hr_leave
+            WHERE employee_id = %s
+            AND (state = 'validate' OR state = 'written')
+            """,
+            (self.employee_id.id,),
+        )
 
-		return {
-			'name': _('Analytic Entries'),
-			'type': 'ir.actions.act_window',
-			'view_type': 'form',
-			'view_mode': 'tree',
-			'res_model': 'account.analytic.line',
-			'views': [(tree_id, 'tree')],
-			'view_id': tree_id,
-			'target': 'current',
-			'domain': [('id', 'in', entries)],
-		}
+        holidays = [x[0] for x in self.env.cr.fetchall()]
+        return {
+            "name": _("Leaves"),
+            "type": "ir.actions.act_window",
+            "view_type": "form",
+            "view_mode": "tree",
+            "res_model": "hr.leave",
+            "views": [(tree_id, "tree")],
+            "view_id": tree_id,
+            "target": "current",
+            "domain": [("id", "in", holidays)],
+            "context": {"search_default_year": 1, "search_default_group_employee": 1},
+        }
 
-	# @api.multi
-	def no_popup_window(self):
-		return {'type': 'ir.actions.act_window_close'}
+    def action_view_timesheet_tree(self):
+        self.ensure_one()
+        ir_model_data = self.env["ir.model.data"]
+        tree_res = ir_model_data.get_object_reference(
+            "hr_timesheet_sheet", "hr_timesheet_sheet_tree"
+        )
+        tree_id = tree_res and tree_res[1] or False
+        return {
+            "name": _("Timesheet"),
+            "type": "ir.actions.act_window",
+            "view_type": "form",
+            "view_mode": "tree",
+            "res_model": "hr_timesheet.sheet",
+            "views": [(tree_id, "tree")],
+            "view_id": tree_id,
+            "target": "current",
+            "domain": [("employee_id.user_id", "=", self.env.uid)],
+        }
+
+    def action_view_analytic_tree(self):
+        self.ensure_one()
+        ir_model_data = self.env["ir.model.data"]
+        tree_res = ir_model_data.get_object_reference(
+            "ps_timesheet_invoicing", "view_ps_time_line_tree"
+        )
+        tree_id = tree_res and tree_res[1] or False
+
+        user_id = self.env.user.id
+        self.env.cr.execute(
+            """
+            SELECT
+                id
+                FROM ps_time_line
+                WHERE user_id = %s
+                  AND ot = true
+            UNION
+            SELECT
+                ps_time_line.id
+                FROM ps_time_line
+                JOIN project_project
+                ON ps_time_line.project_id=project_project.id
+                AND overtime
+                WHERE ps_time_line.user_id = %s
+                AND ps_time_line.state != 'draft'
+            """,
+            (user_id, user_id),
+        )
+
+        entries = [_id for _id, in self.env.cr.fetchall()]
+
+        return {
+            "name": _("Time lines"),
+            "type": "ir.actions.act_window",
+            "view_type": "form",
+            "view_mode": "tree",
+            "res_model": "ps.time.line",
+            "views": [(tree_id, "tree")],
+            "view_id": tree_id,
+            "target": "current",
+            "domain": [("id", "in", entries)],
+        }

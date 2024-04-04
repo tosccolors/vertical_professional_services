@@ -1,21 +1,43 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-        <!-- Top menu item -->
-        <menuitem name="PS Invoicing"
-                  id="menu_ps_invoicing"
-                  sequence="40"
-                  web_icon="ps_timesheet_invoicing,static/description/icon.png"/>
-        <menuitem id="menu_ps" name="Time and Billing"
-                  parent="menu_ps_invoicing"
-                  sequence="2"/>
-        <menuitem id="menu_action_ps_invoice"
-                  action="action_view_ps_invoice" name="Draft Invoices"
-                  parent="menu_ps" sequence="20" />
-        <menuitem id="menu_timeline_entries" name="Time Lines"
-                  parent="menu_ps_invoicing"
-                  sequence="2"/>
-        <menuitem id="menu_action_ps_time_lines"
-                  action="ps_time_line_action_entries"
-                  parent="menu_timeline_entries" sequence="1" groups="analytic.group_analytic_accounting"/>
-
+    <!-- Top menu item -->
+    <menuitem
+        name="Project Invoicing"
+        id="menu_ps_invoicing"
+        sequence="40"
+        web_icon="ps_timesheet_invoicing,static/description/icon.png"
+        groups="ps_project.group_ps_invoicing"
+    />
+    <menuitem
+        id="menu_ps"
+        name="Time and Billing"
+        parent="menu_ps_invoicing"
+        sequence="2"
+    />
+    <menuitem
+        id="menu_action_ps_invoice"
+        action="action_view_ps_invoice"
+        name="Draft Invoices"
+        parent="menu_ps"
+        sequence="20"
+    />
+    <menuitem
+        id="menu_timeline_entries"
+        name="Time Lines"
+        parent="menu_ps_invoicing"
+        sequence="2"
+    />
+    <menuitem
+        id="menu_action_ps_time_lines"
+        action="ps_time_line_action_entries"
+        parent="menu_timeline_entries"
+        sequence="1"
+        groups="analytic.group_analytic_accounting"
+    />
+    <menuitem
+        id="menu_hr_timesheet_line"
+        action="act_hr_timesheet_line"
+        parent="hr_timesheet.menu_hr_time_tracking"
+        sequence="10"
+    />
 </odoo>
