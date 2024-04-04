@@ -145,10 +145,6 @@ class PSInvoice(models.Model):
             for ptl in self.env["ps.time.line"].search(ptl_domain):
                 task_user_lines = task_user_obj.get_task_user_obj(
                     ptl.task_id.id, ptl.user_id.id, ptl.date
-                ) or task_user_obj.get_task_user_obj(
-                    ptl.task_id.project_id.task_ids.filtered("standard").id,
-                    ptl.user_id.id,
-                    ptl.date,
                 )
                 if task_user_lines:
                     task_user_ids += task_user_lines.ids

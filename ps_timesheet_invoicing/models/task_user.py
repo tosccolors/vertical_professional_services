@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from odoo import api, fields, models
+from odoo.osv.expression import TRUE_LEAF
 
 
 class TaskUser(models.Model):
@@ -86,16 +87,21 @@ class TaskUser(models.Model):
                 self.product_id = product.id
                 self.fee_rate = product.lst_price
 
-    def get_task_user_obj(self, task_id, user_id, date):
+    def get_task_user_obj(self, task_id, user_id, date=None):
         taskUserObj = self.search(
             [
-                ("from_date", "<=", date),
+                ("from_date", "<=", date) if date else TRUE_LEAF,
                 ("task_id", "=", task_id),
                 ("user_id", "=", user_id),
             ],
             order="from_date Desc",
             limit=1,
         )
+        if not taskUserObj:
+            task = self.env["project.task"].browse(task_id)
+            standard_task = task.project_id.standard_task_id
+            if standard_task and task != standard_task:
+                taskUserObj = self.get_task_user_obj(standard_task.id, user_id, date)
         return taskUserObj
 
     def update_ps_time_lines(self):
