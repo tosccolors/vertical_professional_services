@@ -82,6 +82,10 @@
                                     <span>Date</span>
                                     <br />
                                     <span>Invoice</span>
+                                    <t t-if="o.ref">
+                                        <br />
+                                        <span>Your Reference</span>
+                                    </t>
                                     <br />
                                     <span>Reference</span>
                                     <br />
@@ -102,6 +106,12 @@
                                         <span>
                                             <strong>:</strong>
                                         </span>
+                                        <t t-if="o.ref">
+                                            <br />
+                                            <span>
+                                                <strong>:</strong>
+                                            </span>
+                                        </t>
                                         <br />
                                         <span>
                                             <strong>:</strong>
@@ -127,6 +137,10 @@
                                         <span t-field="o.invoice_date" />
                                         <br />
                                         <span t-field="o.name" />
+                                        <t t-if="o.ref">
+                                            <br />
+                                            <span t-field="o.ref" />
+                                        </t>
                                         <br />
                                         <span
                                             t-if="sale_inv"
