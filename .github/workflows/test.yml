@@ -27,7 +27,7 @@ jobs:
           gitaggregate -c ../../../repos.yml
           cd ../..
           cp ../requirements.txt .
-          docker-compose build
+          docker compose build
       - name: Run tests
         run: |
           cd _docker
