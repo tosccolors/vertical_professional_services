@@ -101,6 +101,23 @@
             >
                 <attribute name="invisible">True</attribute>
             </button>
+            <div class="oe_button_box" position="inside">
+                <button
+                    class="oe_stat_button"
+                    name="action_view_overtime_entries"
+                    type="object"
+                    icon="fa-pencil-square-o"
+                    attrs="{'invisible':[('overtime_hours', '=', 0)]}"
+                    groups="hr_timesheet.group_hr_timesheet_user"
+                >
+                    <div class="o_form_field o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="overtime_hours" widget="float_time" />
+                        </span>
+                        <span class="o_stat_text">Overtime</span>
+                    </div>
+                </button>
+            </div>
         </field>
     </record>
 </odoo>

@@ -2,8 +2,12 @@
 <odoo>
     <record id="project_overtime" model="project.project">
         <field name="name">Overtime</field>
-        <field name="overtime" eval="True" />
         <field name="overtime_hrs" eval="True" />
+        <field name="chargeable" eval="True" />
+    </record>
+    <record id="project_overtime_taken" model="project.project">
+        <field name="name">Overtime taken</field>
+        <field name="overtime" eval="True" />
         <field name="chargeable" eval="True" />
     </record>
     <record id="project.project_project_2" model="project.project">

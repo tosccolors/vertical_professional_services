@@ -7,6 +7,22 @@ from odoo import api, fields, models
 class HrEmployee(models.Model):
     _inherit = "hr.employee"
 
+    planning_week = fields.Boolean(string="Planning by week")
+    timesheet_optional = fields.Boolean("Timesheet optional")
+    timesheet_no_8_hours_day = fields.Boolean("Timesheet no 8 hours day")
+    overtime_hours = fields.Float(
+        compute="_compute_overtime_hours", string="Overtime Hours"
+    )
+    product_id = fields.Many2one(
+        "product.product",
+        string="Fee Rate Product",
+        domain=lambda self: self._get_category_domain(),
+    )
+    fee_rate = fields.Float(
+        compute="_compute_fee_rate", string="Fee Rate", readonly=True
+    )
+    no_ott_check = fields.Boolean("8 Hours OTT possible", help="No Overtime Check")
+
     @api.depends("product_id")
     def _compute_fee_rate(self):
         self.fee_rate = self.product_id and self.product_id.list_price or 0.0
@@ -29,14 +45,17 @@ class HrEmployee(models.Model):
                 .mapped("overtime_hours")
             )
 
-    planning_week = fields.Boolean(string="Planning by week")
-    timesheet_optional = fields.Boolean("Timesheet optional")
-    timesheet_no_8_hours_day = fields.Boolean("Timesheet no 8 hours day")
-    overtime_hours = fields.Float(
-        compute="_compute_overtime_hours", string="Overtime Hours"
-    )
-    product_id = fields.Many2one(
-        "product.product", string="Fee Rate Product", domain=_get_category_domain
-    )
-    fee_rate = fields.Float(compute=_compute_fee_rate, string="Fee Rate", readonly=True)
-    no_ott_check = fields.Boolean("8 Hours OTT possible", help="No Overtime Check")
+    def action_view_overtime_entries(self):
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "ps_timesheet_invoicing.ps_time_line_action"
+        )
+        ids = (
+            self.env["hr_timesheet.sheet"]
+            .search([("employee_id", "=", self.id)])
+            .mapped("overtime_line_id.id")
+        )
+        return dict(
+            action,
+            domain=[("id", "in", ids)],
+        )

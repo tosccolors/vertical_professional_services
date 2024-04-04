@@ -524,18 +524,15 @@ class HrTimesheetSheet(models.Model):
 
     def action_view_overtime_entry(self):
         self.ensure_one()
-        action = self.env.ref("analytic.account_analytic_line_action").sudo()
-        return {
-            "name": action.name,
-            "help": action.help,
-            "type": action.type,
-            "view_type": "form",
-            "view_mode": "form",
-            "target": action.target,
-            "res_id": self.overtime_line_id.id or False,
-            "res_model": action.res_model,
-            "domain": [("id", "=", self.overtime_line_id.id)],
-        }
+        action = self.env["ir.actions.actions"]._for_xml_id(
+            "ps_timesheet_invoicing.ps_time_line_action"
+        )
+        return dict(
+            action,
+            view_mode="form",
+            res_id=self.overtime_line_id.id,
+            domain=[("id", "=", self.overtime_line_id.id)],
+        )
 
     def copy_with_query(self, last_week_timesheet_id=None):
         query = """

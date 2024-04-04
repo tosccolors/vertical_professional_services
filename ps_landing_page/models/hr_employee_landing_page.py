@@ -61,26 +61,11 @@ class HrEmployeeLandingPage(models.TransientModel):
         # compute overtime balance
         self.env.cr.execute(
             """
-            SELECT overtime_hrs-overtime_taken FROM
-                (SELECT
-                    SUM(unit_amount) as overtime_hrs, user_id
-                    FROM ps_time_line
-                    WHERE user_id = %s
-                      AND ot = true
-                      AND product_uom_id = 5
-                    GROUP BY user_id) aa1
-                JOIN (SELECT
-                    SUM(unit_amount) as overtime_taken, user_id
-                    FROM ps_time_line
-                    WHERE user_id = %s
-                      AND state != %s
-                      AND project_id IN (
-                        SELECT id FROM project_project WHERE overtime = true
-                    )
-                      AND product_uom_id = 5
-                    GROUP BY user_id ) aa2
-                ON aa1.user_id = aa2.user_id""",
-            (user_id, user_id, "draft"),
+            SELECT overtime_balanced FROM
+            overtime_balance_report
+            WHERE user_id=%s
+            """,
+            (user_id,),
         )
         overtime_balance = 0
         for x in self.env.cr.fetchall():
@@ -110,13 +95,12 @@ class HrEmployeeLandingPage(models.TransientModel):
         if self.employee_id:
             self.env.cr.execute(
                 """SELECT
-                                        id
-                                        FROM hr_timesheet_sheet
-                                        WHERE employee_id = %s
-                                        AND state IN %s
-                                        ORDER BY id DESC
-                                        LIMIT 10
-                                            """,
+                id
+                FROM hr_timesheet_sheet
+                WHERE employee_id = %s
+                AND state IN %s
+                ORDER BY id DESC
+                LIMIT 10""",
                 (
                     self.employee_id.id,
                     ("draft", "new", "confirm"),
@@ -128,17 +112,17 @@ class HrEmployeeLandingPage(models.TransientModel):
         # to be approved timesheet
         self.env.cr.execute(
             """SELECT
-                                id
-                                FROM hr_timesheet_sheet
-                                WHERE
-                                state != 'done' AND
-                                 id IN
-                                    (SELECT hr_timesheet_sheet_id
-                                    FROM hr_timesheet_sheet_res_users_rel
-                                    WHERE res_users_id = %s)
-                                 ORDER BY id DESC
-                                  LIMIT 10
-                                """,
+            id
+            FROM hr_timesheet_sheet
+            WHERE
+            state != 'done' AND
+             id IN
+                (SELECT hr_timesheet_sheet_id
+                FROM hr_timesheet_sheet_res_users_rel
+                WHERE res_users_id = %s)
+             ORDER BY id DESC
+              LIMIT 10
+            """,
             (user_id,),
         )
         to_be_approved_sheets = [x[0] for x in self.env.cr.fetchall()]
@@ -149,13 +133,13 @@ class HrEmployeeLandingPage(models.TransientModel):
         if self.employee_id:
             self.env.cr.execute(
                 """SELECT
-                        id
-                        FROM hr_expense_sheet
-                        WHERE employee_id = %s
-                        AND state NOT IN %s
-                        ORDER BY id DESC
-                        LIMIT 10
-                        """,
+                id
+                FROM hr_expense_sheet
+                WHERE employee_id = %s
+                AND state NOT IN %s
+                ORDER BY id DESC
+                LIMIT 10
+                """,
                 (
                     self.employee_id.id,
                     ("post", "done", "cancel"),
@@ -219,11 +203,11 @@ class HrEmployeeLandingPage(models.TransientModel):
         tree_id = tree_res and tree_res[1] or False
         self.env.cr.execute(
             """SELECT
-                                    id
-                                    FROM hr_leave
-                                    WHERE employee_id = %s
-                                    AND (state = 'validate' OR state = 'written')
-                                    """,
+            id
+            FROM hr_leave
+            WHERE employee_id = %s
+            AND (state = 'validate' OR state = 'written')
+            """,
             (self.employee_id.id,),
         )
 
@@ -271,27 +255,25 @@ class HrEmployeeLandingPage(models.TransientModel):
         user_id = self.env.user.id
         self.env.cr.execute(
             """
-            SELECT aa1.id, aa2.id FROM
-                (SELECT
-                    id, user_id
-                    FROM ps_time_line
-                    WHERE user_id = %s
-                      AND ot = true
-                ) aa1
-                JOIN (SELECT id, user_id
-                    FROM ps_time_line
-                    WHERE user_id = %s
-                      AND state != %s
-                      AND project_id IN (
-                        SELECT id FROM project_project WHERE overtime = true
-                      )
-                ) aa2
-                on aa1.user_id = aa2.user_id""",
-            (user_id, user_id, "draft"),
+            SELECT
+                id
+                FROM ps_time_line
+                WHERE user_id = %s
+                  AND ot = true
+            UNION
+            SELECT
+                ps_time_line.id
+                FROM ps_time_line
+                JOIN project_project
+                ON ps_time_line.project_id=project_project.id
+                AND overtime
+                WHERE ps_time_line.user_id = %s
+                AND ps_time_line.state != 'draft'
+            """,
+            (user_id, user_id),
         )
 
-        entries = [t for item in self.env.cr.fetchall() for t in item]
-        entries = list(set(entries))
+        entries = [_id for _id, in self.env.cr.fetchall()]
 
         return {
             "name": _("Time lines"),

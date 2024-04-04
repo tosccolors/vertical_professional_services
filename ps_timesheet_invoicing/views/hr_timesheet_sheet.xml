@@ -20,11 +20,15 @@
                             name="action_view_overtime_entry"
                             type="object"
                             icon="fa-pencil-square-o"
-                            string="OvertimeEntry"
                             attrs="{'invisible':['|',('overtime_line_id','=',False),('state','!=','done')]}"
                             groups="hr_timesheet.group_hr_timesheet_user"
                         >
-
+                            <div class="o_form_field o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="overtime_hours" widget="float_time" />
+                                </span>
+                                <span class="o_stat_text">Overtime</span>
+                            </div>
                         </button>
                     </div>
                 </xpath>

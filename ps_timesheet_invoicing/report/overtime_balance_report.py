@@ -18,41 +18,42 @@ class OvertimeBalanceReport(models.Model):
 
         self.env.cr.execute(
             """
-                        CREATE OR REPLACE VIEW overtime_balance_report AS (
-                        SELECT
-                            min(ptl.id) AS id,
-                            ptl.date AS date,
-                            ptl.user_id AS user_id,
-                            SUM(CASE
-                                WHEN pp.overtime = 'true'
-                                AND product_uom_id = 5
-                                THEN ptl.unit_amount
-                                ELSE 0
-                                END) AS overtime_taken,
-                            SUM(CASE
-                                WHEN pp.overtime_hrs = 'true'
-                                AND product_uom_id = 5
-                                THEN ptl.unit_amount
-                                ELSE 0
-                                END) AS overtime_hrs,
-                            (
-                              SUM(CASE
-                                WHEN pp.overtime_hrs = 'true'
-                                AND product_uom_id = 5
-                                THEN ptl.unit_amount
-                                ELSE 0
-                                END) -
-                              SUM(CASE
-                                WHEN pp.overtime = 'true'
-                                AND product_uom_id = 5
-                                THEN ptl.unit_amount
-                                ELSE 0
-                                END)
-                            ) AS overtime_balanced
-                        FROM ps_time_line ptl
-                        JOIN account_analytic_account aa ON aa.id = ptl.account_id
-                        JOIN project_project pp ON pp.analytic_account_id = aa.id
-                        WHERE pp.overtime = true OR pp.overtime_hrs = true
-                        GROUP BY ptl.date, ptl.user_id
-                        )"""
+            CREATE OR REPLACE VIEW overtime_balance_report AS (
+            SELECT
+                min(ptl.id) AS id,
+                ptl.date AS date,
+                ptl.user_id AS user_id,
+                SUM(CASE
+                    WHEN pp.overtime
+                    AND product_uom_id = %(uom)s
+                    THEN ptl.unit_amount
+                    ELSE 0
+                    END) AS overtime_taken,
+                SUM(CASE
+                    WHEN pp.overtime_hrs
+                    AND product_uom_id = %(uom)s
+                    THEN ptl.unit_amount
+                    ELSE 0
+                    END) AS overtime_hrs,
+                (
+                  SUM(CASE
+                    WHEN pp.overtime_hrs
+                    AND product_uom_id = %(uom)s
+                    THEN ptl.unit_amount
+                    ELSE 0
+                    END) -
+                  SUM(CASE
+                    WHEN pp.overtime
+                    AND product_uom_id = %(uom)s
+                    THEN ptl.unit_amount
+                    ELSE 0
+                    END)
+                ) AS overtime_balanced
+            FROM ps_time_line ptl
+            JOIN account_analytic_account aa ON aa.id = ptl.account_id
+            JOIN project_project pp ON pp.analytic_account_id = aa.id
+            WHERE pp.overtime = true OR pp.overtime_hrs = true
+            GROUP BY ptl.date, ptl.user_id
+            )""",
+            {"uom": self.env.ref("uom.product_uom_hour").id},
         )
