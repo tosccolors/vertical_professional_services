@@ -21,3 +21,14 @@ class AccountAnalyticAccount(models.Model):
                     )
                 )
         return True
+
+    def write(self, vals):
+        result = super().write(vals)
+        if "partner_id" in vals:
+            partner = self.env["res.partner"].browse(vals["partner_id"])
+            projects = self.mapped("project_ids").filtered(
+                lambda x: x.partner_id != partner
+            )
+            if projects:
+                projects.write({"partner_id": vals["partner_id"]})
+        return result

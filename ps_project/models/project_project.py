@@ -87,3 +87,14 @@ class Project(models.Model):
             )
         )
         return result.ids
+
+    def write(self, vals):
+        result = super().write(vals)
+        if "partner_id" in vals:
+            partner = self.env["res.partner"].browse(vals["partner_id"])
+            accounts = self.mapped("analytic_account_id").filtered(
+                lambda x: x.partner_id != partner
+            )
+            if accounts:
+                accounts.write({"partner_id": vals["partner_id"]})
+        return result

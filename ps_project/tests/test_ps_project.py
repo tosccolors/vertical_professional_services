@@ -47,3 +47,16 @@ class TestPsProject(TransactionCase):
             self.assertFalse(form.actual_time_spent)
             form.actual_time_spent = True
             self.assertFalse(form.fixed_amount)
+
+    def test_partner_sync(self):
+        partner = self.env.ref("base.res_partner_1")
+        project = self.env["project.project"].create(
+            {"name": "project", "allow_timesheets": True, "partner_id": partner.id}
+        )
+        self.assertEqual(project.analytic_account_id.partner_id, partner)
+        project.partner_id = False
+        self.assertFalse(project.analytic_account_id.partner_id)
+        project.analytic_account_id.partner_id = partner
+        self.assertEqual(project.partner_id, partner)
+        project.analytic_account_id.partner_id = False
+        self.assertFalse(project.partner_id)
