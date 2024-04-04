@@ -1,7 +1,7 @@
 # Copyright 2018 The Open Source Company ((www.tosc.nl).)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import api, fields, models
+from odoo import _, api, exceptions, fields, models
 from odoo.osv.expression import TRUE_LEAF
 
 
@@ -48,7 +48,7 @@ class TaskUser(models.Model):
         store=True,
     )
     task_id = fields.Many2one("project.task", string="Task")
-    user_id = fields.Many2one("res.users", string="Consultants")
+    user_id = fields.Many2one("res.users", string="Consultant")
     product_id = fields.Many2one(
         "product.product",
         string="Fee rate Product",
@@ -86,6 +86,23 @@ class TaskUser(models.Model):
                 product = emp.product_id
                 self.product_id = product.id
                 self.fee_rate = product.lst_price
+
+    @api.constrains("task_id", "from_date", "user_id")
+    def _check_task_user_date(self):
+        for this in self:
+            if (
+                self.search_count(
+                    [
+                        ("task_id", "=", this.task_id.id),
+                        ("user_id", "=", this.user_id.id),
+                        ("from_date", "=", this.from_date),
+                    ]
+                )
+                > 1
+            ):
+                raise exceptions.ValidationError(
+                    _("The combination of task, user and date must be unique")
+                )
 
     def get_task_user_obj(self, task_id, user_id, date=None):
         taskUserObj = self.search(

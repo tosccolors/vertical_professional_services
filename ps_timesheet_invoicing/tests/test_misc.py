@@ -1,3 +1,4 @@
+from odoo.exceptions import ValidationError
 from odoo.tests.common import Form, TransactionCase
 from odoo.tools.misc import mute_logger
 
@@ -81,6 +82,8 @@ class TestMisc(TransactionCase):
         task_user = self.env.ref("ps_timesheet_invoicing.task_user_task_11")
         hour_amount = self.ps_line.amount
         mileage_amount = self.ps_line_mileage.amount
+        with self.assertRaises(ValidationError):
+            task_user.copy({"fee_rate": 420})
         task_user += task_user[:1].copy({"from_date": "2023-01-02", "fee_rate": 420})
         task_user += task_user[:1].copy({"from_date": "2023-01-03", "fee_rate": 4200})
         task_user._compute_last_valid_fee_rate()
