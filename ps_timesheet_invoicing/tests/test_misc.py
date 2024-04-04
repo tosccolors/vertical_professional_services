@@ -9,6 +9,9 @@ class TestMisc(TransactionCase):
         self.ps_line = self.env.ref(
             "ps_timesheet_invoicing.time_line_demo_user_2023_12_18"
         )
+        self.ps_line_mileage = self.env.ref(
+            "ps_timesheet_invoicing.time_line_demo_user_2023_12_18_mileage"
+        )
 
     def test_change_chargecode(self):
         wizard = (
@@ -76,7 +79,12 @@ class TestMisc(TransactionCase):
     def test_task_user(self):
         """Test creating task.user objects"""
         task_user = self.env.ref("ps_timesheet_invoicing.task_user_task_11")
-        task_user += task_user[:1].copy({"from_date": "2023-01-02"})
-        task_user += task_user[:1].copy({"from_date": "2023-01-03"})
+        hour_amount = self.ps_line.amount
+        mileage_amount = self.ps_line_mileage.amount
+        task_user += task_user[:1].copy({"from_date": "2023-01-02", "fee_rate": 420})
+        task_user += task_user[:1].copy({"from_date": "2023-01-03", "fee_rate": 4200})
         task_user._compute_last_valid_fee_rate()
         self.assertEqual(task_user.filtered("last_valid_fee_rate"), task_user[-1:])
+        self.env.clear()
+        self.assertEqual(hour_amount * 100, self.ps_line.amount)
+        self.assertEqual(mileage_amount, self.ps_line_mileage.amount)

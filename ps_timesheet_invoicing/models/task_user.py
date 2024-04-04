@@ -118,6 +118,7 @@ class TaskUser(models.Model):
                 "not in",
                 ["invoiced", "invoiced-by-fixed", "write_off", "expense-invoiced"],
             ),
+            ("product_uom_id", "=", self.env.ref("uom.product_uom_hour").id),
             ("date", ">=", self.from_date),
         ]
 
