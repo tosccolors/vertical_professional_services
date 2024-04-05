@@ -9,6 +9,7 @@ from psycopg2.extensions import AsIs
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
+from odoo.tests.common import Form
 
 
 class PSInvoice(models.Model):
@@ -502,12 +503,35 @@ class PSInvoice(models.Model):
             user_total_ids.unlink()
 
     def write(self, vals):
+        if "invoice_line_ids" in vals:
+            vals = dict(vals)
+            edit_commands = filter(lambda x: x[0] == 1, vals["invoice_line_ids"])
+            vals["invoice_line_ids"] = list(
+                filter(lambda x: x[0] != 1, vals["invoice_line_ids"])
+            )
+            if edit_commands:
+                self._write_invoice_line_ids(edit_commands)
         res = super().write(vals)
         self.unlink_rec()
         analytic_lines = self.user_total_ids.mapped("detail_ids")
         if analytic_lines:
             analytic_lines.write({"state": "progress"})
         return res
+
+    def _write_invoice_line_ids(self, invoice_line_commands):
+        """
+        changing invoice_line_ids is tricky because the invoice form does a lot of
+        recomputations in its onchange methods. We simulate that here
+        """
+        for this in self.filtered("invoice_id"):
+            with Form(this.invoice_id) as invoice_form:
+                for index in range(len(invoice_form.invoice_line_ids)):
+                    with invoice_form.invoice_line_ids.edit(index) as invoice_line:
+                        # support only edits for now
+                        for cmd_tuple in invoice_line_commands:
+                            if cmd_tuple[0] == 1 and cmd_tuple[1] == invoice_line.id:
+                                for key, value in cmd_tuple[2].items():
+                                    setattr(invoice_line, key, value)
 
     @api.model
     def create(self, vals):

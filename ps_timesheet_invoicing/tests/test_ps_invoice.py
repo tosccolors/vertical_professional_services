@@ -88,6 +88,12 @@ class TestPsInvoice(TestPsInvoiceBase):
         self.assertEqual(ps_line2.state, "invoiced")
         self.assertEqual(mileage_line.state, "invoiced")
 
+    def test_04_edit_invoice_line(self):
+        with Form(self.ps_invoice) as ps_invoice_form:
+            with ps_invoice_form.invoice_line_ids.edit(0) as line:
+                line.price_unit = 43
+        self.assertEqual(self.ps_invoice.invoice_id.invoice_line_ids.price_unit, 43)
+
 
 class TestPsInvoiceGrouped(TestPsInvoiceBase):
     def _create_ps_invoice(self, generate=True):
