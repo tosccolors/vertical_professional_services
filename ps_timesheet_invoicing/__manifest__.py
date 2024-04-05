@@ -61,9 +61,9 @@
         "views/product_view.xml",
         "views/account_move_line.xml",
         "views/account_move.xml",
-        # 'views/inter_ou_account_mapping_view.xml',
         "views/menu_item.xml",
         "views/res_company_view.xml",
+        "views/templates.xml",
     ],
     "installable": True,
     "demo": [
