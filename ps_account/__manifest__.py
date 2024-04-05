@@ -20,9 +20,9 @@
     "data": [
         "report/report_layout.xml",
         "report/report_invoice.xml",
-        "views/account_invoice_view.xml",
+        "views/account_move.xml",
         "views/project_view.xml",
-        "views/account_invoice_report.xml",
+        "report/account_invoice_report.xml",
     ],
     "demo": [
         "demo/operating_unit.xml",

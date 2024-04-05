@@ -27,8 +27,12 @@
                     position="attributes"
                 >
                     <attribute name="attrs">
-                        {'required':[('move_type', 'in', ('in_invoice',
-                            'in_refund'))]}
+                        {
+                            'required':[('move_type', 'in', ('in_invoice',
+                        'in_refund'))],
+                            'invisible':[('move_type', 'not in', ('in_invoice',
+                        'in_refund'))],
+                        }
                     </attribute>
                 </xpath>
             </data>
@@ -40,7 +44,7 @@
         <field name="inherit_id" ref="account.view_move_form" />
         <field name="priority" eval="90" />
         <field name="arch" type="xml">
-            <xpath expr="//notebook/page[1]" position="after">
+            <xpath expr="//notebook/page[@id='invoice_tab']" position="after">
                 <page string="Invoice Description">
                     <div class="oe_clear">
                         <label for="invoice_description" />
