@@ -40,7 +40,7 @@
         "data/product_product.xml",
         "security/ps_security.xml",
         "security/ir.model.access.csv",
-        "wizard/time_line_invoice_view.xml",
+        "wizard/time_line_invoice.xml",
         "wizard/change_chargecode_view.xml",
         "wizard/hr_employee_wizard.xml",
         "report/hr_chargeability_report.xml",
