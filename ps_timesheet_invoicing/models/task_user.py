@@ -47,16 +47,23 @@ class TaskUser(models.Model):
         string="Project",
         store=True,
     )
-    task_id = fields.Many2one("project.task", string="Task")
-    user_id = fields.Many2one("res.users", string="Consultant")
+    task_id = fields.Many2one("project.task", string="Task", required=True)
+    user_id = fields.Many2one("res.users", string="Consultant", required=True)
     product_id = fields.Many2one(
         "product.product",
         string="Fee rate Product",
         default=_default_product,
         domain=_get_category_domain,
+        context=lambda env: {
+            "default_categ_id": env.ref(
+                "ps_timesheet_invoicing.product_category_fee_rate", False
+            ).id
+        },
+        required=True,
     )
     fee_rate = fields.Float(
         string="Fee Rate",
+        required=True,
     )
     ic_fee_rate = fields.Float(
         string="Intercompany Fee Rate",
@@ -95,6 +102,7 @@ class TaskUser(models.Model):
                     [
                         ("task_id", "=", this.task_id.id),
                         ("user_id", "=", this.user_id.id),
+                        ("product_id", "=", this.product_id.id),
                         ("from_date", "=", this.from_date),
                     ]
                 )
