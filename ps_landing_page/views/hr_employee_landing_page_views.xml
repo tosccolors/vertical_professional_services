@@ -17,13 +17,13 @@
                                 attrs="{'invisible':[('current_week', '=', False)]}"
                             >
                                 <label
-                                    for="next_week_id1"
+                                    for="next_week_id"
                                     string="Timesheet To Submit: "
                                 />
                                 <br />
                                 <strong>
                                     <field
-                                        name="next_week_id1"
+                                        name="next_week_id"
                                         widget="statinfo"
                                         nolabel="1"
                                     />
@@ -111,8 +111,8 @@
                             </button>
                         </div>
                         <br />
-                        <div style="background-color:#7d7ba6; padding:1px;">
-                            <h3 style="color:white;">My Timesheet Status</h3>
+                        <div style="padding:1px;" class="btn-primary">
+                            <h3>My Timesheet Status</h3>
                         </div>
                         <div>
                             <seperator />
@@ -126,8 +126,8 @@
                         <br />
                         <group groups="hr_timesheet.group_hr_timesheet_user">
                             <div>
-                                <div style="background-color:#7d7ba6; padding:1px;">
-                                    <h3 style="color:white;">
+                                <div style="padding:1px;" class="btn-primary">
+                                    <h3>
                                         Timesheet To Be Approved
                                     </h3>
                                 </div>
@@ -146,8 +146,8 @@
                             </div>
                         </group>
                         <br />
-                        <div style="background-color:#7d7ba6; padding:1px;">
-                            <h3 style="color:white;">
+                        <div style="padding:1px;" class="btn-primary">
+                            <h3>
                                 <field
                                     name="employee_id"
                                     options="{'no_open': True}"
@@ -168,8 +168,8 @@
                         <br />
                         <group groups="hr_expense.group_hr_expense_user">
                             <div>
-                                <div style="background-color:#7d7ba6; padding:1px;">
-                                    <h3 style="color:white;">Expense To Be Approved</h3>
+                                <div style="padding:1px;" class="btn-primary">
+                                    <h3>Expense To Be Approved</h3>
                                 </div>
                                 <seperator />
                                 <field
@@ -207,7 +207,7 @@
         <menuitem
             id="landing_page_root"
             web_icon="ps_landing_page,static/description/icon.png"
-            name="Professional Services Landing Page"
+            name="Home"
             sequence="1"
         />
         <menuitem

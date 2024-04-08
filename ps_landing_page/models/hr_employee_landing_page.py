@@ -29,7 +29,7 @@ class HrEmployeeLandingPage(models.TransientModel):
 
         if next_week_id:
             self.next_week_id = next_week_id.name
-            self.next_week_id1 = next_week_id.name
+            # self.next_week_id1 = next_week_id.name
 
         # compute vaction balance
         vacation_balance = 0
@@ -162,8 +162,8 @@ class HrEmployeeLandingPage(models.TransientModel):
     employee_id = fields.Many2one(
         "hr.employee", string="Employee", default=_default_employee, required=True
     )
-    next_week_id = fields.Char(string="Week To Submit")
-    next_week_id1 = fields.Char(string="Week To Submit")
+    next_week_id = fields.Char(string="Week To Submit", compute="_compute_all",)
+    # next_week_id1 = fields.Char(string="Week To Submit")
     vacation_balance = fields.Integer(compute="_compute_all", string="Vacation Balance")
     overtime_balance = fields.Integer(compute="_compute_all", string="Overtime Balance")
     private_km_balance = fields.Integer(
@@ -183,7 +183,19 @@ class HrEmployeeLandingPage(models.TransientModel):
     )
     current_week = fields.Boolean(compute="_compute_all")
 
+    def get_unsubmitted_timesheet(self):
+        return self.env["hr_timesheet.sheet"].search(
+            [
+                ("user_id", "=", self.env.user.id),
+                ("state", "in", ("draft", "new")),
+            ]
+            ,limit=1, order='week_id'
+        )
+
     def get_upcoming_week(self):
+        unsubmitted_timesheet = self.get_unsubmitted_timesheet()
+        if unsubmitted_timesheet:
+            return unsubmitted_timesheet.week_id
         result = self.env["hr.timesheet.current.open"].open_timesheet()
         hr_timesheet = self.env["hr_timesheet.sheet"]
         if "res_id" in result:
