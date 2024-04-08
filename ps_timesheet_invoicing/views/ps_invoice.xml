@@ -112,7 +112,8 @@
                             <tree
                                 string="Invoice Lines"
                                 editable="bottom"
-                                create="true"
+                                create="false"
+                                delete="false"
                             >
                                 <field name="sequence" widget="handle" />
                                 <field name="product_id" />

@@ -1,0 +1,20 @@
+<odoo>
+    <record id="view_account_analytic_line_filter" model="ir.ui.view">
+        <field name="model">account.analytic.line</field>
+        <field name="inherit_id" ref="analytic.view_account_analytic_line_filter" />
+        <field name="arch" type="xml">
+            <filter name="date" position="after">
+                <filter
+                    name="ps_progress"
+                    string="In progress"
+                    domain="[('ps_invoice_id', '!=', False), ('ps_invoice_line_id', '=', False)]"
+                />
+                <filter
+                    name="ps_invoiced"
+                    string="Invoiced"
+                    domain="[('ps_invoice_line_id', '!=', False)]"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>

@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <template id="external_layout_ps_header_ou">
-        <div class="header">
-            <div class="row">
-                <div class="row backgroundimage">
-                    <img
-                        t-if="o.operating_unit_id.logo"
-                        t-att-src="'data:image/png;base64,%s' % o.operating_unit_id.logo.decode('utf8')"
-                    />
-                </div>
-            </div>
-        </div>
         <div
             class="article o_report_layout_standard"
             t-att-data-oe-model="o and o._name"

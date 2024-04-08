@@ -90,22 +90,9 @@ class TimeLine(models.Model):
                     "re_confirmed",
                 ]
             ):
-                task_user = self.env["task.user"].get_task_user_obj(
+                line.task_user_id = self.env["task.user"].get_task_user_obj(
                     task.id, user.id, date
-                )[:1]
-                if task_user:
-                    line.task_user_id = task_user
-                # check standard task for fee earners
-                else:
-                    if line.project_id:
-                        standard_task = line.project_id.standard_task_id
-                    if len(standard_task) == 1:
-                        line.task_user_id = (
-                            self.env["task.user"].get_task_user_obj(
-                                standard_task.id, user.id, date
-                            )
-                            or False
-                        )
+                )
                 line.line_fee_rate = line.get_fee_rate()[0]
                 line.amount = line.get_fee_rate_amount()
                 line.product_id = line.get_task_user_product()
@@ -301,14 +288,10 @@ class TimeLine(models.Model):
         if task_id and user_id:
             date_now = fields.Date.today()
             # task-358
-            taskUser = taskUserObj.search(
-                [
-                    ("task_id", "=", task_id),
-                    ("from_date", "<=", date_now),
-                    ("user_id", "=", user_id),
-                ],
-                limit=1,
-                order="from_date Desc",
+            taskUser = taskUserObj.get_task_user_obj(
+                task_id,
+                user_id,
+                date_now,
             )
             if taskUser and taskUser.product_id:
                 product_id = taskUser.product_id.id
@@ -316,16 +299,11 @@ class TimeLine(models.Model):
                 # check standard task for fee earners
                 project_id = self.env["project.task"].browse(task_id).project_id
                 standard_task = project_id.task_ids.filtered("standard")
-                if standard_task:
-                    taskUser = taskUserObj.search(
-                        [("task_id", "=", standard_task.id), ("user_id", "=", user_id)],
-                        limit=1,
-                    )
-                    product_id = (
-                        taskUser.product_id.id
-                        if taskUser and taskUser.product_id
-                        else False
-                    )
+                if standard_task.id != task_id:
+                    product_id = taskUserObj.get_task_user_obj(
+                        task_id,
+                        user_id,
+                    ).product_id.id
 
         if user_id and not product_id:
             user = self.env["res.users"].browse(user_id)
@@ -341,24 +319,12 @@ class TimeLine(models.Model):
         ic_fr = 0.0
         # fr = None
         if uid and tid and date:
-            task_user = self.env["task.user"].get_task_user_obj(tid, uid, date)[:1]
+            task_user = self.env["task.user"].get_task_user_obj(tid, uid, date)
             if task_user and task_user.fee_rate:
                 fr = task_user.fee_rate
                 ic_fr = task_user.ic_fee_rate
             if project_rate:
                 return fr or 0.0
-            # check standard task for fee earners
-            else:
-                project_id = self.env["project.task"].browse(tid).project_id
-                standard_task = project_id.task_ids.filtered("standard")
-                if standard_task:
-                    # task-358
-                    task_user = self.env["task.user"].get_task_user_obj(
-                        standard_task.id, uid, date
-                    )
-                    if task_user:
-                        fr = task_user[:1].fee_rate
-                        ic_fr = task_user[:1].ic_fee_rate
         return [fr, ic_fr]
 
     def merge_timelines(self):

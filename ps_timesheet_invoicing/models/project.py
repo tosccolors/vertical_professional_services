@@ -10,10 +10,8 @@ class Project(models.Model):
 
     @api.depends("task_ids.standard")
     def _compute_standard(self):
-        if self.task_ids:
-            self.standard_task_id = self.env["project.task"].search(
-                [("standard", "=", True), ("id", "in", self.task_ids.ids)]
-            )
+        for this in self:
+            this.standard_task_id = this.task_ids.filtered("standard")
 
     overtime = fields.Boolean(string="Overtime Taken")
     overtime_hrs = fields.Boolean(string="Overtime Hours")
