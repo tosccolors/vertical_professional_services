@@ -301,4 +301,7 @@ class HrEmployeeLandingPage(models.TransientModel):
             "view_id": tree_id,
             "target": "current",
             "domain": [("id", "in", entries)],
+            "context": {
+                "ps_time_line_hide_amount": True,
+            },
         }
