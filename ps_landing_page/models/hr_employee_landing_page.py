@@ -162,7 +162,10 @@ class HrEmployeeLandingPage(models.TransientModel):
     employee_id = fields.Many2one(
         "hr.employee", string="Employee", default=_default_employee, required=True
     )
-    next_week_id = fields.Char(string="Week To Submit", compute="_compute_all",)
+    next_week_id = fields.Char(
+        string="Week To Submit",
+        compute="_compute_all",
+    )
     # next_week_id1 = fields.Char(string="Week To Submit")
     vacation_balance = fields.Integer(compute="_compute_all", string="Vacation Balance")
     overtime_balance = fields.Integer(compute="_compute_all", string="Overtime Balance")
@@ -188,8 +191,9 @@ class HrEmployeeLandingPage(models.TransientModel):
             [
                 ("user_id", "=", self.env.user.id),
                 ("state", "in", ("draft", "new")),
-            ]
-            ,limit=1, order='week_id'
+            ],
+            limit=1,
+            order="week_id",
         )
 
     def get_upcoming_week(self):
