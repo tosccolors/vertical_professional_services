@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<odoo noupdate="1">
+    <record id="expense_demo1" model="hr.expense">
+        <field name="name">an expense</field>
+        <field name="employee_id" ref="hr.employee_qdp" />
+        <field name="analytic_account_id" ref="analytic.analytic_our_super_product" />
+        <field name="product_id" ref="hr_expense.car_travel" />
+        <field name="unit_amount">42</field>
+        <field name="product_uom_id" ref="uom.product_uom_km" />
+    </record>
+    <record id="expense_demo2" model="hr.expense">
+        <field name="name">an expense</field>
+        <field name="employee_id" ref="hr.employee_qdp" />
+        <field name="analytic_account_id" ref="analytic.analytic_our_super_product" />
+        <field name="product_id" ref="hr_expense.car_travel" />
+        <field name="unit_amount">42</field>
+        <field name="product_uom_id" ref="uom.product_uom_km" />
+    </record>
+    <record id="expense_demo3" model="hr.expense">
+        <field name="name">an expense with a different name</field>
+        <field name="employee_id" ref="hr.employee_qdp" />
+        <field name="analytic_account_id" ref="analytic.analytic_our_super_product" />
+        <field name="product_id" ref="hr_expense.car_travel" />
+        <field name="unit_amount">42</field>
+        <field name="product_uom_id" ref="uom.product_uom_km" />
+    </record>
+    <record id="expense_chs" model="hr.expense">
+        <field name="name">an expense</field>
+        <field name="employee_id" ref="hr.employee_chs" />
+        <field name="analytic_account_id" ref="analytic.analytic_our_super_product" />
+        <field name="product_id" ref="hr_expense.car_travel" />
+        <field name="unit_amount">42</field>
+        <field name="product_uom_id" ref="uom.product_uom_km" />
+    </record>
+</odoo>
