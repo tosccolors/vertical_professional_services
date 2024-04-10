@@ -25,6 +25,7 @@
                     groups="ps_timesheet_invoicing.group_timesheet_manager,ps_timesheet_invoicing.group_chargecode_time_admin,ps_project.group_ps_invoicing"
                     invisible="context.get('ps_time_line_hide_amount')"
                 />
+                <field name="currency_id" invisible="1" />
                 <field name="state" />
             </tree>
         </field>
