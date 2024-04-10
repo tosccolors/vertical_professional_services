@@ -3,14 +3,14 @@
     <record id="view_ps_time_line_tree" model="ir.ui.view">
         <field name="model">ps.time.line</field>
         <field name="arch" type="xml">
-            <tree string="Analytic Entries">
+            <tree>
                 <field name="date" optional="show" />
                 <field name="operating_unit_id" />
                 <field name="project_id" />
                 <field name="task_id" />
                 <field name="date_of_last_wip" />
                 <field name="week_id" string="Timesheet Week" />
-                <field name="unit_amount" sum="Quantity" optional="hide" />
+                <field name="unit_amount" sum="Quantity" optional="show" />
                 <field name="product_uom_id" optional="show" />
                 <field name="partner_id" optional="hide" />
                 <field
@@ -18,7 +18,14 @@
                     groups="base.group_multi_company"
                     optional="show"
                 />
-                <field name="amount" sum="Total" optional="show" />
+                <field
+                    name="amount"
+                    sum="Total"
+                    optional="show"
+                    groups="ps_timesheet_invoicing.group_timesheet_manager,ps_timesheet_invoicing.group_chargecode_time_admin,ps_project.group_ps_invoicing"
+                    invisible="context.get('ps_time_line_hide_amount')"
+                />
+                <field name="currency_id" invisible="1" />
                 <field name="state" />
             </tree>
         </field>
