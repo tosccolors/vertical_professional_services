@@ -34,11 +34,13 @@ class TestPsHolidays(TransactionCase):
             - leaves
         )
         self.assertTrue(sum(new_leaves.mapped("number_of_days")), 7)
-        self.assertEqual(self.user.employee_id.allocation_used_count, 7)
+        # the 6 are from demo data sick leave, which doesn't have allocation
+        self.assertEqual(self.user.employee_id.allocation_used_count, 7 + 6)
         self.timesheet.sudo().action_timesheet_draft()
         self.assertFalse(new_leaves.exists())
         self.leave_type.refresh()
         self.assertEqual(self.leave_type.with_user(self.user).leaves_taken, 0)
+        self.assertEqual(self.user.employee_id.allocation_used_count, 6)
 
     def test_ps_holidays_replace(self):
         """Test standard flow with preexisting leave"""
