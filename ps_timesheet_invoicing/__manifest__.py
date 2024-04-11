@@ -58,7 +58,7 @@
         "views/hr_department.xml",
         "views/ps_time_line.xml",
         "views/hr_employee.xml",
-        "views/fleet_view.xml",
+        "views/fleet_vehicle_odometer.xml",
         "views/ps_invoice.xml",
         "views/product_view.xml",
         "views/account_move_line.xml",
