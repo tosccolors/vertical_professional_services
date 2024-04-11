@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<odoo noupdate="1">
+    <record id="user_klippa" model="res.users" context="{'no_reset_password': True}">
+        <field name="login">Klippa_energy</field>
+        <field name="name">Klippa Energy</field>
+    </record>
+</odoo>

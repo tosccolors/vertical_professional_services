@@ -9,7 +9,6 @@ exclude: |
   ^ps_fleet_rdw|
   ^ps_follow_up|
   ^ps_invoice_layout|
-  ^ps_klippa|
   ^ps_nmbrs_base|
   ^ps_nmbrs_employee_interface|
   ^ps_nmbrs_fleet_interface|
