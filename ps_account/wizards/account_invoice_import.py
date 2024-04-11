@@ -41,13 +41,17 @@ class AccountInvoiceImport(models.TransientModel):
                 e,
             )
             logger.info("Creating empty invoice anyways")
-            invoice = self.env["account.move"].create(
-                {
-                    "move_type": "in_invoice",
-                    "partner_id": self.env.user.partner_id.id,
-                }
+            invoice = (
+                self.env["account.move"]
+                .with_context(default_move_type="in_invoice")
+                .create(
+                    {
+                        "move_type": "in_invoice",
+                        "partner_id": self.env.user.partner_id.id,
+                    }
+                )
             )
             invoice.message_post(
-                body=_("Error when importing mail from %s: %s") % (email_from, e),
+                body=_("Error when importing %s: %s") % (origin, e),
                 attachments=[(invoice_filename, b64decode(invoice_file_b64))],
             )
