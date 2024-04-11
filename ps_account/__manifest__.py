@@ -16,6 +16,7 @@
         "ps_timesheet_invoicing",
         "report_qweb_pdf_watermark",
         "ps_calendar",
+        "account_invoice_import",
     ],
     "data": [
         "report/report_layout.xml",
