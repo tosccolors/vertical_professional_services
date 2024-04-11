@@ -211,7 +211,7 @@ class HrTimesheetSheet(models.Model):
             m = sheet.end_mileage - sheet.business_mileage - sheet.starting_mileage
             sheet.private_mileage = m if m > 0 else 0
 
-    @api.depends("timesheet_ids")
+    @api.depends("timesheet_ids.unit_amount")
     def _compute_overtime_hours(self):
         for this in self.with_context(sheet_write=True):
             ptl_incl_ott = this.timesheet_ids.filtered(lambda a: not a.task_id.standby)
