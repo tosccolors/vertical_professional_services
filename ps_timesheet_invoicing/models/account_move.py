@@ -250,14 +250,20 @@ class AccountMove(models.Model):
                 wip_move_data["line_ids"],
             )
         )
-        default = {"account_id": wip_journal.default_account_id.id}
         for command1, command2, line_data in list(wip_move_data["line_ids"]):
             wip_line_data = line_data.copy()
-            if line_data["credit"] != 0:
-                wip_line_data["credit"] = line_data["debit"]
-                wip_line_data["debit"] = line_data["credit"]
-            else:
-                wip_line_data["debit"] = line_data["credit"]
-                wip_line_data["credit"] = line_data["debit"]
+
+            account_id = (
+                self.env["product.product"]
+                .browse(wip_line_data["product_id"] or [])
+                .property_account_wip_id.id
+                or wip_journal.default_account_id.id
+            )
+            if account_id:
+                wip_line_data["account_id"] = account_id
+
+            wip_line_data["credit"] = line_data["debit"]
+            wip_line_data["debit"] = line_data["credit"]
+
             wip_move_data["line_ids"].append((command1, command2, wip_line_data))
         return self.create(wip_move_data)

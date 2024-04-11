@@ -55,6 +55,7 @@ class TestPsInvoice(TestPsInvoiceBase):
         ps_invoice.invoice_id.action_post()
         self.assertEqual(ps_invoice.state, "invoiced")
         self.assertEqual(set(self.ps_line.mapped("state")), {"invoiced"})
+        self.assertTrue(ps_invoice.invoice_id.wip_move_id)
         return ps_invoice
 
     def test_02_delete_invoice(self):
