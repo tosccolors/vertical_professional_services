@@ -34,27 +34,8 @@ class HrEmployeeLandingPage(models.TransientModel):
         # compute vaction balance
         vacation_balance = 0
         if self.employee_id:
-            self.env.cr.execute(
-                """
-                SELECT allocated_leaves-leaves_taken FROM
-                    (SELECT
-                        SUM(number_of_days) as allocated_leaves, employee_id
-                        FROM hr_leave_allocation
-                        WHERE employee_id = %s
-                          AND state = %s
-                        GROUP BY employee_id) hr1
-                    JOIN (SELECT
-                        SUM(number_of_days) as leaves_taken, employee_id
-                        FROM hr_leave
-                        WHERE employee_id = %s
-                          AND state != %s
-                        GROUP BY employee_id ) hr2
-                    on hr1.employee_id = hr2.employee_id""",
-                (self.employee_id.id, "validate", self.employee_id.id, "refuse"),
-            )
-            for x in self.env.cr.fetchall():
-                vacation_balance += x[0]
-
+            vacation_balance = int(self.employee_id.allocation_display) - int(
+                self.employee_id.allocation_used_display)
         self.vacation_balance = vacation_balance
 
         user_id = self.env.user.id
@@ -186,11 +167,28 @@ class HrEmployeeLandingPage(models.TransientModel):
     )
     current_week = fields.Boolean(compute="_compute_all")
 
+    def employement_start_week(self):
+        date_range = self.env["date.range"]
+        emp_obj = self.env.user.employee_id
+        date_range_type_cw_id = self.env.ref(
+            "ps_date_range_week.date_range_calender_week"
+        ).id
+        employment_date = emp_obj.official_date_of_employment
+        return date_range.search(
+            [
+                ("type_id", "=", date_range_type_cw_id),
+                ("date_start", "<=", employment_date),
+                ("date_end", ">=", employment_date),
+            ]
+        )
+
     def get_unsubmitted_timesheet(self):
+        employment_week = self.employement_start_week()
         return self.env["hr_timesheet.sheet"].search(
             [
                 ("user_id", "=", self.env.user.id),
                 ("state", "in", ("draft", "new")),
+                ("date_start", ">=", employment_week.date_start),
             ],
             limit=1,
             order="week_id",
@@ -208,6 +206,16 @@ class HrEmployeeLandingPage(models.TransientModel):
 
     def action_view_timesheet(self):
         self.ensure_one()
+        unsubmitted_timesheet = self.get_unsubmitted_timesheet()
+        if unsubmitted_timesheet:
+            return {
+                "name": _("Open Timesheet"),
+                "view_type": "form",
+                "view_mode": "form,tree",
+                "res_id": unsubmitted_timesheet.id,
+                "res_model": "hr_timesheet.sheet",
+                "type": "ir.actions.act_window",
+            }
         return self.env["hr.timesheet.current.open"].open_timesheet()
 
     def action_view_leaves_dashboard(self):
@@ -275,18 +283,10 @@ class HrEmployeeLandingPage(models.TransientModel):
                 id
                 FROM ps_time_line
                 WHERE user_id = %s
-                  AND ot = true
-            UNION
-            SELECT
-                ps_time_line.id
-                FROM ps_time_line
-                JOIN project_project
-                ON ps_time_line.project_id=project_project.id
-                AND overtime
-                WHERE ps_time_line.user_id = %s
-                AND ps_time_line.state != 'draft'
+                AND project_id IN 
+                 (SELECT id FROM project_project WHERE overtime_hrs = TRUE OR overtime = True)
             """,
-            (user_id, user_id),
+            (user_id,),
         )
 
         entries = [_id for _id, in self.env.cr.fetchall()]
