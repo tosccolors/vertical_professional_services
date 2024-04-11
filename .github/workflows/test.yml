@@ -22,7 +22,7 @@ jobs:
           cd _docker
           mkdir -p  odoo/local-src odoo/external-src data songs
           # TODO: once they are migrated, add more ps_* modules here
-          cp -r ../ps_{account,calendar,contract,crm,date_range_week,expense,fleet,landing_page,hr,holidays,timesheet_invoicing,partner_multi_relation,project} odoo/local-src
+          cp -r ../ps_{account,calendar,contract,crm,date_range_week,expense,fleet,landing_page,hr,holidays,klippa,timesheet_invoicing,partner_multi_relation,project} odoo/local-src
           cd odoo/external-src
           gitaggregate -c ../../../repos.yml
           cd ../..
