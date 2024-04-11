@@ -8,5 +8,4 @@ class Company(models.Model):
         "account.journal",
         "Declaration Journal",
         domain=[("type", "=", "purchase")],
-        required=True,
     )
