@@ -42,6 +42,11 @@ crm:
     oca: https://github.com/OCA/crm
   merges:
     - oca 14.0
+edi:
+  remotes:
+    oca: https://github.com/OCA/edi
+  merges:
+    - oca 14.0
 hr:
   remotes:
     oca: https://github.com/OCA/hr
@@ -70,6 +75,11 @@ reporting-engine:
 server-backend:
   remotes:
     oca: https://github.com/OCA/server-backend
+  merges:
+    - oca 14.0
+server-tools:
+  remotes:
+    oca: https://github.com/OCA/server-tools
   merges:
     - oca 14.0
 server-ux:
