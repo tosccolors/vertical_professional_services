@@ -19,13 +19,16 @@ class HrEmployee(models.Model):
         domain=lambda self: self._get_category_domain(),
     )
     fee_rate = fields.Float(
-        compute="_compute_fee_rate", string="Fee Rate", readonly=True
+        compute="_compute_fee_rate",
+        string="Fee Rate",
+        readonly=True,
     )
     no_ott_check = fields.Boolean("8 Hours OTT possible", help="No Overtime Check")
 
-    @api.depends("product_id")
+    @api.depends("product_id.list_price")
     def _compute_fee_rate(self):
-        self.fee_rate = self.product_id and self.product_id.list_price or 0.0
+        for this in self:
+            this.fee_rate = this.product_id.list_price
 
     @api.model
     def _get_category_domain(self):

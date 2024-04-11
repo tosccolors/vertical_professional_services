@@ -19,6 +19,7 @@ class TimeLineStatus(models.TransientModel):
             ("delayed", "Delayed"),
             ("write-off", "Write-Off"),
             ("open", "Confirmed"),
+            ("invoiced-by-fixed", "Invoiced by Fixed"),
         ],
         string="Lines to be",
     )

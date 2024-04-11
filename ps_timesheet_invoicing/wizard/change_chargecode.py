@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import _, api, exceptions, fields, models
 
 
 class ChangeChargecode(models.TransientModel):
@@ -17,19 +17,25 @@ class ChangeChargecode(models.TransientModel):
             self.task_id = tasks[:1] if len(tasks) == 1 else False
         return {"domain": domain}
 
-    # TODO: aal with km's?
     # TODO: Reverse of correction?
 
     def post(self):
-        context = self.env.context.copy()
-        line_ids = context.get("active_ids", [])
-        time_lines = self.env["ps.time.line"].search(
-            [("id", "in", line_ids), ("state", "in", ["invoiceable", "open"])]
+        states = ("invoiceable", "open")
+        time_lines = self.env["ps.time.line"].browse(
+            self.env.context.get("active_ids", [])
         )
+        if time_lines.filtered(lambda x: x.state not in states):
+            selection_names = dict(
+                time_lines._fields["state"]._description_selection(self.env)
+            )
+            raise exceptions.UserError(
+                _("You can only change the chargecode of lines in states %s")
+                % ", ".join(selection_names[state] for state in states)
+            )
         project_id = self.project_id.id
         task_id = self.task_id.id
         for tl in time_lines:
-            if tl.task_id.id == task_id:
+            if task_id and tl.task_id.id == task_id:
                 continue
             unit_amount = tl.unit_amount
             amount = tl.amount

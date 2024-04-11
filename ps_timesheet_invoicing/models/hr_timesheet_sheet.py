@@ -198,7 +198,7 @@ class HrTimesheetSheet(models.Model):
 
     @api.depends("timesheet_ids.kilometers")
     def _compute_business_mileage(self):
-        for sheet in self:
+        for sheet in self.with_context(sheet_write=True):
             sheet.business_mileage = (
                 sum(sheet.sudo().timesheet_ids.mapped("kilometers"))
                 if sheet.timesheet_ids
@@ -207,18 +207,19 @@ class HrTimesheetSheet(models.Model):
 
     @api.depends("end_mileage", "business_mileage", "starting_mileage")
     def _compute_private_mileage(self):
-        for sheet in self:
+        for sheet in self.with_context(sheet_write=True):
             m = sheet.end_mileage - sheet.business_mileage - sheet.starting_mileage
             sheet.private_mileage = m if m > 0 else 0
 
-    @api.depends("timesheet_ids")
+    @api.depends("timesheet_ids.unit_amount")
     def _compute_overtime_hours(self):
-        ptl_incl_ott = self.timesheet_ids.filtered(lambda a: not a.task_id.standby)
-        ptl_ott = self.timesheet_ids.filtered("project_id.overtime")
-        working_hrs_incl_ott = sum(ptl_incl_ott.mapped("unit_amount"))
-        ott = sum(ptl_ott.mapped("unit_amount"))
-        self.overtime_hours = working_hrs_incl_ott - 40
-        self.overtime_hours_delta = working_hrs_incl_ott - ott - 40
+        for this in self.with_context(sheet_write=True):
+            ptl_incl_ott = this.timesheet_ids.filtered(lambda a: not a.task_id.standby)
+            ptl_ott = this.timesheet_ids.filtered("project_id.overtime")
+            working_hrs_incl_ott = sum(ptl_incl_ott.mapped("unit_amount"))
+            ott = sum(ptl_ott.mapped("unit_amount"))
+            this.overtime_hours = working_hrs_incl_ott - 40
+            this.overtime_hours_delta = working_hrs_incl_ott - ott - 40
 
     # Override for ps_time_line
     timesheet_ids = fields.One2many(comodel_name="ps.time.line", string="PS Time Lines")

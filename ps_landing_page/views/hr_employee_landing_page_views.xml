@@ -127,9 +127,7 @@
                         <group groups="hr_timesheet.group_hr_timesheet_user">
                             <div>
                                 <div style="padding:1px;" class="btn-primary">
-                                    <h3>
-                                        Timesheet To Be Approved
-                                    </h3>
+                                    <h3>Timesheet To Be Approved</h3>
                                 </div>
                                 <seperator />
                                 <field

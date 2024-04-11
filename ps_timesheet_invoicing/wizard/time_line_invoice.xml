@@ -48,4 +48,28 @@
             ref="ps_timesheet_invoicing.model_ps_time_line"
         />
     </record>
+    <record model="ir.actions.server" id="time_line_status_invoiceable">
+        <field name="name">Set To be invoiced</field>
+        <field name="state">code</field>
+        <field name="model_id" ref="ps_timesheet_invoicing.model_ps_time_line" />
+        <field name="code">
+            env['time.line.status'].create({'name': 'invoiceable'}).ps_invoice_lines()
+        </field>
+        <field
+            name="binding_model_id"
+            ref="ps_timesheet_invoicing.model_ps_time_line"
+        />
+    </record>
+    <record model="ir.actions.server" id="time_line_status_open">
+        <field name="name">Set Confirmed</field>
+        <field name="state">code</field>
+        <field name="model_id" ref="ps_timesheet_invoicing.model_ps_time_line" />
+        <field name="code">
+            env['time.line.status'].create({'name': 'open'}).ps_invoice_lines()
+        </field>
+        <field
+            name="binding_model_id"
+            ref="ps_timesheet_invoicing.model_ps_time_line"
+        />
+    </record>
 </odoo>

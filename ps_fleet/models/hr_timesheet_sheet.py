@@ -9,7 +9,7 @@ class HrTimesheetSheet(models.Model):
 
     @api.depends("end_mileage", "business_mileage", "starting_mileage")
     def _compute_mileage_new(self):
-        for sheet in self:
+        for sheet in self.with_context(sheet_write=True):
             m = sheet.end_mileage - sheet.business_mileage - sheet.starting_mileage
             sheet.private_mileage = m if m > 0 else 0
 
