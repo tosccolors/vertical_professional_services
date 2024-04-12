@@ -6,9 +6,17 @@
         <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_view_form" />
         <field name="arch" type="xml">
             <field name="value" position="before">
-                <field name="value_period_update" class="oe_inline" />
+                <field
+                    name="value_period_update"
+                    class="oe_inline"
+                    attrs="{'readonly': [('value_update', '!=', 0)]}"
+                />
                 <field name="value_period" class="oe_inline" />
-                <field name="value_update" class="oe_inline" />
+                <field
+                    name="value_update"
+                    class="oe_inline"
+                    attrs="{'readonly': [('value_period_update', '!=', 0)]}"
+                />
             </field>
         </field>
     </record>
@@ -18,9 +26,15 @@
         <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_view_tree" />
         <field name="arch" type="xml">
             <field name="value" position="before">
-                <field name="value_period_update" />
+                <field
+                    name="value_period_update"
+                    attrs="{'readonly': [('value_update', '!=', 0)]}"
+                />
                 <field name="value_period" />
-                <field name="value_update" />
+                <field
+                    name="value_update"
+                    attrs="{'readonly': [('value_period_update', '!=', 0)]}"
+                />
             </field>
         </field>
     </record>
