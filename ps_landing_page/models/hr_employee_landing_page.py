@@ -34,8 +34,10 @@ class HrEmployeeLandingPage(models.TransientModel):
         # compute vaction balance
         vacation_balance = 0
         if self.employee_id:
-            vacation_balance = int(self.employee_id.allocation_display) - int(
-                self.employee_id.allocation_used_display)
+            vacation_balance = (
+                self.employee_id.allocation_count
+                - self.employee_id.allocation_used_count
+            )
         self.vacation_balance = vacation_balance
 
         user_id = self.env.user.id
@@ -283,7 +285,7 @@ class HrEmployeeLandingPage(models.TransientModel):
                 id
                 FROM ps_time_line
                 WHERE user_id = %s
-                AND project_id IN 
+                AND project_id IN
                  (SELECT id FROM project_project WHERE overtime_hrs = TRUE OR overtime = True)
             """,
             (user_id,),
