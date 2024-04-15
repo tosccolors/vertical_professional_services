@@ -16,10 +16,9 @@ class FleetVehicleOdometer(models.Model):
         )
     ]
 
-    @api.depends("value_period_update", "value_update")
-    def _compute_odometer_value(self):
+    def _inverse_odometer_values(self):
         for odom in self:
-            if odom.value_period_update > 0.0 and odom.value_update > 0.0:
+            if odom.value_period_update and odom.value_update:
                 raise UserError(
                     _("You cannot enter both period value and ultimo value for %s!")
                     % (odom.date)
@@ -29,108 +28,80 @@ class FleetVehicleOdometer(models.Model):
                 limit=1,
                 order="date desc",
             )
-            if older:
-                if odom.value_period_update == 0.0:
-                    odom.value_period = odom.value_update - older.value
-                    odom.value = odom.value_update
-                if odom.value_update == 0.0:
-                    odom.value = older.value + odom.value_period_update
-                    odom.value_period = odom.value_period_update
+            if odom.value_update:
+                odom.value_period = odom.value_update - older.value
+                odom.value = odom.value_update
             else:
-                if odom.value_period_update == 0.0:
-                    odom.value_period = odom.value_update
-                    odom.value = odom.value_update
-                if odom.value_update == 0.0:
-                    odom.value = odom.value_period_update
-                    odom.value_period = odom.value_period_update
+                odom.value = older.value + odom.value_period_update
+                odom.value_period = odom.value_period_update
 
     value_period = fields.Float(
-        compute=_compute_odometer_value,
         string="Odometer Period Value (computed)",
         group_operator="sum",
-        store=True,
+        readonly=True,
     )
     value = fields.Float(
-        compute=_compute_odometer_value,
         string="Odometer Value (computed)",
         group_operator="max",
-        store=True,
+        readonly=True,
     )
     value_update = fields.Float(
-        string="Odometer Value", group_operator="max", store=True
+        string="Odometer Value",
+        group_operator="max",
+        compute=lambda self: None,
+        inverse="_inverse_odometer_values",
     )
     value_period_update = fields.Float(
-        string="Odometer Period Value", group_operator="sum", store=True
+        string="Odometer Period Value",
+        group_operator="sum",
+        compute=lambda self: None,
+        inverse="_inverse_odometer_values",
     )
 
-    @api.model
-    def odo_newer(self):
-        self.ensure_one()
+    def _update_newer(self, vehicle_id=None, date=None):
+        """Recompute records newer than self or date"""
         newer = self.sudo().search(
-            [("vehicle_id", "=", self.vehicle_id.id), ("date", ">", self.date)],
+            [
+                ("vehicle_id", "=", self.vehicle_id.id or vehicle_id),
+                ("date", ">", self.date or date),
+            ],
             order="date asc",
         )
         former_value = self.value
-        for one in newer:
-            period = one.value_period
-            vals = {"value_period_update": 0, "value_update": period + former_value}
-            one.write(vals)
-            former_value = period + former_value
+        for one in newer.with_context(odo_newer=True):
+            one.value = former_value + one.value_period
+            former_value = one.value
+
+    def _find_newer(self, vehicle_id=None, date=None):
+        """Return the closest record that is newer than self or date"""
+        return self.sudo().search(
+            [
+                ("vehicle_id", "=", self.vehicle_id.id or vehicle_id),
+                ("date", ">", self.date or date),
+            ],
+            limit=1,
+            order="date asc",
+        )
 
     @api.model
     def create(self, data):
         res = super().create(data)
-        if (
-            res.date
-            < self.sudo()
-            .search(
-                [("vehicle_id", "=", res.vehicle_id.id)], limit=1, order="date desc"
-            )
-            .date
-        ):
-            res.with_context(odo_newer=True).odo_newer()
+        if res._find_newer():
+            res._update_newer()
         return res
 
     def write(self, data):
-        res = super(FleetVehicleOdometer, self).write(data)
-        for record in self.filtered(lambda s: not s.env.context.get("odo_newer")):
-            if (
-                record.date
-                < self.sudo()
-                .search(
-                    [("vehicle_id", "=", record.vehicle_id.id)],
-                    limit=1,
-                    order="date desc",
-                )
-                .date
-            ):
-                record.with_context(odo_newer=True).odo_newer()
+        res = super().write(data)
+        if not self.env.context.get("odo_newer"):
+            for record in self:
+                if record._find_newer():
+                    record._update_newer()
         return res
 
     def unlink(self):
-        res = {}
-        for odom in self:
-            vals = {"gone_date": odom.date, "gone_vehicle": odom.vehicle_id.id}
-            res[odom.id] = vals
-        super(FleetVehicleOdometer, self).unlink()
-        for value in res.values():
-            if (
-                value["gone_date"]
-                < self.sudo()
-                .search(
-                    [("vehicle_id", "=", value["gone_vehicle"])],
-                    limit=1,
-                    order="date desc",
-                )
-                .date
-            ):
-                older = self.sudo().search(
-                    [
-                        ("vehicle_id", "=", value["gone_vehicle"]),
-                        ("date", "<", value["gone_date"]),
-                    ],
-                    limit=1,
-                    order="date desc",
-                )
-                if len(older) == 1:
-                    older.with_context(odo_newer=True).odo_newer()
+        self_data = self.mapped(lambda x: (x.vehicle_id.id, x.date))
+        result = super().unlink()
+        for vehicle_id, gone_date in self_data:
+            if self.env[self._name]._find_newer(vehicle_id, gone_date):
+                self.env[self._name]._update_newer(vehicle_id, gone_date)
+        return result

@@ -91,3 +91,28 @@ class TestMisc(TransactionCase):
         self.env.clear()
         self.assertEqual(hour_amount * 100, self.ps_line.amount)
         self.assertEqual(mileage_amount, self.ps_line_mileage.amount)
+
+    def test_odometer(self):
+        """Test odometer recomputation works"""
+        vehicle = self.env.ref("fleet.vehicle_1")
+        self.env["fleet.vehicle.odometer"].search([]).unlink()
+        odometer20230601 = self.env["fleet.vehicle.odometer"].create(
+            {
+                "vehicle_id": vehicle.id,
+                "value_update": 42,
+                "date": "2023-06-01",
+            }
+        )
+        self.assertEqual(odometer20230601.value_period, 42)
+        odometer20230101 = odometer20230601.copy(
+            {"date": "2023-01-01", "value_period_update": 10}
+        )
+        self.assertEqual(odometer20230601.value, 52)
+        odometer20230701 = odometer20230601.copy(
+            {"date": "2023-07-01", "value_period_update": 20}
+        )
+        self.assertEqual(odometer20230701.value, 72)
+        odometer20230101.value = 8
+        self.assertEqual(odometer20230701.value, 70)
+        odometer20230101.unlink()
+        self.assertEqual(odometer20230701.value, 62)
