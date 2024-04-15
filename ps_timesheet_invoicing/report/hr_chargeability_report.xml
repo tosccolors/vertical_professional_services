@@ -21,8 +21,6 @@
             <search string="Chargeability Report Search">
                 <field name="user_id" />
                 <field name="date" />
-                <!-- <filter string="Internal Employees" domain="[('external','=',False)]" name="internal_emp_filter"/> -->
-                <filter string="Internal Employees" name="internal_emp_filter" />
                 <group string="Group By...">
                     <filter
                         name="dept_ou"
@@ -38,12 +36,6 @@
                         domain="[]"
                         context="{'group_by':'department_id'}"
                     />
-                    <!-- <filter string="Year" icon="terp-go-today" domain="[]"
-                        context="{'group_by':'date:year'}"/> -->
-                    <!-- <filter string="Month" icon="terp-go-today" domain="[]"
-                        context="{'group_by':'date:month'}"/>
-                        <filter string="Week" icon="terp-go-today" domain="[]"
-                            context="{'group_by':'date:week'}"/> -->
                 </group>
             </search>
         </field>

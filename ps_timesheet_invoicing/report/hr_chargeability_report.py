@@ -1,5 +1,4 @@
-from odoo import _, api, fields, models, tools
-from odoo.exceptions import UserError
+from odoo import api, fields, models, tools
 
 
 class HrChargeabilityReport(models.Model):
@@ -33,7 +32,6 @@ class HrChargeabilityReport(models.Model):
                     pst.user_id as user_id,
                     pst.operating_unit_id as operating_unit_id,
                     pst.department_id as department_id,
-                    -- emp.external as external,
                     emp.timesheet_optional as ts_optional,
                     emp.timesheet_no_8_hours_day as ts_no_8_hours_day,
                     SUM(unit_amount) as captured_hours,
@@ -86,23 +84,16 @@ class HrChargeabilityReport(models.Model):
     def read_group(
         self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True
     ):
-        res = super().read_group(
+        for field_name in ("chargeable_hours:sum", "norm_hours:sum"):
+            if field_name not in fields and field_name not in groupby:
+                fields = list(fields) + [field_name]
+        result = super().read_group(
             domain, fields, groupby, offset, limit=limit, orderby=orderby, lazy=lazy
         )
-        for index in range(len(res)):
-            if res[index].get("norm_hours", False) and res[index].get(
-                "chargeable_hours", False
-            ):
-                res[index]["chargeability"] = (
-                    (res[index]["chargeable_hours"] / res[index]["norm_hours"]) * 100
-                    if res[index]["norm_hours"] > 0
-                    else 0.0
-                )
-            else:
-                raise UserError(
-                    _(
-                        "You have to select Chargeable Hours and Norm Hours as "
-                        "measure for this report"
-                    )
-                )
-        return res
+        for row in result:
+            row["chargeability"] = (
+                row["chargeable_hours"] / row["norm_hours"] * 100
+                if row["norm_hours"] > 0
+                else 0.0
+            )
+        return result
