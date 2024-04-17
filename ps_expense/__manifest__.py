@@ -13,7 +13,8 @@
     ],
     "data": [
         "security/security.xml",
-        "views/hr_expense_views.xml",
+        "views/hr_expense.xml",
+        "views/hr_expense_sheet.xml",
         "views/res_company_view.xml",
         "views/account_analytic_account.xml",
         "views/account_analytic_line.xml",
