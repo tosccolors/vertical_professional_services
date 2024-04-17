@@ -4,6 +4,7 @@ from odoo.tests.common import Form, TransactionCase
 class TestPsHolidays(TransactionCase):
     def setUp(self):
         super().setUp()
+        self.admin = self.env.ref("base.user_admin")
         self.user = self.env.ref("base.user_demo")
         self.timesheet = self.env["hr_timesheet.sheet"].with_user(self.user).create({})
         self.leave_type = self.env.ref("hr_holidays.holiday_status_cl")
@@ -26,7 +27,7 @@ class TestPsHolidays(TransactionCase):
         leaves = self.env["hr.leave"].search(
             [("employee_id.user_id", "=", self.user.id)]
         )
-        self.timesheet.sudo().action_timesheet_done()
+        self.timesheet.with_user(self.admin).action_timesheet_done()
         self.leave_type.refresh()
         self.assertEqual(self.leave_type.with_user(self.user).leaves_taken, 7)
         new_leaves = (
@@ -36,7 +37,7 @@ class TestPsHolidays(TransactionCase):
         self.assertTrue(sum(new_leaves.mapped("number_of_days")), 7)
         # the 6 are from demo data sick leave, which doesn't have allocation
         self.assertEqual(self.user.employee_id.allocation_used_count, 7 + 6)
-        self.timesheet.sudo().action_timesheet_draft()
+        self.timesheet.with_user(self.admin).action_timesheet_draft()
         self.assertFalse(new_leaves.exists())
         self.leave_type.refresh()
         self.assertEqual(self.leave_type.with_user(self.user).leaves_taken, 0)
