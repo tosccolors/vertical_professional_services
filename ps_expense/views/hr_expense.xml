@@ -22,7 +22,7 @@
             </xpath>
             <xpath expr="//field[@name='tax_ids']" position="attributes">
                 <attribute name="attrs">
-                    {'invisible': [('sheet_state', 'not in', ['approve','revise'])]}
+                    {'invisible': [('sheet_state', 'not in', ['approve','approved'])]}
                 </attribute>
                 <attribute name="groups">
                     base.group_no_one,hr_expense.group_hr_expense_manager
@@ -36,7 +36,7 @@
                     {'no_create': True, 'no_create_edit':True}
                 </attribute>
                 <attribute name="attrs">
-                    {'readonly':[('state','not in',('draft','refused','revise'))]}
+                    {'readonly':[('state','not in',('draft','refused','approved'))]}
                 </attribute>
             </xpath>
             <xpath expr="//field[@name='analytic_account_id']" position="after">
@@ -49,17 +49,17 @@
             </xpath>
             <xpath expr="//field[@name='unit_amount']" position="attributes">
                 <attribute name="attrs">
-                    {'readonly':[('state','not in',('draft','refused','revise'))]}
+                    {'readonly':[('state','not in',('draft','refused','approved'))]}
                 </attribute>
             </xpath>
             <xpath expr="//field[@name='quantity']" position="attributes">
                 <attribute name="attrs">
-                    {'readonly':[('state','not in',('draft','refused','revise'))]}
+                    {'readonly':[('state','not in',('draft','refused','approved'))]}
                 </attribute>
             </xpath>
             <xpath expr="//field[@name='date']" position="attributes">
                 <attribute name="attrs">
-                    {'readonly':[('state','not in',('draft','refused','revise'))]}
+                    {'readonly':[('state','not in',('draft','refused','approved'))]}
                 </attribute>
             </xpath>
         </field>

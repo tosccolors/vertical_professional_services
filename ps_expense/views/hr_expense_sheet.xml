@@ -14,32 +14,6 @@
                 <field name="account_id" />
             </xpath>
             <xpath
-                expr="//button[@name='action_sheet_move_create']"
-                position="attributes"
-            >
-                <attribute name="invisible">True</attribute>
-            </xpath>
-            <xpath expr="//button[@name='action_sheet_move_create']" position="after">
-                <button
-                    name="action_partner_sheet_move_create"
-                    states="approve_partner,revise"
-                    string="Post Journal Entries"
-                    type="object"
-                    groups="account.group_account_user"
-                    class="oe_highlight o_expense_sheet_post"
-                />
-            </xpath>
-            <xpath expr="//button[@name='approve_expense_sheets']" position="after">
-                <button
-                    name="approve_partner_expense_sheets"
-                    states="approve"
-                    string="Partner Approve"
-                    type="object"
-                    groups="ps_expense.group_hr_expense_partner"
-                    class="oe_highlight o_expense_sheet_post"
-                />
-            </xpath>
-            <xpath
                 expr="//button[@name='action_register_payment']"
                 position="attributes"
             >
@@ -47,53 +21,18 @@
             </xpath>
             <xpath
                 expr="//button[@name='%(hr_expense.hr_expense_refuse_wizard_action)d']"
-                position="after"
+                position="attributes"
             >
-                <button
-                    name="%(hr_expense.hr_expense_refuse_wizard_action)d"
-                    states="approve_partner"
-                    string="Refuse"
-                    type="action"
-                    groups="account.group_account_user"
-                />
-            </xpath>
-            <xpath
-                expr="//button[@name='%(hr_expense.hr_expense_refuse_wizard_action)d']"
-                position="after"
-            >
-                <button
-                    name="%(hr_expense.hr_expense_refuse_wizard_action)d"
-                    states="approve"
-                    string="Refuse"
-                    type="action"
-                    groups="ps_expense.group_hr_expense_partner"
+                <attribute
+                    name="groups"
+                    add="account.group_account_user"
+                    separator=","
                 />
             </xpath>
             <xpath expr="//header/field[@name='state']" position="attributes">
                 <!-- prettier-ignore-start -->
-                <attribute name="statusbar_visible">submit,approve,approve_partner,post</attribute>
+                <attribute name="statusbar_visible">submit,approve,post</attribute>
                 <!-- prettier-ignore-end -->
-            </xpath>
-            <xpath
-                expr="//button[@name='action_partner_sheet_move_create']"
-                position="after"
-            >
-                <button
-                    name="revise_expense"
-                    type="object"
-                    string="Revise Expense"
-                    class="oe_highlight"
-                    states="approve,approve_partner"
-                    groups="hr_expense.group_hr_expense_manager"
-                />
-                <button
-                    name="expense_revised"
-                    type="object"
-                    string="Re-Submit"
-                    class="oe_highlight"
-                    states="revise"
-                    groups="hr_expense.group_hr_expense_manager"
-                />
             </xpath>
             <xpath expr="//field[@name='expense_line_ids']" position="attributes">
                 <attribute name="domain">[('employee_id', '=', employee_id)]</attribute>
@@ -153,31 +92,19 @@
             </xpath>
         </field>
     </record>
-    <record id="ps_expense_hr_expense_sheet_filter" model="ir.ui.view">
-        <field name="name">hr.expense.filter.ps.expense2</field>
-        <field name="model">hr.expense.sheet</field>
-        <field name="inherit_id" ref="hr_expense.hr_expense_sheet_view_search" />
-        <field name="arch" type="xml">
-            <xpath expr="//search/filter[@name='to_post']" position="attributes">
-                <attribute name="domain">[('state', '=', 'approve_partner')]</attribute>
-            </xpath>
-            <xpath expr="//search/filter[@name='to_post']" position="after">
-                <filter
-                    domain="[('state', '=', 'approve')]"
-                    string="To Partner Approval"
-                    name="to_partner_approval"
-                    help="Manager Approved Expenses"
-                />
-            </xpath>
-        </field>
-    </record>
     <record
         id="hr_expense.action_hr_expense_sheet_all_to_approve"
         model="ir.actions.act_window"
     >
         <field name="context">
-            {'search_default_submitted': 1, 'hr_expense_sheet_account_id_invisible': 1,
-            'hr_expense_sheet_sale_order_id_invisible': 1}
+            {'search_default_submitted': 1,
+            'hr_expense_sheet_account_id_invisible': 1,
+            'hr_expense_sheet_sale_order_id_invisible': 1
+            'search_default_group_operating_unit': 1,
+            'hr_expense_sheet_operating_unit_invisible': 1,
+            'hr_expense_sheet_sale_order_id_invisible': 1,
+            'hr_expense_sheet_tax_ids_invisible': 1,
+            'hr_expense_sheet_unit_amount_invisible': 1}
         </field>
     </record>
     <record
@@ -194,28 +121,7 @@
     >
         <field name="context">{'search_default_approved': 1}</field>
     </record>
-    <record model="ir.actions.act_window" id="partner_approval_menu_action">
-        <field name="name">Partner Approval</field>
-        <field name="res_model">hr.expense.sheet</field>
-        <field name="view_mode">tree,kanban,form,pivot,graph</field>
-        <field name="domain">[('state','=','approve')]</field>
-        <field name="context">
-            {'search_default_group_operating_unit': 1,
-            'hr_expense_sheet_operating_unit_invisible': 1,
-            'hr_expense_sheet_sale_order_id_invisible': 1,
-            'hr_expense_sheet_tax_ids_invisible': 1,
-            'hr_expense_sheet_unit_amount_invisible': 1}
-        </field>
-    </record>
     <record model="ir.ui.menu" id="hr_expense.menu_hr_expense_sheet_all_to_approve">
         <field name='name'>Manager Approval</field>
     </record>
-    <menuitem
-        id="menu_hr_expense_sheet_all_to_approve_partner"
-        name="Partner Approval"
-        sequence="1"
-        parent="menu_hr_expense_to_approve"
-        action="partner_approval_menu_action"
-        groups="ps_expense.group_hr_expense_partner"
-    />
 </odoo>

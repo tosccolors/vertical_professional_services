@@ -11,10 +11,9 @@ class TestPsExpense(TransactionCase):
             expense = expense_form.save()
         action = expense.action_submit_expenses()
         expense_sheet = self.env[action["res_model"]].browse(action["res_id"])
-        expense_sheet.revise_expense()
-        self.assertEqual(expense_sheet.state, "revise")
-        expense_sheet.expense_revised()
+        expense_sheet.approve_expense_sheets()
         self.assertEqual(expense_sheet.state, "approve")
-        expense_sheet.approve_partner_expense_sheets()
-        self.assertEqual(expense_sheet.state, "approve_partner")
-        expense_sheet.action_partner_sheet_move_create()
+        expense_sheet.action_sheet_move_create()
+        self.assertEqual(
+            expense_sheet.account_move_id.operating_unit_id, expense.operating_unit_id
+        )
