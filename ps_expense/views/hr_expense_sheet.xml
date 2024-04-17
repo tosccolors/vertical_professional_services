@@ -126,6 +126,14 @@
                 </attribute>
             </xpath>
             <xpath
+                expr="//field[@name='expense_line_ids']/tree/field[@name='account_id']"
+                position="attributes"
+            >
+                <attribute name="invisible">
+                    context.get('hr_expense_sheet_account_id_invisible')
+                </attribute>
+            </xpath>
+            <xpath
                 expr="//field[@name='expense_line_ids']/tree/field[@name='unit_amount']"
                 position="attributes"
             >
@@ -167,7 +175,10 @@
         id="hr_expense.action_hr_expense_sheet_all_to_approve"
         model="ir.actions.act_window"
     >
-        <field name="context">{'search_default_submitted': 1}</field>
+        <field name="context">
+            {'search_default_submitted': 1, 'hr_expense_sheet_account_id_invisible': 1,
+            'hr_expense_sheet_sale_order_id_invisible': 1}
+        </field>
     </record>
     <record
         id="hr_expense.action_hr_expense_sheet_all_to_post"
