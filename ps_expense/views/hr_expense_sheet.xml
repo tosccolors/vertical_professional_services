@@ -98,6 +98,51 @@
             <xpath expr="//field[@name='expense_line_ids']" position="attributes">
                 <attribute name="domain">[('employee_id', '=', employee_id)]</attribute>
             </xpath>
+            <field name="operating_unit_id" position="attributes">
+                <attribute name="readonly">True</attribute>
+            </field>
+            <xpath
+                expr="//field[@name='expense_line_ids']/tree/field[@name='operating_unit_id']"
+                position="attributes"
+            >
+                <attribute name="invisible">
+                    context.get('hr_expense_sheet_operating_unit_invisible')
+                </attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='expense_line_ids']/tree/field[@name='sale_order_id']"
+                position="attributes"
+            >
+                <attribute name="invisible">
+                    context.get('hr_expense_sheet_sale_order_id_invisible')
+                </attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='expense_line_ids']/tree/field[@name='tax_ids']"
+                position="attributes"
+            >
+                <attribute name="invisible">
+                    context.get('hr_expense_sheet_tax_ids_invisible')
+                </attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='expense_line_ids']/tree/field[@name='unit_amount']"
+                position="attributes"
+            >
+                <attribute name="invisible">
+                    context.get('hr_expense_sheet_unit_amount_invisible')
+                </attribute>
+                <attribute name="optional">show</attribute>
+            </xpath>
+            <xpath
+                expr="//field[@name='expense_line_ids']/tree/field[@name='analytic_account_id']"
+                position="after"
+            >
+                <field
+                    name="product_id"
+                    invisible="context.get('hr_expense_sheet_product_id_invisible')"
+                />
+            </xpath>
         </field>
     </record>
     <record id="ps_expense_hr_expense_sheet_filter" model="ir.ui.view">
@@ -118,19 +163,6 @@
             </xpath>
         </field>
     </record>
-    <record id="view_hr_expense_sheet_form_ps_inherited" model="ir.ui.view">
-        <field name="name">hr.expense.sheet.form</field>
-        <field name="model">hr.expense.sheet</field>
-        <field
-            name="inherit_id"
-            ref="hr_expense_operating_unit.view_hr_expense_sheet_form"
-        />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='operating_unit_id']" position="attributes">
-                <attribute name="readonly">True</attribute>
-            </xpath>
-        </field>
-    </record>
     <record
         id="hr_expense.action_hr_expense_sheet_all_to_approve"
         model="ir.actions.act_window"
@@ -141,7 +173,9 @@
         id="hr_expense.action_hr_expense_sheet_all_to_post"
         model="ir.actions.act_window"
     >
-        <field name="context">{'search_default_to_post': 1}</field>
+        <field name="context">
+            {'search_default_to_post': 1, 'hr_expense_sheet_product_id_invisible': 1}
+        </field>
     </record>
     <record
         id="hr_expense.action_hr_expense_sheet_all_to_pay"
@@ -154,7 +188,13 @@
         <field name="res_model">hr.expense.sheet</field>
         <field name="view_mode">tree,kanban,form,pivot,graph</field>
         <field name="domain">[('state','=','approve')]</field>
-        <field name="context">{'search_default_group_operating_unit': 1}</field>
+        <field name="context">
+            {'search_default_group_operating_unit': 1,
+            'hr_expense_sheet_operating_unit_invisible': 1,
+            'hr_expense_sheet_sale_order_id_invisible': 1,
+            'hr_expense_sheet_tax_ids_invisible': 1,
+            'hr_expense_sheet_unit_amount_invisible': 1}
+        </field>
     </record>
     <record model="ir.ui.menu" id="hr_expense.menu_hr_expense_sheet_all_to_approve">
         <field name='name'>Manager Approval</field>
