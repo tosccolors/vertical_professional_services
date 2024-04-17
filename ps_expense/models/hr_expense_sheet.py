@@ -7,6 +7,21 @@ class HrExpenseSheet(models.Model):
     journal_id = fields.Many2one(
         default=lambda self: self.env.user.company_id.decl_journal_id
     )
+    project_manager_id = fields.Many2one(
+        "res.users", compute="_compute_project_manager_id", store=True
+    )
+
+    @api.depends("expense_line_ids.analytic_account_id")
+    def _compute_project_manager_id(self):
+        for this in self:
+            managers = this.mapped(
+                "expense_line_ids.analytic_account_id.project_ids.user_id"
+            )
+            if len(managers) == 1 and all(
+                line.analytic_account_id.project_ids.user_id
+                for line in this.expense_line_ids
+            ):
+                this.project_manager_id = managers
 
     @api.onchange("expense_line_ids")
     def onchange_expense_line_ids(self):
