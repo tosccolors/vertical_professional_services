@@ -352,6 +352,9 @@
                                             <strong>Subtotal</strong>
                                         </td>
                                         <td class="text-right">
+                                            <span t-if="o.move_type == 'out_refund'">
+                                                -
+                                            </span>
                                             <span t-field="o.amount_untaxed" />
                                         </td>
                                     </tr>
@@ -367,6 +370,11 @@
                                                     <span t-esc="amount_by_group[0]" />
                                                 </td>
                                                 <td class="text-right o_price_total">
+                                                    <span
+                                                        t-if="o.move_type == 'out_refund'"
+                                                    >
+                                                        -
+                                                    </span>
                                                     <span t-esc="amount_by_group[3]" />
                                                 </td>
                                             </t>
@@ -378,6 +386,11 @@
                                             </span>
                                                 </td>
                                                 <td class="text-right o_price_total">
+                                                    <span
+                                                        t-if="o.move_type == 'out_refund'"
+                                                    >
+                                                        -
+                                                    </span>
                                                     <span t-esc="amount_by_group[3]" />
                                                 </td>
                                             </t>
@@ -388,6 +401,9 @@
                                             <strong>Total</strong>
                                         </td>
                                         <td class="text-right">
+                                            <span t-if="o.move_type == 'out_refund'">
+                                                -
+                                            </span>
                                             <span t-field="o.amount_total" />
                                         </td>
                                     </tr>
