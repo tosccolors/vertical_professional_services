@@ -98,9 +98,9 @@
     >
         <field name="context">
             {'search_default_submitted': 1,
-            'hr_expense_sheet_account_id_invisible': 1,
-            'hr_expense_sheet_sale_order_id_invisible': 1
             'search_default_group_operating_unit': 1,
+            'hr_expense_sheet_account_id_invisible': 1,
+            'hr_expense_sheet_sale_order_id_invisible': 1,
             'hr_expense_sheet_operating_unit_invisible': 1,
             'hr_expense_sheet_sale_order_id_invisible': 1,
             'hr_expense_sheet_tax_ids_invisible': 1,
