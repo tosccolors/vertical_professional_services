@@ -20,3 +20,15 @@ class TestPsKlippa(TransactionCase):
         self.assertEqual(len(sheets), 3)
         self.assertEqual(demo_expenses[0].name, demo_expenses[1].sheet_id.name)
         self.assertEqual(set(sheets.mapped("state")), {"submit"})
+        new_expenses = sum(
+            (expense.copy() for expense in demo_expenses), self.env["hr.expense"]
+        )
+        new_sheet = new_expenses[0]._create_sheet_from_expenses()
+        new_sheet.reset_expense_sheets()
+        self.env.cr.execute(
+            "update hr_expense set create_uid=%s where id in %s",
+            (user.id, tuple(new_expenses.ids)),
+        )
+        self.env.ref("ps_klippa.ir_cron_expense_update_actions").method_direct_trigger()
+        self.assertTrue(new_expenses[1].sheet_id)
+        self.assertNotEqual(new_expenses[0].sheet_id, new_expenses[1].sheet_id)
