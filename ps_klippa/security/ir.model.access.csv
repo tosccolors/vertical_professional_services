@@ -1,0 +1,5 @@
+id,perm_create
+hr_expense.access_hr_expense_employee,0
+hr_expense.access_hr_expense_sheet_employee,0
+hr_expense.access_hr_expense_user,0
+hr_expense.access_hr_expense_sheet_user,0

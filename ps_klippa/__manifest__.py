@@ -10,6 +10,7 @@
     "version": "14.0.1.0.0",
     "depends": ["ps_expense"],
     "data": [
+        "security/ir.model.access.csv",
         "data/ir_cron.xml",
         "data/res_users.xml",
     ],
