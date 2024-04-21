@@ -111,7 +111,7 @@
                             </button>
                         </div>
                         <br />
-                        <div style="padding:1px;" class="btn-primary">
+                        <div style="padding:1px;" class="btn-primary btn-ship">
                             <h3>My Timesheet Status</h3>
                         </div>
                         <div>
@@ -126,7 +126,7 @@
                         <br />
                         <group groups="hr_timesheet.group_hr_timesheet_user">
                             <div>
-                                <div style="padding:1px;" class="btn-primary">
+                                <div style="padding:1px;" class="btn-primary btn-ship">
                                     <h3>Timesheet To Be Approved</h3>
                                 </div>
                                 <seperator />
@@ -144,7 +144,7 @@
                             </div>
                         </group>
                         <br />
-                        <div style="padding:1px;" class="btn-primary">
+                        <div style="padding:1px;" class="btn-primary btn-ship">
                             <h3>
                                 <field
                                     name="employee_id"
@@ -166,7 +166,7 @@
                         <br />
                         <group groups="hr_expense.group_hr_expense_user">
                             <div>
-                                <div style="padding:1px;" class="btn-primary">
+                                <div style="padding:1px;" class="btn-primary btn-ship">
                                     <h3>Expense To Be Approved</h3>
                                 </div>
                                 <seperator />
