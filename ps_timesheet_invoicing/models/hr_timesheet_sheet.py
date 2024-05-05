@@ -307,6 +307,20 @@ class HrTimesheetSheet(models.Model):
         # implicitly handled by those being readonly related fields to period
         pass
 
+    def _check_can_review(self):
+        """Enforce can_review flag for all review policies"""
+        super()._check_can_review()
+        if any(not this.can_review for this in self):
+            raise UserError(_("You cannot review this timesheet"))
+
+    def _get_possible_reviewers(self):
+        """Allow self-review only for timesheet managerX"""
+        return super()._get_possible_reviewers() - self.mapped(
+            "employee_id.user_id"
+        ).filtered(
+            lambda x: not x.has_group("ps_timesheet_invoicing.group_timesheet_manager")
+        )
+
     def duplicate_last_week(self):
         if self.week_id and self.employee_id:
             ds = self.week_id.date_start
