@@ -20,7 +20,11 @@ class HrExpense(models.Model):
         ):
             this.operating_unit_id = this.analytic_account_id.operating_unit_ids.ids[:1]
         for row in self.read_group(
-            [("create_uid", "=", user.id), ("state", "=", "draft")],
+            [
+                ("create_uid", "=", user.id),
+                ("state", "=", "draft"),
+                ("sheet_id", "=", False),
+            ],
             [],
             ["employee_id", "analytic_account_id", "name"],
             lazy=False,
