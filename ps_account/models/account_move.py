@@ -12,14 +12,14 @@ class AccountMove(models.Model):
         self.ensure_one()
         result = {}
         if data_type == "sale_order":
-            for line in self.invoice_line_ids:
+            for line in self.invoice_line_ids.sorted("sequence"):
                 if line.analytic_account_id in result:
                     result[line.analytic_account_id].append(line)
                 else:
                     result[line.analytic_account_id] = [line]
         if data_type == "project":
             UOMHrs = self.env.ref("uom.product_uom_hour").id
-            invoice_line_ids = self.invoice_line_ids
+            invoice_line_ids = self.invoice_line_ids.sorted("sequence")
             # TODO what are ic_lines?
             # if self.ic_lines or (self.refund_invoice_id and self.refund_invoice_id.ic_lines):
             #    invoice_line_ids = self.invoice_line_ids.filtered(lambda l: l.revenue_line)
