@@ -1,0 +1,16 @@
+<odoo>
+    <record id="rule_expense_team_approver_project_manager" model="ir.rule">
+        <field name="name">Team Approver Project Manager Expense</field>
+        <field name="model_id" ref="hr_expense.model_hr_expense" />
+        <field name="groups" eval="[(4, ref('hr_expense.group_hr_expense_user'))]" />
+        <field name="domain_force">
+            [('sheet_id.project_manager_id', '=', user.id)]
+        </field>
+    </record>
+    <record id="rule_expense_sheet_team_approver_project_manager" model="ir.rule">
+        <field name="name">Team Approver Project Manager Expense Sheet</field>
+        <field name="model_id" ref="hr_expense.model_hr_expense_sheet" />
+        <field name="groups" eval="[(4, ref('hr_expense.group_hr_expense_user'))]" />
+        <field name="domain_force">[('project_manager_id', '=', user.id)]</field>
+    </record>
+</odoo>
