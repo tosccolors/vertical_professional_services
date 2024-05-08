@@ -10,6 +10,7 @@
         "hr_expense",
         "hr_expense_operating_unit",
         "invoice_line_revenue_distribution_operating_unit",
+        "sale_expense",
     ],
     "data": [
         "security/security.xml",
