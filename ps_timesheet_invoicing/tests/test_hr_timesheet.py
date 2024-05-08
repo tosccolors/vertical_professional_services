@@ -10,12 +10,24 @@ class TestHrTimesheet(TransactionCase):
         self.ps_line = self.env.ref(
             "ps_timesheet_invoicing.time_line_demo_user_2023_12_18"
         )
+        self.env.company.timesheet_sheet_review_policy = "timesheet_manager"
 
     def test_timesheet(self):
         """Test creating and submitting timesheets"""
         task = self.project.task_ids[:1]
         task.standard = True
         user = self.env.ref("base.user_demo")
+        # demo user by default has too much permissions for this test to be sensible
+        user.write(
+            {
+                "groups_id": [
+                    (3, self.env.ref("hr_timesheet.group_hr_timesheet_approver").id),
+                    (3, self.env.ref("project.group_project_manager").id),
+                    (4, self.env.ref("project.group_project_user").id),
+                ]
+            }
+        )
+        self.project.allowed_internal_user_ids += user
         sheet = self.env["hr_timesheet.sheet"].with_user(user).create({})
         sheet.add_line_project_id = self.project
         sheet.onchange_add_project_id()
@@ -29,12 +41,17 @@ class TestHrTimesheet(TransactionCase):
             with sheet_form.line_ids.edit(3) as day_line:
                 day_line.unit_amount = 10
             sheet_form.end_mileage = 42
-        action = (
-            self.env["hr.timesheet.current.open"]
-            .with_user(self.env.ref("base.user_demo"))
-            .open_timesheet()
-        )
+        action = self.env["hr.timesheet.current.open"].with_user(user).open_timesheet()
         self.assertEqual(action["res_id"], sheet.id)
+        sheet.action_timesheet_confirm()
+        with self.assertRaises(exceptions.UserError):
+            sheet.action_timesheet_done()
+        user.groups_id += self.env.ref("hr_timesheet.group_hr_timesheet_approver")
+        with self.assertRaises(exceptions.UserError):
+            sheet.action_timesheet_done()
+        user.groups_id += self.env.ref("ps_timesheet_invoicing.group_timesheet_manager")
+        sheet.action_timesheet_done()
+        sheet.action_timesheet_draft()
         sheet.action_timesheet_confirm()
         sheet_as_admin = sheet.with_user(self.env.ref("base.user_admin"))
         sheet_as_admin.action_timesheet_refuse()
