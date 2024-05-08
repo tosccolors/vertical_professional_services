@@ -10,6 +10,7 @@ class HrExpenseSheet(models.Model):
         selection_add=[
             ("approve_partner", "Approved By Partner"),
             ("revise", "To Be Revised"),
+            ("post",),
         ],
         default="submit",
         ondelete={"approve_partner": "set default", "revise": "set default"},
