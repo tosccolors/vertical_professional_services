@@ -54,7 +54,10 @@ class StatusTimeReport(models.Model):
                 hrc.department_id as department_id,
                 hrc.external as external,
                 hrc.timesheet_optional as ts_optional,
-                string_agg(he.name,',' ORDER BY he.name ASC) as validators,
+                string_agg(
+                    coalesce(he.name, he_parent.name), ','
+                    ORDER BY coalesce(he.name, he_parent.name) ASC
+                ) as validators,
                 htsss.state as state
             FROM date_range dr
             CROSS JOIN  hr_employee hrc
@@ -64,6 +67,8 @@ class StatusTimeReport(models.Model):
             ON (hd.id = hrc.department_id)
             LEFT JOIN hr_employee he
             ON (htsss.reviewer_id=he.id)
+            LEFT JOIN hr_employee he_parent
+            ON (hrc.parent_id=he_parent.id)
             WHERE dr.type_id = %s
             AND hrc.official_date_of_employment < dr.date_start
             AND (
