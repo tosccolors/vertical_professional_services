@@ -23,3 +23,21 @@ class TestPsInvoice(test_ps_invoice.TestPsInvoiceBase):
         self.ps_invoice.invoice_id.flush()
         self.assertEqual(self.ps_invoice.state, "invoiced")
         self.assertEqual(self.ps_line.mapped("state"), ["invoiced"])
+
+    def test_02_invoicing_standard(self):
+        invoice = (
+            self.env["account.move"]
+            .with_context(
+                default_move_type="out_invoice",
+            )
+            .create(
+                {
+                    "partner_id": self.env.ref("base.res_partner_12").id,
+                    "invoice_line_ids": [
+                        (0, 0, {"name": "/", "quantity": 1, "price_unit": 42}),
+                    ],
+                }
+            )
+        )
+        invoice.action_post()
+        self.assertEqual(invoice.state, "posted")

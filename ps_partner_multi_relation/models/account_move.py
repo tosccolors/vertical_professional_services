@@ -138,24 +138,35 @@ class AccountMove(models.Model):
         """
 
         relation_type = self.env.ref("ps_partner_multi_relation.rel_type_consortium").id
-        members_data = self.get_members_sharing_key(self.partner_id, relation_type)
-        if not members_data:
-            return super()._post(soft=soft)
+        invoice2members_data = {
+            this: members_data
+            for this, members_data in (
+                (this, self.get_members_sharing_key(this.partner_id, relation_type))
+                for this in self
+            )
+            if members_data
+        }
+
+        result = super(
+            AccountMove, self - sum(invoice2members_data, self.browse([]))
+        )._post(soft=soft)
 
         # lots of duplicate calls to action_invoice_open, so we remove those already open
-        to_open_invoices = self.filtered(lambda inv: inv.state != "open")
+        to_open_invoices = self.filtered(
+            lambda inv: inv.state != "open" and inv in invoice2members_data
+        )
         if to_open_invoices.filtered(lambda inv: inv.state != "draft"):
             raise UserError(
                 _("Invoice must be in draft state in order to validate it.")
             )
 
         for invoice in to_open_invoices:
-            for partner, share_key in members_data.items():
+            for partner, share_key in invoice2members_data[invoice].items():
                 invoice._create_member_invoice(partner, share_key)
 
         to_open_invoices.button_cancel()
 
-        return to_open_invoices
+        return result + to_open_invoices
 
     def action_view_member_invoice(self):
         self.ensure_one()
