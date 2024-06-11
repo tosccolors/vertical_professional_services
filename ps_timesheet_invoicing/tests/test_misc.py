@@ -116,3 +116,13 @@ class TestMisc(TransactionCase):
         self.assertEqual(odometer20230701.value, 70)
         odometer20230101.unlink()
         self.assertEqual(odometer20230701.value, 62)
+
+    def test_status_time_report(self):
+        """Test that the status report works"""
+        self.env["hr.employee"].search([]).write(
+            {"official_date_of_employment": "2022-12-31"}
+        )
+        self.env["hr.employee"].flush()
+        self.env["status.time.report"].with_user(
+            self.env.ref("base.user_admin")
+        ).search([]).read([])

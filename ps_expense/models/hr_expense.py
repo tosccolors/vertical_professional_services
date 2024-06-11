@@ -1,5 +1,4 @@
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo import api, fields, models
 
 
 class HrExpense(models.Model):
@@ -13,7 +12,6 @@ class HrExpense(models.Model):
     )
     customer_charge_expense = fields.Boolean("Charge Expense To Customer", index=True)
     analytic_tag_ids = fields.Many2many(string="WKR")
-    state = fields.Selection(selection_add=[("revise", "To Be Revised")])
 
     def action_move_create(self):
         res = super(
@@ -26,30 +24,12 @@ class HrExpense(models.Model):
                     expense.sheet_id.account_move_id.operating_unit_id = ou
         return res
 
-    def action_submit_expenses(self):
-        if any(expense.state != "draft" for expense in self):
-            raise UserError(_("You cannot report twice the same line!"))
-        if len(self.mapped("employee_id")) != 1:
-            raise UserError(
-                _(
-                    "You cannot report expenses for different employees in the same report!"
-                )
-            )
-        expense_sheet = self.env["hr.expense.sheet"].create(
-            {
-                "expense_line_ids": [(6, 0, [line.id for line in self])],
-                "employee_id": self[0].employee_id.id,
-                "name": self[0].name if len(self.ids) == 1 else "",
-                "operating_unit_id": self[0].operating_unit_id.id,
-            }
-        )
-        return {
-            "type": "ir.actions.act_window",
-            "view_mode": "form",
-            "res_model": "hr.expense.sheet",
-            "target": "current",
-            "res_id": expense_sheet.id,
-        }
+    def _create_sheet_from_expenses(self):
+        """Allow creating expense sheet from expenses without product"""
+        result = super()._create_sheet_from_expenses()
+        if not result.operating_unit_id:
+            result.operating_unit_id = self.mapped("operating_unit_id")[:1]
+        return result
 
     def action_view_sheet(self):
         res = super(HrExpense, self).action_view_sheet()

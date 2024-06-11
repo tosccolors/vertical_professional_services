@@ -1,6 +1,10 @@
 from datetime import datetime
 
+from lxml import etree
+
 from odoo import _, api, fields, models
+from odoo.osv.expression import AND
+from odoo.tools.safe_eval import safe_eval
 
 
 class HrEmployeeLandingPage(models.TransientModel):
@@ -29,7 +33,6 @@ class HrEmployeeLandingPage(models.TransientModel):
 
         if next_week_id:
             self.next_week_id = next_week_id.name
-            # self.next_week_id1 = next_week_id.name
 
         # compute vaction balance
         vacation_balance = 0
@@ -74,73 +77,35 @@ class HrEmployeeLandingPage(models.TransientModel):
         )
 
         # my timesheet status
-        timesheet_ids = []
-        if self.employee_id:
-            self.env.cr.execute(
-                """SELECT
-                id
-                FROM hr_timesheet_sheet
-                WHERE employee_id = %s
-                AND state IN %s
-                ORDER BY id DESC
-                LIMIT 10""",
-                (
-                    self.employee_id.id,
-                    ("draft", "new", "confirm"),
-                ),
-            )
-            timesheet_ids = [x[0] for x in self.env.cr.fetchall()]
+        domain = self._get_action_domain(
+            "hr_timesheet_sheet.act_hr_timesheet_sheet_my_timesheets"
+        )
+        timesheet_ids = hr_timesheet.search(domain, limit=10).ids
         self.emp_timesheet_status_ids = [(6, 0, timesheet_ids)]
 
-        # to be approved timesheet
-        self.env.cr.execute(
-            """SELECT
-            id
-            FROM hr_timesheet_sheet
-            WHERE
-            state != 'done' AND
-             id IN
-                (SELECT hr_timesheet_sheet_id
-                FROM hr_timesheet_sheet_res_users_rel
-                WHERE res_users_id = %s)
-             ORDER BY id DESC
-              LIMIT 10
-            """,
-            (user_id,),
+        # to be approved timesheets
+        domain = self._get_action_domain(
+            "hr_timesheet_sheet.act_hr_timesheet_sheet_to_review"
         )
-        to_be_approved_sheets = [x[0] for x in self.env.cr.fetchall()]
+        to_be_approved_sheets = hr_timesheet.search(domain, limit=10).ids
         self.emp_timesheet_to_be_approved_ids = [(6, 0, to_be_approved_sheets)]
 
         # my expense status
-        expense_ids = []
-        if self.employee_id:
-            self.env.cr.execute(
-                """SELECT
-                id
-                FROM hr_expense_sheet
-                WHERE employee_id = %s
-                AND state NOT IN %s
-                ORDER BY id DESC
-                LIMIT 10
-                """,
-                (
-                    self.employee_id.id,
-                    ("post", "done", "cancel"),
-                ),
-            )
-            expense_ids = [x[0] for x in self.env.cr.fetchall()]
+        domain = self._get_action_domain("hr_expense.action_hr_expense_sheet_my_all")
+        expense_ids = self.env["hr.expense.sheet"].search(domain, limit=10).ids
         self.emp_expense_status_ids = [(6, 0, expense_ids)]
 
-        to_be_approved_expense_ids = self.env["hr.expense.sheet"].search(
-            [("employee_id", "!=", self.employee_id.id), ("state", "=", "submit")],
-            order="id Desc",
-            limit=10,
+        # to be approved expenses
+        domain = self._get_action_domain(
+            "hr_expense.action_hr_expense_sheet_all_to_approve"
         )
-        self.emp_expense_to_be_approved_ids = [(6, 0, to_be_approved_expense_ids.ids)]
+        to_be_approved_expense_ids = (
+            self.env["hr.expense.sheet"].search(domain, limit=10).ids
+        )
+        self.emp_expense_to_be_approved_ids = [(6, 0, to_be_approved_expense_ids)]
 
     def _default_employee(self):
-        emp_ids = self.env["hr.employee"].search([("user_id", "=", self.env.uid)])
-        return emp_ids and emp_ids[0] or False
+        return self.env.user.employee_id
 
     employee_id = fields.Many2one(
         "hr.employee", string="Employee", default=_default_employee, required=True
@@ -149,7 +114,6 @@ class HrEmployeeLandingPage(models.TransientModel):
         string="Week To Submit",
         compute="_compute_all",
     )
-    # next_week_id1 = fields.Char(string="Week To Submit")
     vacation_balance = fields.Integer(compute="_compute_all", string="Vacation Balance")
     overtime_balance = fields.Integer(compute="_compute_all", string="Overtime Balance")
     private_km_balance = fields.Integer(
@@ -307,3 +271,23 @@ class HrEmployeeLandingPage(models.TransientModel):
                 "ps_time_line_hide_amount": True,
             },
         }
+
+    def _get_action_domain(self, xmlid):
+        """Return the domain of an action as it would be run by the web client"""
+        action = self.env.ref(xmlid).sudo()
+        eval_context = action._get_eval_context()
+        domain = safe_eval(action.domain, eval_context)
+        context = safe_eval(action.context, eval_context)
+        extra_domains = []
+        search_view = etree.fromstring(
+            self.env[action.res_model].fields_view_get(
+                action.search_view_id.id, "search"
+            )["arch"]
+        )
+        for key in context:
+            prefix = "search_default_"
+            if not key.startswith(prefix):
+                continue
+            for node in search_view.xpath("//*[@name='%s']" % key[len(prefix) :]):
+                extra_domains.append(safe_eval(node.get("domain", "[]"), eval_context))
+        return AND([domain] + extra_domains)

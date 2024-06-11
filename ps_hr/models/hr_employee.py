@@ -31,14 +31,16 @@ class Employee(models.Model):
     leave_hours = fields.Float(string="Leave Hours")
 
     def validate_dates(self):
-        start_date = self.official_date_of_employment
-        end_date = self.end_date_of_employment
-        if start_date and end_date and start_date > end_date:
-            raise ValidationError(
-                _(
-                    "End Date of Employment cannot be set before Official Date of Employment."
+        for this in self:
+            start_date = this.official_date_of_employment
+            end_date = this.end_date_of_employment
+            if start_date and end_date and start_date > end_date:
+                raise ValidationError(
+                    _(
+                        "End Date of Employment cannot be set before "
+                        "Official Date of Employment."
+                    )
                 )
-            )
 
     @api.onchange("official_date_of_employment", "end_date_of_employment")
     def onchange_dates(self):

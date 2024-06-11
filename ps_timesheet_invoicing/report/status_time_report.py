@@ -8,27 +8,22 @@ class StatusTimeReport(models.Model):
 
     @api.depends("department_id")
     def _compute_atmost_parent_ou(self):
-        # calling atmost parent's operating unit
-        self.env.cr.execute(
-            """
-            SELECT * FROM (WITH RECURSIVE
-            ancestors (id,parent_id) AS(
-            SELECT id,parent_id,operating_unit_id FROM hr_department where id = %s
-            UNION
-            SELECT
-            hr_department.id,hr_department.parent_id,hr_department.operating_unit_id
-            FROM ancestors, hr_department WHERE hr_department.id = ancestors.parent_id
-            )TABLE ancestors )parents
-            WHERE parent_id IS NULL
-            """,
-            (self.department_id.id or 0,),
-        )
-        dept_parent_ids = [x[2] for x in self.env.cr.fetchall() if x[2]]
-        self.operating_unit_id = dept_parent_ids[0]
+        department2ou = {}
+        for this in self:
+            if not this.department_id:
+                continue
+            if this.department_id in department2ou:
+                this.operating_unit_id = department2ou[this.department_id]
+            else:
+                department = this.department_id
+                while department.parent_id:
+                    department = department.parent_id
+                department2ou[
+                    department
+                ] = this.operating_unit_id = department.operating_unit_id
 
     employee_id = fields.Many2one("hr.employee", string="Employee", readonly=True)
     week_id = fields.Many2one("date.range", string="Week", readonly=True)
-    sheet_id = fields.Many2one("hr_timesheet.sheet", string="Sheet", readonly=True)
     department_id = fields.Many2one("hr.department", string="Department", readonly=True)
     operating_unit_id = fields.Many2one(
         "operating.unit",
@@ -59,7 +54,10 @@ class StatusTimeReport(models.Model):
                 hrc.department_id as department_id,
                 hrc.external as external,
                 hrc.timesheet_optional as ts_optional,
-                string_agg(rp.name,',' ORDER BY rp.name ASC) as validators,
+                string_agg(
+                    coalesce(he.name, he_parent.name), ','
+                    ORDER BY coalesce(he.name, he_parent.name) ASC
+                ) as validators,
                 htsss.state as state
             FROM date_range dr
             CROSS JOIN  hr_employee hrc
@@ -67,12 +65,10 @@ class StatusTimeReport(models.Model):
             ON (dr.id = htsss.week_id and hrc.id = htsss.employee_id)
             LEFT JOIN hr_department hd
             ON (hd.id = hrc.department_id)
-            LEFT JOIN hr_timesheet_sheet_res_users_rel validators
-            ON (htsss.id = validators.hr_timesheet_sheet_id)
-            LEFT JOIN res_users ru
-            ON (validators.res_users_id = ru.id)
-            LEFT JOIN res_partner rp
-            ON (rp.id = ru.partner_id)
+            LEFT JOIN hr_employee he
+            ON (htsss.reviewer_id=he.id)
+            LEFT JOIN hr_employee he_parent
+            ON (hrc.parent_id=he_parent.id)
             WHERE dr.type_id = %s
             AND hrc.official_date_of_employment < dr.date_start
             AND (
