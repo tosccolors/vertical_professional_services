@@ -36,10 +36,12 @@ class AccountMove(models.Model):
                     if line.analytic_account_id in result:
                         result[line.analytic_account_id]["tot_hrs"] += quantity
                         result[line.analytic_account_id]["sub_total"] += price_subtotal
+                        result[line.analytic_account_id]["name"] += " " + line.name
                     else:
                         result[line.analytic_account_id] = {
                             "tot_hrs": quantity,
                             "sub_total": price_subtotal,
+                            "name": line.name,
                         }
             else:
                 for line in invoice_line_ids.filtered(
