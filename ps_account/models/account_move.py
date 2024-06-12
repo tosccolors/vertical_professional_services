@@ -1,6 +1,7 @@
 # Copyright 2014-2023 The Open Source Company (www.tosc.nl).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 from odoo import fields, models
+from odoo.tools import is_html_empty
 
 
 class AccountMove(models.Model):
@@ -50,10 +51,7 @@ class AccountMove(models.Model):
         return result
 
     def parse_invoice_description(self):
-        res = False
-        desc = self.invoice_description
-        if desc and desc != "<p><br></p>":
-            res = True
+        res = not is_html_empty(self.invoice_description)
         return res
 
     def value_conversion(self, value, monetary=False, digits=2, currency_obj=False):
