@@ -234,9 +234,7 @@
                                     </td>
                                 </tr>
                                 <td style='border-top:none' width="40%">
-                                    <span
-                                        t-field="aaLines.name"
-                                    />
+                                    <span t-field="aaLines.name" />
                                 </td>
                                 <td style='border-top:none' width="20%">
 
