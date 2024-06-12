@@ -234,13 +234,7 @@
                                     </td>
                                 </tr>
                                 <td style='border-top:none' width="40%">
-                                    <!--Hours:-->
-                                    <!--<span-->
-                                        <!--t-esc="o.value_conversion(aaLines_value['tot_hrs'])"-->
-                                    <!--/>-->
-                                    <span
-                                        t-esc="aaLines_value['name']"
-                                    />
+                                    <span t-esc="aaLines_value['name']"/>
                                 </td>
                                 <td style='border-top:none' width="20%">
 
