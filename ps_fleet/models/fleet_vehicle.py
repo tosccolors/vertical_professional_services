@@ -87,6 +87,6 @@ class FleetVehicle(models.Model):
         return res
 
     def write(self, vals):
-        if "driver_id" in vals and not vals["driver_id"]:
+        if "driver_id" in vals:
             self._close_driver_history()
         return super().write(vals)
