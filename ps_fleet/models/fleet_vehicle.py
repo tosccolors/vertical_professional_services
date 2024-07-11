@@ -85,3 +85,8 @@ class FleetVehicle(models.Model):
         res_ids = [x[0] for x in self.env.cr.fetchall()]
         res.append(("id", search_operator, res_ids))
         return res
+
+    def write(self, vals):
+        if "driver_id" in vals and not vals["driver_id"]:
+            self._close_driver_history()
+        return super().write(vals)
