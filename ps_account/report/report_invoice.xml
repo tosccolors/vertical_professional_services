@@ -175,9 +175,6 @@
                                             <span
                                                 t-esc="analytic_invoice_id.period_id.calendar_name or analytic_invoice_id.period_id.name"
                                             />
-                                            <span
-                                                t-esc="analytic_invoice_id.period_id.date_start.strftime('%Y')"
-                                            />
                                         </t>
                                         <br />
                                         <br />
