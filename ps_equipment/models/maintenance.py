@@ -1,14 +1,13 @@
-from datetime import date, datetime, timedelta
-import calendar  # Import calendar to get monthrange
+# -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, SUPERUSER_ID, _
-from odoo.exceptions import UserError
-from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
+from datetime import date
+import calendar
+from odoo import api, fields, models
 
 class MaintenanceEquipment(models.Model):
-    _name = 'maintenance.equipment'
-    _inherit = ['maintenance.equipment', 'data.track.thread']
+    _inherit = 'maintenance.equipment'
 
+    # General fields
     purchase_date = fields.Date(string="Date of acquisition", default=fields.Date.context_today)
     maintenance_status = fields.Many2one(
         'maintenance.equipment.maintenance.status',
@@ -24,12 +23,14 @@ class MaintenanceEquipment(models.Model):
     warranty_date = fields.Date(string='Warranty until', compute='_compute_warranty_date')
     department = fields.Many2one('hr.department', string="Department")
 
+    # Phone specific fields
     phone_number = fields.Char(string="Phone Number", size=10)
     sim_number = fields.Char(string="SIM number")
     puk_code = fields.Char(string="PUK Code")
     imei_number = fields.Char(string="IMEI Number")
     remarks = fields.Text(string="Remarks")
 
+    # Laptop specific fields
     cpu = fields.Char(string="CPU")
     memory = fields.Char(string="Memory")
     hard_disk = fields.Char(string="Hard Disk")
@@ -39,13 +40,15 @@ class MaintenanceEquipment(models.Model):
     @api.depends('purchase_date', 'warranty_category.warranty_duration')
     def _compute_warranty_date(self):
         for record in self:
-            if record.purchase_date and record.warranty_category:
+            if record.purchase_date and record.warranty_category and record.warranty_category.warranty_duration:
                 purchase_date = record.purchase_date
                 month = purchase_date.month - 1 + record.warranty_category.warranty_duration
                 year = purchase_date.year + month // 12
                 month = month % 12 + 1
                 day = min(purchase_date.day, calendar.monthrange(year, month)[1])
                 record.warranty_date = date(year, month, day)
+            else:
+                record.warranty_date = None
 
 class MaintenanceWarrantyCategory(models.Model):
     _name = 'maintenance.equipment.warranty.category'
@@ -53,7 +56,7 @@ class MaintenanceWarrantyCategory(models.Model):
     _rec_name = 'warranty_category_name'
 
     warranty_category_name = fields.Char(string="Warranty Category Name")
-    warranty_duration = fields.Integer(string="Warranty  (months)")
+    warranty_duration = fields.Integer(string="Warranty (months)")
 
 class MaintenanceStatus(models.Model):
     _name = 'maintenance.equipment.maintenance.status'
