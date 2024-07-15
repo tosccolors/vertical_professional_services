@@ -90,3 +90,20 @@ class TestPsHolidays(TransactionCase):
         wizard.create_holiday(self.user.employee_id)
         new_allocation = self.env["hr.leave.allocation"].search([]) - allocations
         self.assertEqual(new_allocation.number_of_days, 30)
+
+    def test_negative(self):
+        """Test the creating negative allocations works as expected"""
+        remaining_leaves = self.leave_type.with_user(self.user).remaining_leaves
+        self.env["hr.leave.allocation"].create(
+            {
+                "holiday_type": "employee",
+                "employee_id": self.user.employee_id.id,
+                "number_of_days": -8,
+                "holiday_status_id": self.leave_type.id,
+                "state": "validate",
+            }
+        )
+        self.env.clear()
+        self.assertEqual(
+            self.leave_type.with_user(self.user).remaining_leaves, remaining_leaves - 8
+        )
