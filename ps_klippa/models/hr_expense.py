@@ -15,7 +15,7 @@ class HrExpense(models.Model):
                 ("create_uid", "=", user.id),
                 ("state", "=", "draft"),
                 ("operating_unit_id", "=", False),
-                ("analytic_account_id", "!=", False),
+                ("analytic_distribution", "!=", False),
             ]
         ):
             this.operating_unit_id = this.analytic_account_id.operating_unit_ids.ids[:1]
@@ -26,10 +26,19 @@ class HrExpense(models.Model):
                 ("sheet_id", "=", False),
             ],
             [],
-            ["employee_id", "analytic_account_id", "name"],
+            ["employee_id", "analytic_distribution", "name"],
             lazy=False,
         ):
             expenses = self.search(row["__domain"])
-            sheet = expenses._create_sheet_from_expenses()
-            sheet.name = expenses[0].name
-            sheet.action_submit_sheet()
+            action = expenses.action_submit_expenses()
+            if not action.get("domain"):
+                sheets = self.env[action["res_model"]].create(
+                    {
+                        key[len("default_") :]: value
+                        for key, value in action["context"].items()
+                    }
+                )
+            else:
+                sheets = self.env[action["res_model"]].search(action["domain"])
+            sheets.name = expenses[0].name
+            sheets.action_submit_sheet()

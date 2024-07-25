@@ -72,6 +72,7 @@ class TaskUser(models.Model):
         compute="_compute_margin",
         string="Margin",
     )
+    name = fields.Char(compute="_compute_name")
     from_date = fields.Date(
         string="From Date",
         required=True,
@@ -82,6 +83,12 @@ class TaskUser(models.Model):
     cost_rate = fields.Float(
         string="Cost Rate",
     )
+
+    @api.depends("user_id", "product_id")
+    def _compute_name(self):
+        """x2x tracking code of project in core expects a name field on x2many fields"""
+        for this in self:
+            this.name = _("%s: %s") % (this.user_id.display_name, this.product_id.name)
 
     @api.onchange("user_id")
     def onchange_user_id(self):

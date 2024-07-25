@@ -8,5 +8,9 @@
         "account_payment_order",
         "account_operating_unit",
     ],
-    "installable": True,
+    'data': [
+    ],
+    'demo': [
+    ],
+    'installable': False,
 }

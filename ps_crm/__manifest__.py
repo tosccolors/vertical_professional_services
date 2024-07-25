@@ -7,8 +7,9 @@
     "author": "The Open Source Company",
     "website": "http://www.tosc.nl",
     "category": "Sales",
-    "version": "14.0.1.0.0",
+    "version": "16.0.1.0.0",
     "depends": [
+        "account_analytic_tag",
         "base",
         "uom",
         "crm",

@@ -4,7 +4,7 @@ from odoo.tests.common import Form, TransactionCase
 class TestPsCrm(TransactionCase):
     def setUp(self):
         super().setUp()
-        self.lead = self.env.ref("crm.crm_case_10")
+        self.lead = self.env.ref("crm.crm_case_13")
 
     def test_crm_lead_form(self):
         """Run onchanges on crm lead form"""

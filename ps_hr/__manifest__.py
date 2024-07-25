@@ -6,7 +6,7 @@
     "author": "The Open Source Company",
     "website": "http://www.tosc.nl",
     "category": "Human Resources",
-    "version": "14.0.1.0.0",
+    "version": "16.0.1.0.0",
     "license": "AGPL-3",
     "depends": [
         "account_payment_mode",
@@ -23,8 +23,12 @@
     ],
     "data": [
         "views/hr_employee.xml",
-        "views/templates.xml",
         "wizard/hr_employee_wizard_view.xml",
         "security/ir.model.access.csv",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "/ps_hr/static/src/js/employee_wizard.js",
+        ],
+    },
 }

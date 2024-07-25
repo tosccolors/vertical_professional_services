@@ -1,0 +1,10 @@
+<odoo>
+    <template
+        id="tier_validation_buttons"
+        inherit_id="base_tier_validation.tier_validation_buttons"
+    >
+        <button name="request_validation" position="attributes">
+            <attribute name="groups">account.group_account_manager</attribute>
+        </button>
+    </template>
+</odoo>

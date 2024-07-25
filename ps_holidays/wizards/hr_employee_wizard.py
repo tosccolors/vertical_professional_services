@@ -18,10 +18,11 @@ class HREmployeeWizard(models.TransientModel):
             "holiday_type": "employee",
             "employee_id": employee_id.id,
             "number_of_days": self.leave_hours / HOURS_PER_DAY,
-            "state": "confirm",
+            "state": "draft",
         }
         allocation = self.env["hr.leave.allocation"].create(allocation_data)
-        allocation.action_approve()
+        allocation.action_confirm()
+        allocation.action_validate()
         return True
 
     def create_all(self):

@@ -81,7 +81,7 @@
                     <xpath expr="//field[@name='user_id']" position="after">
                         <field name="operating_unit_id" />
                     </xpath>
-                    <xpath expr="//label[@for='name']" position="before">
+                    <xpath expr="(//field[@name='name'])/../.." position="before">
                         <group>
                             <div class="pull-right">
                                 <field name="contract_signed" />

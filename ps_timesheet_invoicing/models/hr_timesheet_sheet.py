@@ -84,7 +84,6 @@ class HrTimesheetSheet(models.Model):
         )
         if len(default_tasks) == 1:
             self.add_line_task_id = default_tasks
-        return super().onchange_add_project_id()
 
     @api.model
     def default_get(self, fields):
@@ -391,7 +390,7 @@ class HrTimesheetSheet(models.Model):
                 """,
                 (ids, ids),
             )
-            self.env.cache.invalidate()
+            self.timesheet_ids.invalidate_recordset()
         if self.odo_log_id:
             self.sudo().odo_log_id.unlink()
         if self.overtime_line_id:
@@ -560,7 +559,7 @@ class HrTimesheetSheet(models.Model):
                 currency_id,
                 ref,
                 general_account_id,
-                move_id,
+                move_line_id,
                 product_id,
                 -- amount_currency,
                 project_id,
@@ -601,7 +600,7 @@ class HrTimesheetSheet(models.Model):
                 ptl.currency_id as currency_id,
                 ptl.ref as ref,
                 ptl.general_account_id as general_account_id,
-                ptl.move_id as move_id,
+                ptl.move_line_id as move_line_id,
                 ptl.product_id as product_id,
                 -- 0 as amount_currency,
                 ptl.project_id as project_id,
@@ -660,7 +659,6 @@ class HrTimesheetSheet(models.Model):
                  )
               AND pp.allow_timesheets = TRUE
              ;"""
-
         self.env.cr.execute(
             query,
             {
@@ -673,7 +671,7 @@ class HrTimesheetSheet(models.Model):
                 ).id,
             },
         )
-        self.env.cache.invalidate()
+        self.invalidate_model()
         return True
 
     def generate_km_lines(self):
@@ -696,7 +694,7 @@ class HrTimesheetSheet(models.Model):
                 currency_id,
                 ref,
                 general_account_id,
-                move_id,
+                move_line_id,
                 product_id,
                 -- amount_currency,
                 project_id,
@@ -736,7 +734,7 @@ class HrTimesheetSheet(models.Model):
                 ptl.currency_id as currency_id,
                 ptl.ref as ref,
                 ptl.general_account_id as general_account_id,
-                ptl.move_id as move_id,
+                ptl.move_line_id as move_line_id,
                 pp.ps_mileage_product_id as product_id,
                 -- ptl.amount_currency as amount_currency,
                 ptl.project_id as project_id,
@@ -796,7 +794,7 @@ class HrTimesheetSheet(models.Model):
                 "sheet_select": self.id,
             },
         )
-        self.env.cache.invalidate()
+        self.invalidate_model()
         return True
 
 

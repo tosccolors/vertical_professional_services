@@ -24,10 +24,11 @@ class Project(models.Model):
         string="Contract/Analytic",
     )
     wbso = fields.Boolean("WBSO")
-    linked_operating_unit = fields.Boolean(
-        string="Linked Operating Unit",
-        related="analytic_account_id.linked_operating_unit",
-    )
+    # TODO: from invoice_line_revenue_distribution_operating_unit, refactor that
+    #    linked_operating_unit = fields.Boolean(
+    #        string="Linked Operating Unit",
+    #        related="analytic_account_id.linked_operating_unit",
+    #    )
     operating_unit_ids = fields.Many2many(
         "operating.unit",
         string="Operating Units",

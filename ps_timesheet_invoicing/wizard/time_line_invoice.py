@@ -64,7 +64,7 @@ class TimeLineStatus(models.TransientModel):
                 "UPDATE ps_time_line SET state=%s WHERE id IN %s",
                 (status, tuple(entries.ids)),
             )
-            self.env.cache.invalidate()
+            ptl_lines.invalidate_recordset()
             if status == "delayed" and self.wip:
                 notupdatestate = {line.id: line.state for line in ptl_lines}
                 self.with_delay(
@@ -118,8 +118,8 @@ class TimeLineStatus(models.TransientModel):
                         "invoice_payment_term_id": partner.property_payment_term_id.id
                         or False,
                         "journal_id": self.env["account.move"]
-                        .with_context(default_move_type="out_invoice")
-                        ._get_default_journal()
+                        .new({"move_type": "out_invoice"})
+                        ._search_default_journal()
                         .id,
                         "fiscal_position_id": partner.property_account_position_id.id
                         or False,
@@ -260,15 +260,7 @@ class TimeLineStatus(models.TransientModel):
         if line.unit_amount == 0:
             return res
 
-        default_analytic_account = self.env["account.analytic.default"].search(
-            [("analytic_id", "=", line.account_id.id)], limit=1
-        )
-        analytic_tag_ids = []
-        if default_analytic_account:
-            analytic_tag_ids = [
-                (4, analytic_tag.id, None)
-                for analytic_tag in default_analytic_account.analytic_tag_ids
-            ]
+        # TODO choose some analytic distribution here
         amount = abs(self._calculate_fee_rate(line))
 
         move_line_debit = {
@@ -283,8 +275,6 @@ class TimeLineStatus(models.TransientModel):
             "quantity": line.unit_amount,
             "product_id": line.product_id.id,
             "product_uom_id": line.product_uom_id.id,
-            "analytic_account_id": line.account_id.id,
-            "analytic_tag_ids": analytic_tag_ids,
             "operating_unit_id": line.operating_unit_id
             and line.operating_unit_id.id
             or False,
@@ -447,7 +437,9 @@ class TimeLineStatus(models.TransientModel):
                     "UPDATE ps_time_line SET state = %s WHERE id=%s", (state, line_id)
                 )
                 self.env.cr.commit()  # pylint: disable=invalid-commit
-                self.env.cache.invalidate()
+                self.env["ps.time.line"].browse(
+                    notupdatestate.keys()
+                ).invalidate_recordset()
             raise FailedJobError(_("The details of the error:'%s'") % e)
         vals = [account_move.id]
         # if self.wip_percentage > 0.0 or True:
@@ -469,7 +461,7 @@ class TimeLineStatus(models.TransientModel):
                 date = move.date + timedelta(days=1)
                 reverse_move = move._reverse_moves(
                     default_values_list=[
-                        dict(date=date, journal_id=move.journal_id.id, auto_post=False)
+                        dict(date=date, journal_id=move.journal_id.id, auto_post="no")
                     ],
                 )
             except Exception as e:

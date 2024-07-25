@@ -47,7 +47,9 @@ class TestHrTimesheet(TransactionCase):
         """Test creating and submitting timesheets"""
         task = self.project.task_ids[:1]
         task.standard = True
-        self.project.allowed_internal_user_ids += self.user
+        # demo user by default has too much permissions for this test to be sensible
+        self.env.ref("fleet.vehicle_1").driver_id = self.user.partner_id
+        self.project.message_partner_ids += self.user.partner_id
         sheet = self.env["hr_timesheet.sheet"].with_user(self.user).create({})
         sheet.add_line_project_id = self.project
         sheet.onchange_add_project_id()
@@ -61,9 +63,9 @@ class TestHrTimesheet(TransactionCase):
             with sheet_form.line_ids.edit(3) as day_line:
                 day_line.unit_amount = 10
             sheet_form.end_mileage = 42
-        action = (
-            self.env["hr.timesheet.current.open"].with_user(self.user).open_timesheet()
-        )
+        self.assertEqual(sheet.employee_id, self.user.employee_id)
+        self.assertEqual(sheet.mapped("timesheet_ids.employee_id"), self.user.employee_id)
+        action = self.env["hr.timesheet.current.open"].with_user(self.user).open_timesheet()
         self.assertEqual(action["res_id"], sheet.id)
         sheet.action_timesheet_confirm()
         with self.assertRaises(exceptions.UserError):
@@ -86,6 +88,7 @@ class TestHrTimesheet(TransactionCase):
         sheet_as_admin.action_timesheet_done()
         self.assertEqual(sheet.overtime_hours, 18)
         self.assertEqual(sheet.overtime_hours_delta, 18)
+        self.env.flush_all()
         next_sheet = sheet.create({})
         next_sheet.duplicate_last_week()
         self.assertEqual(next_sheet.employee_id, self.user.employee_id)
@@ -161,7 +164,7 @@ class TestHrTimesheet(TransactionCase):
 
         move_max = self.env["account.move"].search([], limit=1, order="id desc")
         with mute_logger("odoo.addons.queue_job.delay"):
-            wizard.with_context(test_queue_job_no_delay=True).ps_invoice_lines()
+            wizard.with_context(queue_job__no_delay=True).ps_invoice_lines()
 
         self.assertEqual(self.ps_line.state, "delayed")
         reversed_move, move = self.env["account.move"].search(

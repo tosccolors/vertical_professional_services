@@ -10,6 +10,7 @@ from odoo import api, fields, models
 
 class CrmMonthlyRevenue(models.Model):
     _name = "crm.monthly.revenue"
+    _description = "Monthly revenue"
     _rec_name = "month"
 
     @api.model
@@ -49,12 +50,12 @@ class CrmMonthlyRevenue(models.Model):
         string="Currency",
         related="lead_id.company_id.currency_id",
         readonly=True,
-        relation="res.currency",
+        comodel_name="res.currency",
         store=True,
     )
     user_id = fields.Many2one(
         related="lead_id.user_id",
-        relation="res.users",
+        comodel_name="res.users",
         string="Salesperson",
         index=True,
         store=True,
@@ -89,7 +90,7 @@ class CrmMonthlyRevenue(models.Model):
             weighted_revenue = self.expected_revenue * percentage / 100
         return weighted_revenue
 
-    @api.onchange("expected_revenue", "percentage", "lead_id.probability")
+    @api.onchange("expected_revenue", "percentage", "lead_id")
     def onchagne_expected_revenue(self):
         self.percentage = self.lead_id.probability
         self.weighted_revenue = self.calculate_weighted_revenue(self.percentage)

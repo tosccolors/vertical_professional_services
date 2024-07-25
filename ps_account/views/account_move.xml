@@ -80,21 +80,6 @@
                     groups="base.group_user"
                 />
             </xpath>
-            <button name="restart_validation" position="attributes">
-                <attribute name="groups">account.group_account_manager</attribute>
-            </button>
-            <button
-                name="%(account_invoice_import.account_invoice_import_action)d"
-                position="attributes"
-            >
-                <attribute name="groups">account.group_account_manager</attribute>
-            </button>
-            <xpath
-                expr="(//button[@name='%(account_invoice_import.account_invoice_import_action)d'])[2]"
-                position="attributes"
-            >
-                <attribute name="groups">account.group_account_manager</attribute>
-            </xpath>
         </field>
     </record>
 </odoo>

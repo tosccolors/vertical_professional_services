@@ -1,4 +1,7 @@
 <odoo>
     <!-- satisfy unique date constraint for odometer logs from demo data -->
-    <delete model="fleet.vehicle.odometer" id="fleet.log_odometer_15" />
+    <delete
+        model="fleet.vehicle.odometer"
+        search="[('id', '=', ref('fleet.log_odometer_15', raise_if_not_found=False))]"
+    />
 </odoo>

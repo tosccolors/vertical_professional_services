@@ -20,7 +20,7 @@ services:
       - LOG_HANDLER=:WARN
 
   db:
-    image: postgres:9.6
+    image: postgres:16
     ports:
       - 5432
     environment:

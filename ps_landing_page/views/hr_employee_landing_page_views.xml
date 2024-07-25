@@ -8,7 +8,7 @@
                 <form create="false" edit="false" copy="false" delete="false">
                     <sheet>
                         <field name="current_week" invisible="1" />
-                        <div name="button_box" style="margin-left:45px;">
+                        <div name="button_box">
                             <button
                                 class="oe_stat_button oe_highlight"
                                 name="action_view_timesheet"
@@ -124,25 +124,23 @@
                             </field>
                         </div>
                         <br />
-                        <group groups="hr_timesheet.group_hr_timesheet_user">
-                            <div>
-                                <div style="padding:1px;" class="btn-primary btn-ship">
-                                    <h3>Timesheet To Be Approved</h3>
-                                </div>
-                                <seperator />
-                                <field
-                                    name="emp_timesheet_to_be_approved_ids"
-                                    nolabel="1"
-                                    groups="hr_timesheet.group_hr_timesheet_user"
-                                >
-                                    <tree>
-                                        <field name="employee_id" />
-                                        <field name="week_id" />
-                                        <field name="state" />
-                                    </tree>
-                                </field>
+                        <div groups="hr_timesheet.group_hr_timesheet_user">
+                            <div style="padding:1px;" class="btn-primary btn-ship">
+                                <h3>Timesheet To Be Approved</h3>
                             </div>
-                        </group>
+                            <seperator />
+                            <field
+                                name="emp_timesheet_to_be_approved_ids"
+                                nolabel="1"
+                                groups="hr_timesheet.group_hr_timesheet_user"
+                            >
+                                <tree>
+                                    <field name="employee_id" />
+                                    <field name="week_id" />
+                                    <field name="state" />
+                                </tree>
+                            </field>
+                        </div>
                         <br />
                         <div style="padding:1px;" class="btn-primary btn-ship">
                             <h3>
@@ -164,24 +162,22 @@
                             </field>
                         </div>
                         <br />
-                        <group groups="hr_expense.group_hr_expense_user">
-                            <div>
-                                <div style="padding:1px;" class="btn-primary btn-ship">
-                                    <h3>Expense To Be Approved</h3>
-                                </div>
-                                <seperator />
-                                <field
-                                    name="emp_expense_to_be_approved_ids"
-                                    nolabel="1"
-                                    groups="hr_expense.group_hr_expense_user"
-                                >
-                                    <tree>
-                                        <field name="employee_id" />
-                                        <field name="state" />
-                                    </tree>
-                                </field>
+                        <div groups="hr_expense.group_hr_expense_user">
+                            <div style="padding:1px;" class="btn-primary btn-ship">
+                                <h3>Expense To Be Approved</h3>
                             </div>
-                        </group>
+                            <seperator />
+                            <field
+                                name="emp_expense_to_be_approved_ids"
+                                nolabel="1"
+                                groups="hr_expense.group_hr_expense_user"
+                            >
+                                <tree>
+                                    <field name="employee_id" />
+                                    <field name="state" />
+                                </tree>
+                            </field>
+                        </div>
                     </sheet>
                 </form>
             </field>

@@ -3,11 +3,11 @@
     <record id="product.product_product_1" model="product.product">
         <field
             name="property_account_wip_id"
-            search="[('deprecated', '=', False), ('user_type_id.internal_group','=','income')]"
+            search="[('deprecated', '=', False), ('account_type','=','income')]"
         />
         <field
             name="property_account_income_id"
-            search="[('deprecated', '=', False), ('user_type_id.internal_group','=','income'), ('is_off_balance', '=', False)]"
+            search="[('deprecated', '=', False), ('account_type','=','income'), ('is_off_balance', '=', False)]"
         />
     </record>
     <record id="product_mileage" model="product.product">

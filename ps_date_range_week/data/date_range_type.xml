@@ -10,7 +10,7 @@
         </record>
     </data>
     <data noupdate="0">
-        <record model="date.range.type" id="account_fiscal_year.fiscalyear">
+        <record model="date.range.type" id="fiscalyear">
             <field name="name">Fiscal Year</field>
             <field name="allow_overlap" eval="False" />
             <field name="fiscal_year" eval="True" />

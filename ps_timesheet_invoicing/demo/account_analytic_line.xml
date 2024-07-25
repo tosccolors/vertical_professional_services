@@ -12,9 +12,6 @@
             search="[('project_ids', '=', ref('project.project_project_2'))]"
         />
         <field name="partner_id" ref="base.res_partner_12" />
-        <field
-            name="move_id"
-            search="[('account_id.user_type_id', 'in', [ref('account.data_account_type_expenses'), ref('account.data_account_type_direct_costs')])]"
-        />
+        <field name="move_line_id" search="[('account_type', 'like', 'expense%')]" />
     </record>
 </odoo>

@@ -8,6 +8,7 @@ from odoo.exceptions import ValidationError
 
 class CRMRevenueSplit(models.Model):
     _name = "crm.revenue.split"
+    _description = "Revenue split"
 
     lead_id = fields.Many2one("crm.lead", string="Opportunity", ondelete="cascade")
 
@@ -33,30 +34,14 @@ class CRMRevenueSplit(models.Model):
     month = fields.Many2one("date.range", string="Month")
     total_revenue = fields.Float("Total Revenue")
     total_revenue_per = fields.Float("Total Revenue %")
-    ps_blue_bv_amount = fields.Float(
-        oldname="mangnus_blue_bv_amount", string="Magnus Blue B.V."
-    )
-    ps_blue_bv_per = fields.Float(
-        oldname="mangnus_blue_bv_per", string="Magnus Blue B.V. %"
-    )
-    ps_red_bv_amount = fields.Float(
-        oldname="mangnus_red_bv_amount", string="Magnus Red B.V."
-    )
-    ps_red_bv_per = fields.Float(
-        oldname="mangnus_red_bv_per", string="Magnus Red B.V. %"
-    )
-    ps_green_bv_amount = fields.Float(
-        oldname="mangnus_green_bv_amount", string="Magnus Green B.V."
-    )
-    ps_green_bv_per = fields.Float(
-        oldname="mangnus_green_bv_per", string="Magnus Green B.V. %"
-    )
-    ps_black_bv_amount = fields.Float(
-        oldname="mangnus_black_bv_amount", string="Magnus Black B.V."
-    )
-    ps_black_bv_per = fields.Float(
-        oldname="mangnus_black_bv_per", string="Magnus Black B.V. %"
-    )
+    ps_blue_bv_amount = fields.Float(string="Magnus Blue B.V.")
+    ps_blue_bv_per = fields.Float(string="Magnus Blue B.V. %")
+    ps_red_bv_amount = fields.Float(string="Magnus Red B.V.")
+    ps_red_bv_per = fields.Float(string="Magnus Red B.V. %")
+    ps_green_bv_amount = fields.Float(string="Magnus Green B.V.")
+    ps_green_bv_per = fields.Float(string="Magnus Green B.V. %")
+    ps_black_bv_amount = fields.Float(string="Magnus Black B.V.")
+    ps_black_bv_per = fields.Float(string="Magnus Black B.V. %")
 
     @api.constrains(
         "ps_blue_bv_per", "ps_red_bv_per", "ps_green_bv_per", "ps_black_bv_per"

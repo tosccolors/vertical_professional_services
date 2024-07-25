@@ -13,7 +13,7 @@
     # for the full list
     'category': 'Payroll',
     'version': '1.0',
-    'installable': True,
+    'installable': False,
     # any module necessary for this one to work correctly
     'depends': ['ps_fleet', 'ps_fleet_rdw'],
 

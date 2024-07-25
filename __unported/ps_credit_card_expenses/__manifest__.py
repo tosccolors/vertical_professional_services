@@ -51,7 +51,7 @@ defined. This is used for reconciliation of the expenses and the final expense i
         'views/menu_view.xml',
         ],
     'demo' : [],
-    'installable': True
+    'installable': False
 }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

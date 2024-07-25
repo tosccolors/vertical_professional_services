@@ -11,7 +11,7 @@
     # for the full list
     'category': 'Payroll',
     'version': '1.0',
-    'installable': True,
+    'installable': False,
     # any module necessary for this one to work correctly
     'depends': ['operating_unit'],
 

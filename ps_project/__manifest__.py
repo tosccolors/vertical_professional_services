@@ -6,14 +6,16 @@
     "author": "The Open Source Company",
     "website": "http://www.tosc.nl",
     "category": "Project",
-    "version": "14.0.1.0.0",
+    "version": "16.0.1.0.0",
     "license": "AGPL-3",
     "depends": [
         "project",
         "operating_unit",
         "analytic",
         "hr_timesheet_sheet",
-        "invoice_line_revenue_distribution_operating_unit",
+        # TODO: migrate the OU==analytic account part of this
+        # "invoice_line_revenue_distribution_operating_unit",
+        "account_operating_unit",
         "account_fiscal_month",
     ],
     "data": [

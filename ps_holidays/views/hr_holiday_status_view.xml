@@ -6,7 +6,7 @@
             <field name="model">hr.leave.type</field>
             <field name="inherit_id" ref="hr_holidays.edit_holiday_status_form" />
             <field name="arch" type="xml">
-                <xpath expr="//group[@name='validity']" position="inside">
+                <xpath expr="//group[@name='allocation_validation']" position="inside">
                     <field name="is_leave_type_of_wizard" />
                 </xpath>
             </field>
@@ -19,7 +19,10 @@
                 ref="hr_holidays.view_holiday_status_normal_tree"
             />
             <field name="arch" type="xml">
-                <xpath expr="//field[@name='validity_stop']" position="after">
+                <xpath
+                    expr="//field[@name='allocation_validation_type']"
+                    position="after"
+                >
                     <field name="is_leave_type_of_wizard" />
                 </xpath>
             </field>

@@ -16,7 +16,7 @@ class FleetVehicleLogContract(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get("start_date") and vals.get("lease_period") > 0:
+        if vals.get("start_date") and vals.get("lease_period", 0) > 0:
             start_date = fields.Date.to_date(vals.get("start_date"))
             end_date = start_date + relativedelta(months=vals.get("lease_period"))
             vals.update({"expiration_date": end_date})
@@ -24,7 +24,7 @@ class FleetVehicleLogContract(models.Model):
 
     def write(self, vals):
         for this in self:
-            if int(vals.get("lease_period")) > 0:
+            if int(vals.get("lease_period", 0)) > 0:
                 start_date = this.start_date
                 end_date = start_date + relativedelta(months=vals.get("lease_period"))
                 vals.update({"expiration_date": end_date})

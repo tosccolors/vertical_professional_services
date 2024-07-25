@@ -3,7 +3,7 @@
     "name": "PS Calendar Week",
     "summary": """
         Provide a calendar week date range type""",
-    "version": "14.0.1.0.0",
+    "version": "16.0.1.0.0",
     "license": "AGPL-3",
     "author": "The Open Source Company",
     "website": "https://www.tosc.nl",

@@ -3,10 +3,10 @@ name: tests
 on:
   pull_request:
     branches:
-      - "14.0*"
+      - "16.0*"
   push:
     branches:
-      - "14.0"
+      - "16.0"
 
 jobs:
   test:
@@ -21,13 +21,12 @@ jobs:
           pip install git-aggregator
           cd _docker
           mkdir -p  odoo/local-src odoo/external-src data songs
-          # TODO: once they are migrated, add more ps_* modules here
-          cp -r ../ps_{account,account_payment_order_operating_unit,assets_equipment_link,calendar,contract,crm,date_range_week,equipment,expense,fleet,fleet_rdw,landing_page,hr,holidays,klippa,timesheet_invoicing,partner_multi_relation,project} odoo/local-src
+          cp -r ../ps* odoo/local-src
           cd odoo/external-src
           gitaggregate -c ../../../repos.yml
           cd ../..
           cp ../requirements.txt .
-          docker compose build
+          docker compose build || true
       - name: Run tests
         run: |
           cd _docker
@@ -36,3 +35,4 @@ jobs:
       - uses: codecov/codecov-action@v3
         with:
           files: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}

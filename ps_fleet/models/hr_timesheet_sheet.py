@@ -13,6 +13,4 @@ class HrTimesheetSheet(models.Model):
             m = sheet.end_mileage - sheet.business_mileage - sheet.starting_mileage
             sheet.private_mileage = m if m > 0 else 0
 
-    private_mileage_new = fields.Integer(
-        compute="_compute_mileage_new", string="Private Mileage", store=True
-    )
+    private_mileage_new = fields.Integer(compute="_compute_mileage_new", store=True)

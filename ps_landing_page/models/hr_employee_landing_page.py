@@ -34,14 +34,7 @@ class HrEmployeeLandingPage(models.TransientModel):
         if next_week_id:
             self.next_week_id = next_week_id.name
 
-        # compute vaction balance
-        vacation_balance = 0
-        if self.employee_id:
-            vacation_balance = (
-                self.employee_id.allocation_count
-                - self.employee_id.allocation_used_count
-            )
-        self.vacation_balance = vacation_balance
+        self.vacation_balance = self.employee_id.remaining_leaves
 
         user_id = self.env.user.id
         # compute overtime balance
@@ -91,14 +84,12 @@ class HrEmployeeLandingPage(models.TransientModel):
         self.emp_timesheet_to_be_approved_ids = [(6, 0, to_be_approved_sheets)]
 
         # my expense status
-        domain = self._get_action_domain("hr_expense.action_hr_expense_sheet_my_all")
+        domain = self._get_action_domain("hr_expense.action_hr_expense_sheet_all")
         expense_ids = self.env["hr.expense.sheet"].search(domain, limit=10).ids
         self.emp_expense_status_ids = [(6, 0, expense_ids)]
 
         # to be approved expenses
-        domain = self._get_action_domain(
-            "hr_expense.action_hr_expense_sheet_all_to_approve"
-        )
+        domain = self._get_action_domain("hr_expense.action_hr_expense_sheet_all")
         to_be_approved_expense_ids = (
             self.env["hr.expense.sheet"].search(domain, limit=10).ids
         )
@@ -186,11 +177,7 @@ class HrEmployeeLandingPage(models.TransientModel):
 
     def action_view_leaves_dashboard(self):
         self.ensure_one()
-        ir_model_data = self.env["ir.model.data"]
-        tree_res = ir_model_data.get_object_reference(
-            "hr_holidays", "hr_leave_view_tree"
-        )
-        tree_id = tree_res and tree_res[1] or False
+        tree = self.env.ref("hr_holidays.hr_leave_view_tree")
         self.env.cr.execute(
             """SELECT
             id
@@ -208,8 +195,8 @@ class HrEmployeeLandingPage(models.TransientModel):
             "view_type": "form",
             "view_mode": "tree",
             "res_model": "hr.leave",
-            "views": [(tree_id, "tree")],
-            "view_id": tree_id,
+            "views": [(tree.id, "tree")],
+            "view_id": tree.id,
             "target": "current",
             "domain": [("id", "in", holidays)],
             "context": {"search_default_year": 1, "search_default_group_employee": 1},
@@ -217,30 +204,22 @@ class HrEmployeeLandingPage(models.TransientModel):
 
     def action_view_timesheet_tree(self):
         self.ensure_one()
-        ir_model_data = self.env["ir.model.data"]
-        tree_res = ir_model_data.get_object_reference(
-            "hr_timesheet_sheet", "hr_timesheet_sheet_tree"
-        )
-        tree_id = tree_res and tree_res[1] or False
+        tree = self.env.ref("hr_timesheet_sheet.hr_timesheet_sheet_tree")
         return {
             "name": _("Timesheet"),
             "type": "ir.actions.act_window",
             "view_type": "form",
             "view_mode": "tree",
             "res_model": "hr_timesheet.sheet",
-            "views": [(tree_id, "tree")],
-            "view_id": tree_id,
+            "views": [(tree.id, "tree")],
+            "view_id": tree.id,
             "target": "current",
             "domain": [("employee_id.user_id", "=", self.env.uid)],
         }
 
     def action_view_analytic_tree(self):
         self.ensure_one()
-        ir_model_data = self.env["ir.model.data"]
-        tree_res = ir_model_data.get_object_reference(
-            "ps_timesheet_invoicing", "view_ps_time_line_tree"
-        )
-        tree_id = tree_res and tree_res[1] or False
+        tree = self.env.ref("ps_timesheet_invoicing.view_ps_time_line_tree")
 
         user_id = self.env.user.id
         self.env.cr.execute(
@@ -263,8 +242,8 @@ class HrEmployeeLandingPage(models.TransientModel):
             "view_type": "form",
             "view_mode": "tree",
             "res_model": "ps.time.line",
-            "views": [(tree_id, "tree")],
-            "view_id": tree_id,
+            "views": [(tree.id, "tree")],
+            "view_id": tree.id,
             "target": "current",
             "domain": [("id", "in", entries)],
             "context": {
@@ -280,9 +259,9 @@ class HrEmployeeLandingPage(models.TransientModel):
         context = safe_eval(action.context, eval_context)
         extra_domains = []
         search_view = etree.fromstring(
-            self.env[action.res_model].fields_view_get(
-                action.search_view_id.id, "search"
-            )["arch"]
+            self.env[action.res_model].get_view(view_id=action.search_view_id.id)[
+                "arch"
+            ]
         )
         for key in context:
             prefix = "search_default_"

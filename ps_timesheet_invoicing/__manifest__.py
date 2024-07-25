@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "Timesheet and Invoicing",
-    "version": "14.0.1.0.2",
+    "version": "16.0.1.0.0",
     "license": "AGPL-3",
     "summary": """This module introduces an advanced professional services invoicing process,
         offering fixed price, time and material, licensing and several combinations
@@ -12,6 +12,7 @@
     "category": "module_category_specific_industry_applications",
     "depends": [
         "account",
+        "account_analytic_tag",
         "account_move_name_sequence",
         "analytic",
         "uom",
@@ -19,7 +20,6 @@
         "fleet",
         "ps_hr",
         "ps_crm",
-        "data_time_tracker",
         "ps_date_range_week",
         "uom_unece",
         "ps_project",
@@ -29,7 +29,8 @@
         "account_fiscal_month",
         "account_fiscal_year",
         "web_domain_field",
-        "invoice_line_revenue_distribution_operating_unit",
+        # TODO: migrate
+        # "invoice_line_revenue_distribution_operating_unit",
         "queue_job",
     ],
     "data": [
@@ -66,7 +67,6 @@
         "views/account_move.xml",
         "views/menu_item.xml",
         "views/res_company_view.xml",
-        "views/templates.xml",
     ],
     "installable": True,
     "demo": [
@@ -85,4 +85,9 @@
         "demo/ps_time_line.xml",
     ],
     "post_init_hook": "post_init_hook",
+    "assets": {
+        "web.assets_backend": [
+            "/ps_timesheet_invoicing/static/src/css/ps_timesheet_invoicing.css",
+        ],
+    },
 }

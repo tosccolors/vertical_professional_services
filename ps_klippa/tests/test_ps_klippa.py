@@ -23,7 +23,10 @@ class TestPsKlippa(TransactionCase):
         new_expenses = sum(
             (expense.copy() for expense in demo_expenses), self.env["hr.expense"]
         )
-        new_sheet = new_expenses[0]._create_sheet_from_expenses()
+        action = new_expenses[0].action_submit_expenses()
+        new_sheet = self.env[action["res_model"]].create(
+            {key[len("default_") :]: value for key, value in action["context"].items()}
+        )
         new_sheet.reset_expense_sheets()
         self.env.cr.execute(
             "update hr_expense set create_uid=%s where id in %s",

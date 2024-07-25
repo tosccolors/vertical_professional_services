@@ -59,14 +59,14 @@ class CrmPipelineActualsReport(models.Model):
                 aal.general_account_id = aa.id
                 )
             LEFT JOIN account_move_line aml on (
-                aal.move_id = aml.id
+                aal.move_line_id = aml.id
                 )
             LEFT JOIN project_project pp ON (
                 pp.analytic_account_id = aal.account_id
                 )
             WHERE
                 aa.code = '8100' AND
-                aal.move_id is not NULL
+                aal.move_line_id is not NULL
             GROUP BY
                 dr.id,
                 aml.operating_unit_id,

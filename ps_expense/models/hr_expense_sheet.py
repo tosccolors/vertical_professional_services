@@ -11,16 +11,18 @@ class HrExpenseSheet(models.Model):
         "res.users", compute="_compute_project_manager_id", store=True
     )
 
-    @api.depends("expense_line_ids.analytic_account_id")
+    @api.depends("expense_line_ids.analytic_distribution")
     def _compute_project_manager_id(self):
+        AccountAnalyticAccount = self.env["account.analytic.account"]
         for this in self:
-            managers = this.mapped(
-                "expense_line_ids.analytic_account_id.project_ids.user_id"
-            )
-            if len(managers) == 1 and all(
-                line.analytic_account_id.project_ids.user_id
-                for line in this.expense_line_ids
-            ):
+            managers = AccountAnalyticAccount.project_ids.user_id
+            distributions = this.mapped("expense_line_ids.analytic_distribution")
+            for distribution in distributions:
+                for account_id in (distribution or {}).keys():
+                    managers |= AccountAnalyticAccount.browse(int(account_id)).mapped(
+                        "project_ids.user_id"
+                    )
+            if len(managers) == 1 and len(distributions) == len(this.expense_line_ids):
                 this.project_manager_id = managers
 
     @api.onchange("expense_line_ids")
@@ -32,3 +34,15 @@ class HrExpenseSheet(models.Model):
                 self.operating_unit_id = self.expense_line_ids[0].operating_unit_id.id
         else:
             self.operating_unit_id = False
+
+    def _prepare_move_vals(self):
+        AccountAnalyticAccount = self.env["account.analytic.account"]
+        vals = super()._prepare_move_vals()
+        for distribution in self.mapped("expense_line_ids.analytic_distribution"):
+            for account_id in (distribution or {}).keys():
+                account = AccountAnalyticAccount.browse(int(account_id))
+                if account.operating_unit_ids:
+                    ou = account.operating_unit_ids[0]
+                    if ou:
+                        vals["operating_unit_id"] = ou.id
+        return vals

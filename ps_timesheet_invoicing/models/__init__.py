@@ -18,3 +18,4 @@ from . import res_company
 from . import ps_time_line
 from . import ps_time_line_user_total
 from . import task_user
+from . import timesheets_analysis_report

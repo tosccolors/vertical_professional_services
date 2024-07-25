@@ -17,10 +17,14 @@ class AccountMove(models.Model):
         result = {}
         if data_type == "sale_order":
             for line in self.invoice_line_ids.sorted("sequence"):
-                if line.analytic_account_id in result:
-                    result[line.analytic_account_id].append(line)
-                else:
-                    result[line.analytic_account_id] = [line]
+                for analytic_account_id in (line.analytic_distribution or {}).keys():
+                    analytic_account = self.env["account.analytic.account"].browse(
+                        int(analytic_account_id)
+                    )
+                    if analytic_account in result:
+                        result[analytic_account].append(line)
+                    else:
+                        result[analytic_account] = [line]
         if data_type == "project":
             UOMHrs = self.env.ref("uom.product_uom_hour").id
             invoice_line_ids = self.invoice_line_ids.sorted("sequence")
@@ -37,20 +41,32 @@ class AccountMove(models.Model):
                     price_subtotal = line.product_uom_id._compute_price(
                         line.price_subtotal, line.product_uom_id
                     )
-                    if line.analytic_account_id in result:
-                        result[line.analytic_account_id]["tot_hrs"] += quantity
-                        result[line.analytic_account_id]["sub_total"] += price_subtotal
-                    else:
-                        result[line.analytic_account_id] = {
-                            "tot_hrs": quantity,
-                            "sub_total": price_subtotal,
-                            "name": line.name,
-                        }
+                    for analytic_account_id in (
+                        line.analytic_distribution or {}
+                    ).keys():
+                        analytic_account = self.env["account.analytic.account"].browse(
+                            int(analytic_account_id)
+                        )
+                        if analytic_account in result:
+                            result[analytic_account]["tot_hrs"] += quantity
+                            result[analytic_account]["sub_total"] += price_subtotal
+                        else:
+                            result[analytic_account] = {
+                                "tot_hrs": quantity,
+                                "sub_total": price_subtotal,
+                                "name": line.name,
+                            }
             else:
                 for line in invoice_line_ids.filtered(
                     lambda l: not l.product_uom_id or l.product_uom_id.id != UOMHrs
                 ):
-                    result.setdefault(line.analytic_account_id, []).append(line)
+                    for analytic_account_id in (
+                        line.analytic_distribution or {}
+                    ).keys():
+                        analytic_account = self.env["account.analytic.account"].browse(
+                            int(analytic_account_id)
+                        )
+                        result.setdefault(analytic_account, []).append(line)
         return result
 
     def parse_invoice_description(self):

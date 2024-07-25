@@ -1,2 +1,3 @@
+astor
 phonenumbers
 pypdf

@@ -60,15 +60,32 @@ class TimeLine(models.Model):
                 )
                 line.partner_id = line.project_id._get_invoice_partner()
             else:
+                line.chargeable = False
+                line.correction_charge = 0.0
+                line.project_mgr = False
+                line.period_id = False
                 line.project_mgr = line.account_id.project_ids.user_id or False
             user = line.user_id
             if not user:
+                line.operating_unit_id = False
+                line.planned_qty = line.unit_amount
+                line.actual_qty = 0.0
+                line.wip_month_id = False
+                line.task_user_id = False
+                line.line_fee_rate = False
+                line.amount = False
+                line.product_id = False
                 continue
             uou = user._get_operating_unit_id()
             line.operating_unit_id = uou
             if line.planned:
                 line.planned_qty = line.unit_amount
                 line.actual_qty = 0.0
+                line.wip_month_id = False
+                line.task_user_id = False
+                line.line_fee_rate = False
+                line.amount = False
+                line.product_id = False
                 continue
             if line.month_of_last_wip:
                 line.wip_month_id = line.month_of_last_wip
@@ -397,8 +414,7 @@ class TimeLine(models.Model):
                 "UPDATE %s SET state = %s WHERE id IN %s",
                 (AsIs(self._table), state, tuple(self.ids)),
             )
-            self.env.cache.invalidate()
-            vals.pop("state")
+            self.invalidate_recordset(["state"])
             return True
 
         if len(self) == 1:

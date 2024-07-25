@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <record id="task_user_task_11" model="task.user">
-        <field name="task_id" ref="project.project_task_11" />
+        <field name="task_id" ref="project.project_1_task_1" />
         <field name="user_id" ref="base.user_demo" />
         <field name="product_id" ref="product.product_product_1" />
         <field name="fee_rate">42</field>

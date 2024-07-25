@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "PS Account",
-    "version": "14.0.1.0.0",
+    "version": "16.0.1.0.0",
     "category": "accounts",
     "author": "The Open Source Company",
     "website": "http://www.tosc.nl",
@@ -16,7 +16,8 @@
         "ps_timesheet_invoicing",
         "report_qweb_pdf_watermark",
         "ps_calendar",
-        "account_invoice_import",
+        # TODO: probably replace with yet-to-be-migrated account_edi_simple_pdf
+        "account_edi",
         "account_move_tier_validation",
         "account_invoice_merge",
     ],
@@ -24,7 +25,8 @@
         "report/report_layout.xml",
         "report/report_invoice.xml",
         "views/account_move.xml",
-        "views/project_view.xml",
+        "views/project_invoicing_properties.xml",
+        "views/templates.xml",
         "report/account_invoice_report.xml",
     ],
     "demo": [

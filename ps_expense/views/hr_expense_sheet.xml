@@ -82,7 +82,7 @@
                 <attribute name="optional">show</attribute>
             </xpath>
             <xpath
-                expr="//field[@name='expense_line_ids']/tree/field[@name='analytic_account_id']"
+                expr="//field[@name='expense_line_ids']/tree/field[@name='analytic_distribution']"
                 position="after"
             >
                 <field
@@ -92,10 +92,7 @@
             </xpath>
         </field>
     </record>
-    <record
-        id="hr_expense.action_hr_expense_sheet_all_to_approve"
-        model="ir.actions.act_window"
-    >
+    <record id="hr_expense.action_hr_expense_sheet_all" model="ir.actions.act_window">
         <field name="context">
             {'search_default_submitted': 1,
             'search_default_group_operating_unit': 1,
@@ -107,21 +104,7 @@
             'hr_expense_sheet_unit_amount_invisible': 1}
         </field>
     </record>
-    <record
-        id="hr_expense.action_hr_expense_sheet_all_to_post"
-        model="ir.actions.act_window"
-    >
-        <field name="context">
-            {'search_default_to_post': 1, 'hr_expense_sheet_product_id_invisible': 1}
-        </field>
-    </record>
-    <record
-        id="hr_expense.action_hr_expense_sheet_all_to_pay"
-        model="ir.actions.act_window"
-    >
-        <field name="context">{'search_default_approved': 1}</field>
-    </record>
-    <record model="ir.ui.menu" id="hr_expense.menu_hr_expense_sheet_all_to_approve">
+    <record model="ir.ui.menu" id="hr_expense.menu_hr_expense_report">
         <field name='name'>Manager Approval</field>
     </record>
 </odoo>

@@ -57,6 +57,7 @@
                             <field name="account_id" />
                             <field name="tag_ids" widget="many2many_tags" />
                             <field name="date" />
+                            <field name="company_id" invisible="1" />
                             <field
                                 name="company_id"
                                 groups="base.group_multi_company"
@@ -103,7 +104,7 @@
                     domain="[
                                 '|', '&amp;',
                                 ('state', 'in', ['draft','open']),
-                                ('move_id','!=',False),
+                                ('move_line_id','!=',False),
                                 ('state', 'not in', ['draft','delayed','write_off','invoice_created','invoiced','progress','change-chargecode']),
                                 ('non_invoiceable_mileage', '=', False),
                                 ('chargeable', '=', True)
@@ -539,34 +540,6 @@
     <!--
             Menus and Actions
         -->
-    <record id="hr_timesheet.act_hr_timesheet_report" model="ir.actions.act_window">
-        <field name="res_model">ps.time.line</field>
-        <field
-            name="domain"
-            eval="str(
-                [('project_id', '!=', False), ('product_uom_id', '=', ref('uom.product_uom_hour')),
-                ('planned', '=', False)])"
-        />
-        <field name="context">{"search_default_today":1}</field>
-    </record>
-    <record
-        id="hr_timesheet.timesheet_action_report_by_project"
-        model="ir.actions.act_window"
-    >
-        <field name="res_model">ps.time.line</field>
-    </record>
-    <record
-        id="hr_timesheet.timesheet_action_report_by_task"
-        model="ir.actions.act_window"
-    >
-        <field name="res_model">ps.time.line</field>
-    </record>
-    <record
-        id="sale_timesheet.timesheet_action_billing_report"
-        model="ir.actions.act_window"
-    >
-        <field name="res_model">ps.time.line</field>
-    </record>
     <record id="act_hr_timesheet_line" model="ir.actions.act_window">
         <field name="name">My Timelines</field>
         <field name="res_model">ps.time.line</field>

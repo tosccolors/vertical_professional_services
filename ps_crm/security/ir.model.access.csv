@@ -7,7 +7,8 @@ access_sale_order_mgs,sale.order,sale.model_sale_order,ps_crm.group_sale_regular
 access_sale_order_line_mgs,sale.order.line,sale.model_sale_order_line,ps_crm.group_sale_regular_user,1,1,1,1
 
 access_account_payment_term_salesman_mgs,account_payment_term salesman,account.model_account_payment_term,ps_crm.group_sale_regular_user,1,0,0,0
-access_account_analytic_tag_sale_salesman_mgs,account.analytic.tag.sale.salesman,analytic.model_account_analytic_tag,ps_crm.group_sale_regular_user,1,0,0,0
+access_account_analytic_plan_sale_salesman_mgs,account.analytic.tag.sale.salesman,analytic.model_account_analytic_plan,ps_crm.group_sale_regular_user,1,0,0,0
+access_account_analytic_tag_sale_salesman_mgs,account.analytic.tag.sale.salesman,account_analytic_tag.model_account_analytic_tag,ps_crm.group_sale_regular_user,1,0,0,0
 access_account_analytic_account_salesman_mgs,account_analytic_account salesman,analytic.model_account_analytic_account,ps_crm.group_sale_regular_user,1,1,1,0
 access_sale_report_salesman,sale.report_mgs,sale.model_sale_report,ps_crm.group_sale_regular_user,1,1,1,0
 access_ir_property_sales_mgs,ir.property.sales,base.model_ir_property,ps_crm.group_sale_regular_user,1,1,1,1

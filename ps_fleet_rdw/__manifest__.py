@@ -7,7 +7,7 @@
     "license": "AGPL-3",
     "category": "Report",
     "version": "14.0.1.0.0",
-    "installable": True,
+    "installable": False,
     "depends": ["ps_fleet"],
     "data": [
         "security/security.xml",

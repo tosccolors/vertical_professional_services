@@ -68,7 +68,7 @@ class TestMisc(TransactionCase):
 
         move_max = self.env["account.move"].search([], limit=1, order="id desc")
         with mute_logger("odoo.addons.queue_job.delay"):
-            wizard.with_context(test_queue_job_no_delay=True).ps_invoice_lines()
+            wizard.with_context(queue_job__no_delay=True).ps_invoice_lines()
 
         self.assertEqual(self.ps_line.state, "delayed")
         reversed_move, move = self.env["account.move"].search(
@@ -122,7 +122,7 @@ class TestMisc(TransactionCase):
         self.env["hr.employee"].search([]).write(
             {"official_date_of_employment": "2022-12-31"}
         )
-        self.env["hr.employee"].flush()
+        self.env["hr.employee"].flush_model()
         self.env["status.time.report"].with_user(
             self.env.ref("base.user_admin")
         ).search([]).read([])

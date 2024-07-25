@@ -4,7 +4,7 @@
     "author": "The Open Source Company",
     "website": "http://www.tosc.nl",
     "category": "Report",
-    "version": "14.0.1.0.0",
+    "version": "16.0.1.0.0",
     "license": "AGPL-3",
     "depends": ["ps_timesheet_invoicing", "ps_holidays", "ps_expense"],
     "data": [
@@ -15,4 +15,5 @@
     "demo": [
         "demo/res_groups.xml",
     ],
+    "installable": True,
 }

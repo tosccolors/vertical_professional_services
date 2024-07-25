@@ -15,7 +15,7 @@ class HrEmployeeBase(models.AbstractModel):
         result = super()._get_remaining_leaves()
         extra_leaves = self.env["hr.leave"].read_group(
             [
-                ("holiday_status_id.allocation_type", "=", "no"),
+                ("holiday_status_id.requires_allocation", "=", "no"),
                 ("holiday_status_id.active", "=", True),
                 ("state", "=", "validate"),
                 ("employee_id", "in", self.ids),

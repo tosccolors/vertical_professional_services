@@ -111,7 +111,7 @@ class HrTimesheetSheet(models.Model):
 
     def get_leave_type(self, hour):
         leave_types = self.env["hr.leave.type"].search(
-            [("valid", "=", True)], order="validity_start"
+            [("has_valid_allocation", "=", True)],
         )
         if not leave_types:
             raise ValidationError(

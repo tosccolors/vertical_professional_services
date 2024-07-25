@@ -312,7 +312,7 @@ class PSInvoice(models.Model):
             "UPDATE %s SET state = %s WHERE id IN %s",
             (AsIs(self_obj._table), status, tuple(self_obj.ids)),
         )
-        self_obj.invalidate_cache(fnames=["state"], ids=self_obj.ids)
+        self_obj.invalidate_recordset(["state"], flush=False)
 
     @api.depends("invoice_id.state", "invoice_id.line_ids")
     def _compute_state(self):
@@ -482,14 +482,15 @@ class PSInvoice(models.Model):
             )
 
     def _get_expense_line_ids_domain(self, with_date=True):
-        account_types = self.env.ref(
-            "account.data_account_type_expenses"
-        ) + self.env.ref("account.data_account_type_direct_costs")
         return [
             ("ps_invoice_id", "=", False),
             ("ps_invoice_line_id", "=", False),
             ("account_id", "in", self.account_analytic_ids.ids),
-            ("general_account_id.user_type_id", "in", account_types.ids),
+            (
+                "general_account_id.account_type",
+                "in",
+                ("expense", "expense_direct_cost"),
+            ),
         ] + (
             [
                 (field, operator, fields.Date.to_string(date))
@@ -566,41 +567,15 @@ class PSInvoice(models.Model):
         analytic_account,
         price_unit,
     ):
-        invoice_line = (
-            self.env["account.move.line"]
-            .with_context(
-                active_model="analytic.invoice",
-                active_id=self.invoice_id.id,
-                active_ids=self.invoice_id.ids,
-            )
-            .new(
-                {
-                    "move_id": self.invoice_id.id,
-                    "product_id": product.id,
-                    "quantity": quantity,
-                    "product_uom_id": uom.id,
-                    "user_id": user.id,
-                }
-            )
-        )
-        # Get other invoice line values from product onchange
-        invoice_line._onchange_product_id()
-        invoice_line_vals = invoice_line._convert_to_write(invoice_line._cache)
-
-        invoice_line_vals.update(
-            {
-                "analytic_account_id": analytic_account.id
-                or invoice_line.analytic_account_id.id,
-                "price_unit": price_unit,
-                "ps_invoice_id": self.id,
-                # TODO: no origin field any more, readd?
-                # 'origin': line.task_id.project_id.po_number
-                # if line.task_id and line.task_id.project_id.correction_charge
-                # else '/',
-            }
-        )
-
-        return invoice_line_vals
+        return {
+            "product_id": product.id,
+            "quantity": quantity,
+            "product_uom_id": uom.id,
+            "user_id": user.id,
+            "analytic_distribution": {account.id: 100 for account in analytic_account},
+            "price_unit": price_unit,
+            "ps_invoice_id": self.id,
+        }
 
     def _prepare_invoice_lines_fixed_amount(self, user_total_lines):
         product = self.env.ref("ps_timesheet_invoicing.product_fixed_amount")
@@ -723,7 +698,7 @@ class PSInvoice(models.Model):
 
     def delete_invoice(self):
         self.mapped("invoice_id").button_draft()
-        self.mapped("invoice_id.line_ids").unlink()
+        self.mapped("invoice_id.line_ids").with_context(dynamic_unlink=True).unlink()
 
         self.state = "draft"
         for user_total in self.user_total_ids:

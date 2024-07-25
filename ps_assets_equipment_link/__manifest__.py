@@ -7,7 +7,7 @@
     "website": "http://www.tosc.nl",
     "author": "The Open Source Company",
     "license": "AGPL-3",
-    "installable": True,
+    "installable": False,
     "depends": [
         "ps_equipment",
         "account_asset_operating_unit",

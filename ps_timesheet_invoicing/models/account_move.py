@@ -110,7 +110,7 @@ class AccountMove(models.Model):
                             {
                                 "name": _("Fixed amount value difference"),
                                 "date": invoice.date,
-                                "move_id": invoice_line.id,
+                                "move_line_id": invoice_line.id,
                                 "tag_ids": [
                                     (
                                         6,
@@ -134,7 +134,7 @@ class AccountMove(models.Model):
                             {
                                 "name": _("Fixed amount hour difference"),
                                 "date": invoice.date,
-                                "move_id": invoice_line.id,
+                                "move_line_id": invoice_line.id,
                                 "tag_ids": [
                                     (
                                         6,
@@ -177,10 +177,10 @@ class AccountMove(models.Model):
             date_end = inv.period_id.date_end
             new_name = sequence.with_context(ir_sequence_date=date_end).next_by_id()
             account = inv.line_ids.filtered(
-                lambda x: x.account_internal_type in ("receivable", "payable")
+                lambda x: x.account_type in ("receivable", "payable")
             ).account_id
             wip_move = inv.wip_move_create(wip_journal, new_name, account.id, inv.name)
-            wip_move.post()
+            wip_move._post()
             # make the invoice point to that wip move
             inv.wip_move_id = wip_move
             # wip reverse posting
@@ -200,7 +200,7 @@ class AccountMove(models.Model):
             # #######################################
             reverse_wip_move = wip_move._reverse_moves(
                 default_values_list=[
-                    dict(date=reverse_date, journal_id=wip_journal.id, auto_post=False)
+                    dict(date=reverse_date, journal_id=wip_journal.id, auto_post="no")
                 ],
             )
             wip_nxt_seq = sequence.with_context(
@@ -244,16 +244,16 @@ class AccountMove(models.Model):
         # All filtered out lines are unlinked. All will be kept unchanged and copied
         # with reversing debit/credit and replace P/L account by wip-account.
         include_types = (
-            self.env.ref("account.data_account_type_other_income")
-            + self.env.ref("account.data_account_type_revenue")
-            + self.env.ref("account.data_account_type_depreciation")
-            + self.env.ref("account.data_account_type_expenses")
-            + self.env.ref("account.data_account_type_direct_costs")
+            "income",
+            "income_other",
+            "expense",
+            "expense_depreciation",
+            "expense_direct_cost",
         )
         wip_move_data["line_ids"] = list(
             filter(
-                lambda x: x[2]["credit"] + x[2]["debit"] != 0
-                and self.env["account.account"].browse(x[2]["account_id"]).user_type_id
+                lambda x: x[2]["price_unit"] != 0
+                and self.env["account.account"].browse(x[2]["account_id"]).account_type
                 in include_types,
                 wip_move_data["line_ids"],
             )
@@ -270,8 +270,7 @@ class AccountMove(models.Model):
             if account_id:
                 wip_line_data["account_id"] = account_id
 
-            wip_line_data["credit"] = line_data["debit"]
-            wip_line_data["debit"] = line_data["credit"]
+            wip_line_data["price_unit"] = -line_data["price_unit"]
 
             wip_move_data["line_ids"].append((command1, command2, wip_line_data))
         return self.create(wip_move_data)

@@ -14,6 +14,6 @@
         'views/hr_views.xml',
     ],
 
-    'installable': True,
+    'installable': False,
     'application': True,
 }

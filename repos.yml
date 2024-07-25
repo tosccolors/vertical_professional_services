@@ -2,112 +2,122 @@ account-analytic:
   remotes:
     oca: https://github.com/OCA/account-analytic
   merges:
-    - oca 14.0
+    - oca 16.0
+    # analytic_base_department
+    - oca refs/pull/658/head
 account-financial-tools:
   remotes:
     oca: https://github.com/OCA/account-financial-tools
   merges:
-    - oca 14.0
+    - oca 16.0
 account-invoicing:
   remotes:
     oca: https://github.com/OCA/account-invoicing
   merges:
-    - oca 14.0
-    # merge invoice line names
-    - oca refs/pull/1402/head
-    # fix dirty check
-    - oca refs/pull/1696/head
+    - oca 16.0
 account-payment:
   remotes:
     oca: https://github.com/OCA/account-payment
   merges:
-    - oca 14.0
+    - oca 16.0
 bank-payment:
   remotes:
     oca: https://github.com/OCA/bank-payment
   merges:
-    - oca 14.0
+    - oca 16.0
 community-data-files:
   remotes:
     oca: https://github.com/OCA/community-data-files
   merges:
-    - oca 14.0
+    - oca 16.0
 contract:
   remotes:
     oca: https://github.com/OCA/contract
   merges:
-    - oca 14.0
+    - oca 16.0
 crm:
   remotes:
     oca: https://github.com/OCA/crm
   merges:
-    - oca 14.0
+    - oca 16.0
 edi:
   remotes:
     oca: https://github.com/OCA/edi
   merges:
-    - oca 14.0
+    - oca 16.0
 hr:
   remotes:
     oca: https://github.com/OCA/hr
   merges:
-    - oca 14.0
+    - oca 16.0
+    # hr_employee_service
+    - oca refs/pull/1330/head
+    # hr_employee_service_contract
+    - oca refs/pull/1226/head
 operating-unit:
   remotes:
     oca: https://github.com/OCA/operating-unit
   merges:
-    - oca 14.0
+    - oca 16.0
+    # account_operating_unit
+    - oca refs/pull/656/head
+    # report_qweb_operating_unit
+    - oca refs/pull/699/head
+    # contract_qweb_operating_unit
+    - oca refs/pull/700/head
+    # hr_expense_operating_unit
+    - oca refs/pull/701/head
 partner-contact:
   remotes:
     oca: https://github.com/OCA/partner-contact
   merges:
-    - oca 14.0
+    - oca 16.0
 queue:
   remotes:
     oca: https://github.com/OCA/queue
   merges:
-    - oca 14.0
+    - oca 16.0
 reporting-engine:
   remotes:
     oca: https://github.com/OCA/reporting-engine
   merges:
-    - oca 14.0
+    - oca 16.0
 server-backend:
   remotes:
     oca: https://github.com/OCA/server-backend
   merges:
-    - oca 14.0
+    - oca 16.0
 server-tools:
   remotes:
     oca: https://github.com/OCA/server-tools
   merges:
-    - oca 14.0
+    - oca 16.0
 server-ux:
   remotes:
     oca: https://github.com/OCA/server-ux
   merges:
-    - oca 14.0
+    - oca 16.0
 timesheet:
   remotes:
     oca: https://github.com/OCA/timesheet
-    hbrunn: https://github.com/hbrunn/hr-timesheet
   merges:
-    - oca 14.0
-    - hbrunn 14.0-hr_timesheet_sheet-no-merge-in-onchange
+    - oca 16.0
 web:
   remotes:
     oca: https://github.com/OCA/web
   merges:
-    - oca 14.0
+    - oca 16.0
 misc:
   remotes:
     tosccolors: https://github.com/tosccolors/misc
   merges:
-    - tosccolors 14.0
+    - tosccolors 16.0
+    # operating_unit_report_layout
+    - tosccolors refs/pull/240/head
 ../src:
   defaults:
     depth: 1
   remotes:
     oca: https://github.com/OCA/ocb
   merges:
-    - oca 14.0
+    - oca 16.0

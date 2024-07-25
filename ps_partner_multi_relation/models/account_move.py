@@ -40,23 +40,18 @@ class AccountMove(models.Model):
 
     @api.model
     def _prepare_member_invoice_line(self, line, invoice, share_key):
-        invoice_line = self.env["account.move.line"].new(
-            {
-                "move_id": invoice.id,
-                "product_id": line.product_id.id,
-                "quantity": line.quantity,
-                "product_uom_id": line.product_uom_id.id,
-                "discount": line.discount,
-                "account_id": line.account_id.id,
-            }
-        )
-
-        # Add analytic tags to invoice line
-        invoice_line.analytic_tag_ids |= line.analytic_tag_ids
-
-        # Get other invoice line values from product onchange
-        invoice_line._onchange_product_id()
-        invoice_line_vals = invoice_line._convert_to_write(invoice_line._cache)
+        invoice_line_vals = {
+            "name": line.name,
+            "move_id": invoice.id,
+            "product_id": line.product_id.id,
+            "quantity": line.quantity,
+            "product_uom_id": line.product_uom_id.id,
+            "discount": line.discount,
+            "account_id": line.account_id.id,
+            "analytic_tag_ids": [fields.Command.set(line.analytic_tag_ids.ids)],
+            "price_unit": line.price_unit * share_key,
+            "analytic_distribution": line.analytic_distribution,
+        }
 
         # Analytic Invoice invoicing period is doesn't lies in same month update with
         # property_account_wip_id
@@ -73,13 +68,6 @@ class AccountMove(models.Model):
                 )
                 invoice_line_vals.update({"account_id": account.id})
 
-        invoice_line_vals.update(
-            {
-                "name": line.name,
-                "analytic_account_id": line.analytic_account_id.id,
-                "price_unit": line.price_unit * share_key,
-            }
-        )
         return invoice_line_vals
 
     def _prepare_member_invoice(self, partner):
@@ -96,28 +84,25 @@ class AccountMove(models.Model):
         currency = (
             partner.property_product_pricelist.currency_id or company_id.currency_id
         )
-        invoice = self.env["account.move"].new(
-            {
-                "ref": self.name,
-                "move_type": "out_invoice",
-                "partner_id": partner.address_get(["invoice"])["invoice"],
-                "currency_id": currency.id,
-                "journal_id": journal.id,
-                "invoice_date": self.invoice_date,
-                # TODO: restore origin field?
-                # 'origin': self.name,
-                "company_id": company_id.id,
-                "parent_id": self.id,
-                "user_id": partner.user_id.id,
-                "invoice_description": self.invoice_description,
-                "ps_custom_layout": self.ps_custom_layout,
-                "ps_custom_footer": self.ps_custom_footer,
-                "ps_custom_header": self.ps_custom_header,
-            }
-        )
-        # Get other invoice values from partner onchange
-        invoice._onchange_partner_id()
-        return invoice._convert_to_write(invoice._cache)
+        invoice_vals = {
+            "ref": self.name,
+            "move_type": "out_invoice",
+            "partner_id": partner.address_get(["invoice"])["invoice"],
+            "currency_id": currency.id,
+            "journal_id": journal.id,
+            "invoice_date": self.invoice_date,
+            # TODO: restore origin field?
+            # 'origin': self.name,
+            "company_id": company_id.id,
+            "parent_id": self.id,
+            "user_id": partner.user_id.id,
+            "invoice_description": self.invoice_description,
+            "ps_custom_layout": self.ps_custom_layout,
+            "ps_custom_footer": self.ps_custom_footer,
+            "ps_custom_header": self.ps_custom_header,
+        }
+
+        return invoice_vals
 
     def _create_member_invoice(self, partner, share_key):
         self.ensure_one()

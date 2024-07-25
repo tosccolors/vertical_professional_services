@@ -25,7 +25,7 @@ class AccountMoveLine(models.Model):
     )
     # wip_percentage=fields.Float("WIP percentage")
 
-    @api.constrains("operating_unit_id", "analytic_account_id", "user_id")
+    @api.constrains("operating_unit_id", "user_id")
     def _check_analytic_operating_unit(self):
         for rec in self.filtered("user_id"):
             if not rec.operating_unit_id == rec.user_id._get_operating_unit_id():
@@ -37,21 +37,12 @@ class AccountMoveLine(models.Model):
                         " of the user/employee"
                     )
                 )
-        super(
-            AccountMoveLine, self - self.filtered("user_id")
-        )._check_analytic_operating_unit()
+        # TODO: this comes from invoice_line_revenue_distribution_operating_unit
 
-    @api.onchange("analytic_account_id", "user_id")
-    def onchange_operating_unit(self):
-        super().onchange_operating_unit()
-        if self.user_id:
-            self.operating_unit_id = self.user_id._get_operating_unit_id()
-
-    @api.depends("account_analytic_id", "user_id", "move_id.operating_unit_id")
-    def _compute_operating_unit(self):
-        super()._compute_operating_unit()
-        for line in self.filtered("user_id"):
-            line.operating_unit_id = line.user_id._get_operating_unit_id()
+    #        super(
+    #            AccountMoveLine, self - self.filtered("user_id")
+    #        )._check_analytic_operating_unit()
+    #
 
     @api.model
     def default_get(self, fields):
