@@ -85,6 +85,14 @@ class Project(models.Model):
             action = {"type": "ir.actions.act_window_close"}
         return action
 
+    def _get_invoice_partner(self):
+        """Get a partner for invoicing"""
+        return (
+            self.invoice_address
+            or self.partner_id
+            or self.analytic_account_id.partner_id
+        )
+
 
 class InvoiceScheduleLine(models.Model):
     _name = "invoice.schedule.lines"
