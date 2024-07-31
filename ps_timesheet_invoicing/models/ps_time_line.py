@@ -58,6 +58,7 @@ class TimeLine(models.Model):
                     or self.env.ref("account_fiscal_month.date_range_fiscal_month"),
                     raise_not_found=True,
                 )
+                line.partner_id = line.project_id._get_invoice_partner()
             else:
                 line.project_mgr = line.account_id.project_ids.user_id or False
             user = line.user_id
