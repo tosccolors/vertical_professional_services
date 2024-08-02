@@ -1,0 +1,10 @@
+<odoo>
+    <record id="planning_task1" model="project.task">
+        <field name="project_id" ref="planning_project" />
+        <field name="name">Planning task 1</field>
+    </record>
+    <record id="planning_task2" model="project.task">
+        <field name="project_id" ref="planning_project" />
+        <field name="name">Planning task 2</field>
+    </record>
+</odoo>
