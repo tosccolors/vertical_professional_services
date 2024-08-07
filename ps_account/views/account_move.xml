@@ -45,7 +45,7 @@
         <field name="priority" eval="90" />
         <field name="arch" type="xml">
             <xpath expr="//notebook/page[@id='aml_tab']" position="after">
-                <page string="Invoice Description">
+                <page string="Invoice Layout">
                     <div class="oe_clear">
                         <label for="invoice_description" />
                     </div>
@@ -55,6 +55,17 @@
                         class="oe_inline"
                         placeholder="Add description"
                     />
+                    <group>
+                        <field name="ps_custom_layout" />
+                        <field
+                            name="ps_custom_header"
+                            attrs="{'invisible': [('ps_custom_layout', '=', False)]}"
+                        />
+                        <field
+                            name="ps_custom_footer"
+                            attrs="{'invisible': [('ps_custom_layout', '=', False)]}"
+                        />
+                    </group>
                 </page>
             </xpath>
             <xpath expr="//field[@name='invoice_origin']" position="after">
