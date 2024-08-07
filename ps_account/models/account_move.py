@@ -8,6 +8,9 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     invoice_description = fields.Html("Description")
+    ps_custom_layout = fields.Boolean("Add Custom Header/Footer")
+    ps_custom_header = fields.Text("Custom Header")
+    ps_custom_footer = fields.Text("Custom Footer")
 
     def group_by_analytic_acc(self, data_type, uom_hrs=False):
         self.ensure_one()
