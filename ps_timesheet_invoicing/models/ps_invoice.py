@@ -97,7 +97,7 @@ class PSInvoice(models.Model):
             user_total_data.append((4, total_line.id))
         self.user_total_ids = user_total_data
         if self.invoice_properties.actual_expenses and self.period_id:
-            expense_domain = json.loads(self.expense_line_ids_domain)
+            expense_domain = self._get_expense_line_ids_domain()
             self.expense_line_ids = [
                 (4, line.id)
                 for line in self.env["account.analytic.line"].search(expense_domain)
@@ -475,22 +475,29 @@ class PSInvoice(models.Model):
 
     @api.depends("account_analytic_ids")
     def _compute_expense_line_ids_domain(self):
+        with_date = not self.env.user.has_group("account.group_account_manager")
+        for this in self:
+            this.expense_line_ids_domain = json.dumps(
+                this._get_expense_line_ids_domain(with_date=with_date)
+            )
+
+    def _get_expense_line_ids_domain(self, with_date=True):
         account_types = self.env.ref(
             "account.data_account_type_expenses"
         ) + self.env.ref("account.data_account_type_direct_costs")
-        for this in self:
-            this.expense_line_ids_domain = json.dumps(
-                [
-                    ("ps_invoice_id", "=", False),
-                    ("ps_invoice_line_id", "=", False),
-                    ("account_id", "in", this.account_analytic_ids.ids),
-                    ("general_account_id.user_type_id", "in", account_types.ids),
-                ]
-                + [
-                    (field, operator, fields.Date.to_string(date))
-                    for (field, operator, date) in this.period_id.get_domain("date")
-                ]
-            )
+        return [
+            ("ps_invoice_id", "=", False),
+            ("ps_invoice_line_id", "=", False),
+            ("account_id", "in", self.account_analytic_ids.ids),
+            ("general_account_id.user_type_id", "in", account_types.ids),
+        ] + (
+            [
+                (field, operator, fields.Date.to_string(date))
+                for (field, operator, date) in self.period_id.get_domain("date")
+            ]
+            if with_date
+            else []
+        )
 
     def unlink_rec(self):
         user_total_ids = self.env["ps.time.line.user.total"].search(
