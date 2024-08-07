@@ -87,11 +87,7 @@ class TimeLineStatus(models.TransientModel):
                 if link_project:
                     project = self.env["project.project"].browse(res[4])
                     project_id = project.id
-                    partner_id = (
-                        project.invoice_address
-                        or project.partner_id
-                        or project.analytic_account_id.partner_id
-                    ).id
+                    partner_id = project._get_invoice_partner().id
 
                 search_domain = [
                     ("partner_id", "=", partner_id),
