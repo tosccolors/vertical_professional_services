@@ -7,23 +7,31 @@ from odoo import api, fields, models
 class HrEmployee(models.Model):
     _inherit = "hr.employee"
 
-    planning_week = fields.Boolean(string="Planning by week")
-    timesheet_optional = fields.Boolean("Timesheet optional")
-    timesheet_no_8_hours_day = fields.Boolean("Timesheet no 8 hours day")
+    planning_week = fields.Boolean(string="Planning by week", groups="hr.group_hr_user")
+    timesheet_optional = fields.Boolean("Timesheet optional", groups="hr.group_hr_user")
+    timesheet_no_8_hours_day = fields.Boolean(
+        "Timesheet no 8 hours day", groups="hr.group_hr_user"
+    )
     overtime_hours = fields.Float(
-        compute="_compute_overtime_hours", string="Overtime Hours"
+        compute="_compute_overtime_hours",
+        string="Overtime Hours",
+        groups="hr.group_hr_user",
     )
     product_id = fields.Many2one(
         "product.product",
         string="Fee Rate Product",
         domain=lambda self: self._get_category_domain(),
+        groups="hr.group_hr_user",
     )
     fee_rate = fields.Float(
         compute="_compute_fee_rate",
         string="Fee Rate",
         readonly=True,
+        groups="hr.group_hr_user",
     )
-    no_ott_check = fields.Boolean("8 Hours OTT possible", help="No Overtime Check")
+    no_ott_check = fields.Boolean(
+        "8 Hours OTT possible", help="No Overtime Check", groups="hr.group_hr_user"
+    )
 
     @api.depends("product_id.list_price")
     def _compute_fee_rate(self):
