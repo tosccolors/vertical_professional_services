@@ -11,24 +11,26 @@ class TestHrTimesheet(TransactionCase):
             "ps_timesheet_invoicing.time_line_demo_user_2023_12_18"
         )
         self.env.company.timesheet_sheet_review_policy = "timesheet_manager"
+        self.user = self.env.ref("base.user_demo")
+        self.user.write(
+            {
+                "groups_id": [
+                    (3, self.env.ref("hr_timesheet.group_hr_timesheet_approver").id),
+                    (3, self.env.ref("project.group_project_manager").id),
+                    (3, self.env.ref("hr.group_hr_user").id),
+                    (3, self.env.ref("hr_contract.group_hr_contract_manager").id),
+                    (4, self.env.ref("project.group_project_user").id),
+                ]
+            }
+        )
 
     def test_timesheet(self):
         """Test creating and submitting timesheets"""
         task = self.project.task_ids[:1]
         task.standard = True
-        user = self.env.ref("base.user_demo")
         # demo user by default has too much permissions for this test to be sensible
-        user.write(
-            {
-                "groups_id": [
-                    (3, self.env.ref("hr_timesheet.group_hr_timesheet_approver").id),
-                    (3, self.env.ref("project.group_project_manager").id),
-                    (4, self.env.ref("project.group_project_user").id),
-                ]
-            }
-        )
-        self.project.allowed_internal_user_ids += user
-        sheet = self.env["hr_timesheet.sheet"].with_user(user).create({})
+        self.project.allowed_internal_user_ids += self.user
+        sheet = self.env["hr_timesheet.sheet"].with_user(self.user).create({})
         sheet.add_line_project_id = self.project
         sheet.onchange_add_project_id()
         self.assertEqual(sheet.add_line_task_id, task)
@@ -41,15 +43,19 @@ class TestHrTimesheet(TransactionCase):
             with sheet_form.line_ids.edit(3) as day_line:
                 day_line.unit_amount = 10
             sheet_form.end_mileage = 42
-        action = self.env["hr.timesheet.current.open"].with_user(user).open_timesheet()
+        action = (
+            self.env["hr.timesheet.current.open"].with_user(self.user).open_timesheet()
+        )
         self.assertEqual(action["res_id"], sheet.id)
         sheet.action_timesheet_confirm()
         with self.assertRaises(exceptions.UserError):
             sheet.action_timesheet_done()
-        user.groups_id += self.env.ref("hr_timesheet.group_hr_timesheet_approver")
+        self.user.groups_id += self.env.ref("hr_timesheet.group_hr_timesheet_approver")
         with self.assertRaises(exceptions.UserError):
             sheet.action_timesheet_done()
-        user.groups_id += self.env.ref("ps_timesheet_invoicing.group_timesheet_manager")
+        self.user.groups_id += self.env.ref(
+            "ps_timesheet_invoicing.group_timesheet_manager"
+        )
         sheet.action_timesheet_done()
         sheet.action_timesheet_draft()
         sheet.action_timesheet_confirm()
@@ -64,9 +70,9 @@ class TestHrTimesheet(TransactionCase):
         self.assertEqual(sheet.overtime_hours_delta, 18)
         next_sheet = sheet.create({})
         next_sheet.duplicate_last_week()
-        self.assertEqual(next_sheet.employee_id, user.employee_id)
+        self.assertEqual(next_sheet.employee_id, self.user.employee_id)
         self.assertEqual(
-            next_sheet.mapped("timesheet_ids.employee_id"), user.employee_id
+            next_sheet.mapped("timesheet_ids.employee_id"), self.user.employee_id
         )
         with Form(next_sheet) as sheet_form:
             for i in range(7):

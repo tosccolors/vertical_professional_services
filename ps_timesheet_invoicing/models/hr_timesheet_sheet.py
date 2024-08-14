@@ -28,7 +28,7 @@ class HrTimesheetSheet(models.Model):
         date_range_type_cw_id = self.env.ref(
             "ps_date_range_week.date_range_calender_week"
         ).id
-        employment_date = emp_obj.official_date_of_employment
+        employment_date = emp_obj.sudo().official_date_of_employment
         employment_week = date_range.search(
             [
                 ("type_id", "=", date_range_type_cw_id),
@@ -88,7 +88,8 @@ class HrTimesheetSheet(models.Model):
 
     @api.model
     def default_get(self, fields):
-        rec = super().default_get(fields)
+        # sudo super because it accesses employee fields normal users can't
+        rec = super(HrTimesheetSheet, self.sudo()).default_get(fields)
         week = self.get_week_to_submit()
         if week:
             rec.update(
@@ -424,7 +425,8 @@ class HrTimesheetSheet(models.Model):
             "ps_timesheet_invoicing.group_timesheet_manager"
         )
         no_ott_check = (
-            self.employee_id.no_ott_check or self.employee_id.department_id.no_ott_check
+            self.employee_id.sudo().no_ott_check
+            or self.employee_id.sudo().department_id.no_ott_check
         )
         for i in range(7):
             date = datetime.strftime(date_from + timedelta(days=i), "%Y-%m-%d")
@@ -441,7 +443,7 @@ class HrTimesheetSheet(models.Model):
             )
             if hour < 0 or hour > 24:
                 raise UserError(_("Logged hours should be 0 to 24."))
-            if not self.employee_id.timesheet_no_8_hours_day:
+            if not self.employee_id.sudo().timesheet_no_8_hours_day:
                 if (
                     i < 5
                     and float_compare(
