@@ -9,6 +9,7 @@ from . import project_task
 from . import project_invoicing_properties
 from . import product
 from . import fleet_vehicle
+from . import fleet_vehicle_driver
 from . import fleet_vehicle_odometer
 from . import res_users
 from . import hr_department

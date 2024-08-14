@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "Timesheet and Invoicing",
-    "version": "14.0.1.0.1",
+    "version": "14.0.1.0.2",
     "license": "AGPL-3",
     "summary": """This module introduces an advanced professional services invoicing process,
         offering fixed price, time and material, licensing and several combinations
@@ -58,6 +58,7 @@
         "views/hr_department.xml",
         "views/ps_time_line.xml",
         "views/hr_employee.xml",
+        "views/fleet_vehicle.xml",
         "views/fleet_vehicle_odometer.xml",
         "views/ps_invoice.xml",
         "views/product_view.xml",
@@ -83,4 +84,5 @@
         # needs to be on the bottom
         "demo/ps_time_line.xml",
     ],
+    "post_init_hook": "post_init_hook",
 }
