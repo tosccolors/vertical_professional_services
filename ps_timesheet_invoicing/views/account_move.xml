@@ -58,6 +58,12 @@
                         attrs="{'invisible': [('wip_move_id', '=', False)]}"
                     />
                 </xpath>
+                <field name="to_check" position="after">
+                    <field
+                        name="create_wip_entry"
+                        attrs="{'invisible': [('move_type', '!=', 'out_invoice')], 'readonly': [('state', '!=', 'draft')]}"
+                    />
+                </field>
             </field>
         </record>
     </data>
