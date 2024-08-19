@@ -12,6 +12,10 @@ class TestPsPartnerMultiRelation(TransactionCase):
                 "invoice_line_ids": [
                     (0, 0, {"name": "/", "price_unit": 42, "quantity": 42}),
                 ],
+                "invoice_description": "<p>hello world</p>",
+                "ps_custom_header": "custom header",
+                "ps_custom_footer": "custom footer",
+                "ps_custom_layout": True,
             }
         )
         invoice.action_post()
@@ -34,6 +38,22 @@ class TestPsPartnerMultiRelation(TransactionCase):
             partner18_invoice.amount_total, partner12_invoice.amount_total * 2
         )
         self.assertEqual(invoice.state, "cancel")
+        self.assertEqual(
+            partner18_invoice.invoice_description,
+            "<p>hello world</p>",
+        )
+        self.assertEqual(
+            partner18_invoice.ps_custom_layout,
+            True,
+        )
+        self.assertEqual(
+            partner18_invoice.ps_custom_footer,
+            "custom footer",
+        )
+        self.assertEqual(
+            partner18_invoice.ps_custom_header,
+            "custom header",
+        )
 
         to_merge_invoices = child_invoices
         for invoice in child_invoices:

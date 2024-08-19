@@ -109,6 +109,10 @@ class AccountMove(models.Model):
                 "company_id": company_id.id,
                 "parent_id": self.id,
                 "user_id": partner.user_id.id,
+                "invoice_description": self.invoice_description,
+                "ps_custom_layout": self.ps_custom_layout,
+                "ps_custom_footer": self.ps_custom_footer,
+                "ps_custom_header": self.ps_custom_header,
             }
         )
         # Get other invoice values from partner onchange
