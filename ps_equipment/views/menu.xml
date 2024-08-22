@@ -1,0 +1,30 @@
+<odoo>
+    <menuitem
+        id="maintenance.menu_maintenance_title"
+        name="Equipment"
+        web_icon="maintenance,static/description/icon.png"
+        sequence="110"
+    />
+    <menuitem
+        id="menu_equipment_settings"
+        name="Settings"
+        parent="maintenance.menu_maintenance_title"
+        groups="maintenance.group_equipment_manager"
+        sequence="150"
+    />
+    <menuitem
+        id="menu_warranty_categories"
+        name="Warranty Categories"
+        parent="menu_equipment_settings"
+        action="warranty_categories_action_settings"
+        groups="maintenance.group_equipment_manager"
+        sequence="1"
+    />
+    <menuitem
+        id="menu_maintenance_cat"
+        name="Equipment Categories"
+        parent="menu_equipment_settings"
+        action="maintenance.hr_equipment_category_action"
+        sequence="2"
+    />
+</odoo>

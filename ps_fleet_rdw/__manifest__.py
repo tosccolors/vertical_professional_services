@@ -1,33 +1,17 @@
-# -*- coding: utf-8 -*-
 {
-    'name': "Professional Services Fleet RDW",
-
-    'summary': """
+    "name": "Professional Services Fleet RDW",
+    "summary": """
         Provides a simple interface to fetch RDW data using the RDW API """,
-
-    'author': "TOSC - Hayo Bos",
-    'website': "http://www.tosc.nl",
-
-    # Categories can be used to filter modules in modules listing
-    # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
-    # for the full list
-    'category': 'Report',
-    'version': '1.0',
-    'installable': True,
-    # any module necessary for this one to work correctly
-    'depends': ['ps_fleet'],
-
-    # always loaded
-    'data': [
-        'security/security.xml',
-        'security/ir.model.access.csv',
-        'views/fleet_view.xml',
-    ],
-    # only loaded in demonstration mode
-    'demo': [
-        # 'demo/demo.xml',
-    ],
-    'qweb': [
-        # "static/src/xml/qweb.xml",
+    "author": "The Open Source Company",
+    "website": "http://www.tosc.nl",
+    "license": "AGPL-3",
+    "category": "Report",
+    "version": "14.0.1.0.0",
+    "installable": True,
+    "depends": ["ps_fleet"],
+    "data": [
+        "security/security.xml",
+        "security/ir.model.access.csv",
+        "views/fleet_view.xml",
     ],
 }

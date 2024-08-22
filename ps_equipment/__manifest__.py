@@ -1,20 +1,19 @@
-# -*- coding: utf-8 -*-
-
 {
-    'name': 'Professional Services - Equipments addon',
-    'version': '1.0',
-    'author'  : 'TOSC - Willem Hulshof',
-    'website' : 'http://www.tosc.nl',
-    'category': 'Maintenance',
-    'description': """Restricting Menu Visibility""",
-    'depends': ['hr_maintenance','data_time_tracker'],
-    'summary': 'Equipments, Assets, Internal Hardware, Allocation Tracking',
-    'data': [
-        'security/security.xml',
-        'views/maintenance_view.xml',
-        'views/maintenance_equipment_view.xml'
+    "name": "Professional Services - Equipments addon",
+    "version": "14.0.1.0.0",
+    "author": "The Open Source Company",
+    "website": "http://www.tosc.nl",
+    "category": "Maintenance",
+    "depends": ["hr_maintenance"],
+    "summary": "Equipments, Assets, Internal Hardware, Allocation Tracking",
+    "data": [
+        "security/security.xml",
+        "views/maintenance_equipment.xml",
+        "views/maintenance_equipment_warranty_category.xml",
+        "views/menu.xml",
+        "security/ir.model.access.csv",
     ],
-
-    'installable': True,
-    'application': True,
+    "license": "AGPL-3",
+    "installable": True,
+    "application": True,
 }

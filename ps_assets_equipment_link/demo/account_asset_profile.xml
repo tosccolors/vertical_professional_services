@@ -1,0 +1,11 @@
+<odoo>
+    <record id="demo_asset_profile" model="account.asset.profile">
+        <field name="name">Demo asset profile</field>
+        <field name="journal_id" search="[('type', '=', 'general')]" />
+        <field name="account_asset_id" search="[]" />
+        <field name="account_depreciation_id" search="[]" />
+        <field name="account_expense_depreciation_id" search="[]" />
+        <field name="has_equipments" eval="True" />
+        <field name="equipment_category_id" ref="demo_equipment_category" />
+    </record>
+</odoo>
