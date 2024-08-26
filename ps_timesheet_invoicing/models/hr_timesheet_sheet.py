@@ -133,36 +133,25 @@ class HrTimesheetSheet(models.Model):
         return domain
 
     def _get_vehicle(self):
-        vehicle = False
+        vehicle = self.env["fleet.vehicle"]
         if self.employee_id:
             user = self.employee_id.user_id or False
             if user:
-                dtt_vehicle = (
-                    self.env["data.time.tracker"]
+                vehicle = (
+                    self.env["fleet.vehicle.driver"]
                     .sudo()
                     .search(
                         [
-                            ("model", "=", "fleet.vehicle"),
-                            ("relation_model", "=", "res.partner"),
-                            ("relation_ref", "=", user.partner_id.id),
-                            ("date_from", "<", self.date_start),
-                            ("date_to", ">=", self.date_end),
+                            ("driver_id", "=", user.partner_id.id),
+                            ("date_start", "<=", self.date_start),
+                            "|",
+                            ("date_end", "=", False),
+                            # we don't enforce that the car lease covers the whole week
+                            ("date_end", ">=", self.date_start),
                         ],
                         limit=1,
                     )
-                )
-                if dtt_vehicle:
-                    vehicle = (
-                        self.env["fleet.vehicle"]
-                        .sudo()
-                        .search([("id", "=", dtt_vehicle.model_ref)], limit=1)
-                    )
-                else:
-                    vehicle = (
-                        self.env["fleet.vehicle"]
-                        .sudo()
-                        .search([("driver_id", "=", user.partner_id.id)], limit=1)
-                    )
+                ).mapped("vehicle_id")
         return vehicle
 
     def _get_latest_mileage(self):

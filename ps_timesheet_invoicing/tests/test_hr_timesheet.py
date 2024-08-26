@@ -2,6 +2,8 @@ from odoo import exceptions
 from odoo.tests.common import Form, TransactionCase
 from odoo.tools.misc import mute_logger
 
+from odoo.addons.ps_timesheet_invoicing.hooks import _init_fleet_vehicle_driver
+
 
 class TestHrTimesheet(TransactionCase):
     def setUp(self):
@@ -12,6 +14,7 @@ class TestHrTimesheet(TransactionCase):
         )
         self.env.company.timesheet_sheet_review_policy = "timesheet_manager"
         self.user = self.env.ref("base.user_demo")
+        # demo user by default has too much permissions for this test to be sensible
         self.user.write(
             {
                 "groups_id": [
@@ -23,12 +26,27 @@ class TestHrTimesheet(TransactionCase):
                 ]
             }
         )
+        _init_fleet_vehicle_driver(self.env.cr)
+        self.env["fleet.vehicle"].search([]).fleet_vehicle_driver_ids.unlink()
+        self.env["fleet.vehicle"].search([], limit=1).write(
+            {
+                "fleet_vehicle_driver_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "driver_id": self.user.partner_id.id,
+                            "date_start": "2020-01-06",
+                        },
+                    ),
+                ],
+            }
+        )
 
     def test_timesheet(self):
         """Test creating and submitting timesheets"""
         task = self.project.task_ids[:1]
         task.standard = True
-        # demo user by default has too much permissions for this test to be sensible
         self.project.allowed_internal_user_ids += self.user
         sheet = self.env["hr_timesheet.sheet"].with_user(self.user).create({})
         sheet.add_line_project_id = self.project
