@@ -18,6 +18,7 @@
         "ps_calendar",
         "account_invoice_import",
         "account_move_tier_validation",
+        "account_invoice_merge",
     ],
     "data": [
         "report/report_layout.xml",
