@@ -5,3 +5,4 @@ from . import project_project
 from . import ps_planning_line
 from . import ps_contracted_line
 from . import ps_planning_billing_report
+from . import ps_time_line_planning_report

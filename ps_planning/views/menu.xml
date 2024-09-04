@@ -42,4 +42,10 @@
         action="action_ps_planning_billing_report"
         sequence="130"
     />
+    <menuitem
+        id="menu_ps_time_line_planning_report"
+        parent="planning_root"
+        action="action_ps_time_line_planning_report"
+        sequence="140"
+    />
 </odoo>

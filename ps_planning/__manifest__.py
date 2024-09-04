@@ -21,6 +21,7 @@
         "views/ps_contracted_line.xml",
         "views/ps_planning_line.xml",
         "views/ps_planning_billing_report.xml",
+        "views/ps_time_line_planning_report.xml",
         "views/templates.xml",
         "wizards/ps_planning_wizard.xml",
         "wizards/ps_planning_report_wizard.xml",
