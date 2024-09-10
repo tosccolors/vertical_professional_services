@@ -1,0 +1,74 @@
+<odoo>
+    <record id="view_ps_contracted_line_tree" model="ir.ui.view">
+        <field name="model">ps.contracted.line</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field
+                    name="project_id"
+                    invisible="context.get('default_project_id')"
+                    options="{'no_create': true}"
+                />
+                <field name="task_id" options="{'no_create': true}" />
+                <field name="product_id" options="{'no_create': true}" />
+                <field name="days" required="True" />
+                <field name="rate" required="True" />
+                <field name="value" required="True" />
+                <field name="date_from" required="True" />
+                <field name="date_to" required="True" />
+            </tree>
+        </field>
+    </record>
+    <record id="view_ps_contracted_line_search" model="ir.ui.view">
+        <field name="model">ps.contracted.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="project_id" />
+                <filter
+                    name="my"
+                    string="My projects"
+                    domain="[('project_id.user_id', '=', uid)]"
+                />
+                <filter
+                    name="with_period"
+                    string="With period"
+                    domain="[('range_id', '!=', False)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Project"
+                        name="group_project"
+                        context="{'group_by': 'project_id'}"
+                    />
+                    <filter
+                        string="Project manager"
+                        name="group_project_user"
+                        context="{'group_by': 'project_user_id'}"
+                    />
+                    <filter
+                        string="Customer"
+                        name="group_project_partner"
+                        context="{'group_by': 'project_partner_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="view_ps_contracted_line_pivot" model="ir.ui.view">
+        <field name="model">ps.contracted.line</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="value" type="measure" />
+                <field name="rate" type="measure" />
+                <field name="days" type="measure" />
+                <field name="project_id" type="row" />
+                <field name="range_id" type="col" />
+            </pivot>
+        </field>
+    </record>
+    <record id="action_ps_contracted_line" model="ir.actions.act_window">
+        <field name="name">Contract Overview</field>
+        <field name="res_model">ps.contracted.line</field>
+        <field name="view_mode">tree,pivot</field>
+        <field name="context">{'search_default_my': 1}</field>
+    </record>
+</odoo>
