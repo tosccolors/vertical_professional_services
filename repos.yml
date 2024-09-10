@@ -62,6 +62,11 @@ partner-contact:
     oca: https://github.com/OCA/partner-contact
   merges:
     - oca 14.0
+project:
+  remotes:
+    oca: https://github.com/OCA/project
+  merges:
+    - oca 14.0
 queue:
   remotes:
     oca: https://github.com/OCA/queue

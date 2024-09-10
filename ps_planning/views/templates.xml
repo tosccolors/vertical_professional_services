@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="assets_backend" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script
+                type="text/javascript"
+                src="/ps_planning/static/src/js/widget_x2many_2d_matrix.js"
+            />
+            <link
+                rel="stylesheet"
+                href="/ps_planning/static/src/css/widget_x2many_2d_matrix.css"
+            />
+        </xpath>
+    </template>
+</odoo>

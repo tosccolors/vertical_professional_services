@@ -1,0 +1,47 @@
+<odoo>
+    <record id="view_ps_planning_report_wizard_form" model="ir.ui.view">
+        <field name="model">ps.planning.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="project_ids" widget="many2many_tags" />
+                    <field name="reference_date" />
+                </group>
+                <footer>
+                    <button
+                        type="object"
+                        name="action_open_report"
+                        string="Open report"
+                        class="btn btn-primary"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="view_ps_planning_report_wizard_line_tree" model="ir.ui.view">
+        <field name="model">ps.planning.report.wizard.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="business_line" />
+                <field name="project_name" />
+                <field name="project_code" />
+                <field name="days_commercial_full_month" />
+                <field name="days_planned_full_month" />
+                <field name="days_planned_mtd" />
+                <field name="days_actual_mtd" />
+                <field name="days_actual_planned_mtd" />
+                <field name="days_actual_commercial_mtd" />
+                <field name="budget_utilization" />
+                <field name="actual_commercial_ytm" />
+                <field name="manager_name" />
+            </tree>
+        </field>
+    </record>
+    <record id="action_ps_planning_report_wizard" model="ir.actions.act_window">
+        <field name="name">PS Planning report</field>
+        <field name="res_model">ps.planning.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_ps_planning_report_wizard_form" />
+        <field name="target">new</field>
+    </record>
+</odoo>

@@ -1,0 +1,41 @@
+<odoo>
+    <record id="view_ps_time_line_planning_report_search" model="ir.ui.view">
+        <field name="model">ps.time.line.planning.report</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="project_id" />
+                <filter
+                    name="my"
+                    string="My projects"
+                    domain="[('project_id.user_id', '=', uid)]"
+                />
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Project"
+                        name="group_project"
+                        context="{'group_by': 'project_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="view_ps_time_line_planning_report_pivot" model="ir.ui.view">
+        <field name="model">ps.time.line.planning.report</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="hours_actual" type="measure" />
+                <field name="hours_planned" type="measure" />
+                <field name="hours_contracted" type="measure" />
+                <field name="project_id" type="row" />
+                <field name="employee_id" type="row" />
+                <field name="date" type="col" />
+            </pivot>
+        </field>
+    </record>
+    <record id="action_ps_time_line_planning_report" model="ir.actions.act_window">
+        <field name="name">PS Activity Analysis (Contracted / Planned / Actual)</field>
+        <field name="res_model">ps.time.line.planning.report</field>
+        <field name="view_mode">pivot</field>
+        <field name="context">{'search_default_my': 1}</field>
+    </record>
+</odoo>

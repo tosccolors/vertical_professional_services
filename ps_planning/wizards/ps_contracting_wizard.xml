@@ -1,0 +1,35 @@
+<odoo>
+    <record id="view_ps_contracting_wizard_form" model="ir.ui.view">
+        <field name="model">ps.contracting.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group col="4">
+                    <field name="project_id" options="{'no_create': true}" />
+                    <field
+                        name="product_ids"
+                        widget="many2many_tags"
+                        domain=""
+                        options="{'no_create': true}"
+                    />
+                    <field name="date_from" />
+                    <field name="date_to" />
+                </group>
+                <footer>
+                    <button
+                        type="object"
+                        name="action_open_ps_contracted_lines"
+                        string="Start contract entry"
+                        class="btn btn-primary"
+                    />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <record id="action_ps_contracting_wizard" model="ir.actions.act_window">
+        <field name="name">Contract Entry</field>
+        <field name="res_model">ps.contracting.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_ps_contracting_wizard_form" />
+        <field name="target">new</field>
+    </record>
+</odoo>
