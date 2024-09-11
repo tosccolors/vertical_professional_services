@@ -123,13 +123,12 @@ class TestPsPlanning(TransactionCase):
     def test_reports(self):
         self.test_contract_lines()
         self.test_planning_lines()
-        wizard = self.env["ps.planning.report.wizard"].create(
-            {
-                "project_ids": [(6, 0, self.project.ids)],
-            }
-        )
+        wizard = self.env["ps.planning.report.wizard"].create({})
         wizard.action_open_report()
         # TODO assert things
 
         self.env["ps.planning.billing.report"].search([])
+        # TODO assert things
+
+        self.env["ps.time.line.planning.report"].search([])
         # TODO assert things
