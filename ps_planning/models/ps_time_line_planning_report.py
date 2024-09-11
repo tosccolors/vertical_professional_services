@@ -3,7 +3,7 @@
 
 from psycopg2.extensions import AsIs
 
-from odoo import fields, models, tools
+from odoo import _, fields, models, tools
 
 
 class PsTimeLinePlanningReport(models.Model):
@@ -89,3 +89,10 @@ class PsTimeLinePlanningReport(models.Model):
         """,
             (AsIs(self._table),),
         )
+
+    def _read_group_resolve_many2one_fields(self, data, fields):
+        result = super()._read_group_resolve_many2one_fields(data, fields)
+        for record in data:
+            if record.get("employee_id") is False:
+                record["employee_id"] = (0, _("Contracted"))
+        return result
