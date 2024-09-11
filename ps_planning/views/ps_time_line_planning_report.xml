@@ -16,6 +16,7 @@
                         context="{'group_by': 'project_id'}"
                     />
                 </group>
+                <filter name="date" date="date" string="Date" />
             </search>
         </field>
     </record>
