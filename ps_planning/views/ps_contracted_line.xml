@@ -8,6 +8,7 @@
                     invisible="context.get('default_project_id')"
                     options="{'no_create': true}"
                 />
+                <field name="project_user_id" optional="hidden" />
                 <field name="task_id" options="{'no_create': true}" />
                 <field name="product_id" options="{'no_create': true}" />
                 <field name="days" required="True" />
