@@ -13,6 +13,7 @@
         "account_invoice_merge",
     ],
     "data": [
+        "data/decimal_precision.xml",
         "data/res_partner_relation_type.xml",
         "data/res_partner_category.xml",
         "views/res_partner_relation_all.xml",

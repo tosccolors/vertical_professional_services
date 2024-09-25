@@ -175,9 +175,6 @@
                                             <span
                                                 t-esc="analytic_invoice_id.period_id.calendar_name or analytic_invoice_id.period_id.name"
                                             />
-                                            <span
-                                                t-esc="analytic_invoice_id.period_id.date_start.strftime('%Y')"
-                                            />
                                         </t>
                                         <br />
                                         <br />
@@ -191,13 +188,8 @@
                         style="padding-left:85px;padding-right:15px;"
                         t-if="invoice_desc"
                     >
-                        <t
-                            t-if="not sale_inv and invoice_project and invoice_project.invoice_properties and
-                        invoice_project.invoice_properties.custom_layout"
-                        >
-                            <span
-                                t-field="invoice_project.invoice_properties.custom_header"
-                            />
+                        <t t-if="not sale_inv and o.ps_custom_layout">
+                            <span t-field="o.ps_custom_header" />
                             <br />
                             <br />
                         </t>
@@ -211,13 +203,8 @@
                         style="padding-left:85px;padding-right:15px;"
                         t-if="not invoice_desc and not sale_inv"
                     >
-                        <t
-                            t-if="invoice_project and invoice_project.invoice_properties and
-                        invoice_project.invoice_properties.custom_layout"
-                        >
-                            <span
-                                t-field="invoice_project.invoice_properties.custom_header"
-                            />
+                        <t t-if="o.ps_custom_layout">
+                            <span t-field="o.ps_custom_header" />
                             <br />
                             <br />
                         </t>
@@ -430,12 +417,9 @@
                     <div style="page-break-inside:avoid;">
                         <span
                             style="padding-left:85px;padding-right:15px;padding-top:30px;"
-                            t-if="not sale_inv and invoice_project and invoice_project.invoice_properties and
-                        invoice_project.invoice_properties.custom_layout"
+                            t-if="not sale_inv and o.ps_custom_layout"
                         >
-                            <span
-                                t-field="invoice_project.invoice_properties.custom_footer"
-                            />
+                            <span t-field="o.ps_custom_footer" />
                         </span>
                         <span t-if="o.invoice_payment_term_id">
                             <br />

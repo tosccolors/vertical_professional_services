@@ -28,6 +28,11 @@ class AccountMove(models.Model):
         ondelete="restrict",
         copy=False,
     )
+    create_wip_entry = fields.Boolean(
+        default=True,
+        help="If you uncheck this, no accounting entries will be created to move "
+        "the amount into the invoicing period",
+    )
 
     def compute_target_invoice_amount(self):
         try:
@@ -92,7 +97,10 @@ class AccountMove(models.Model):
                 period_date = ps_invoice.period_id.date_start
                 cur_date = datetime.now().date()
                 inv_date = invoice.date or invoice.invoice_date or cur_date
-                if inv_date.timetuple()[:2] != period_date.timetuple()[:2]:
+                if (
+                    inv_date.timetuple()[:2] != period_date.timetuple()[:2]
+                    and invoice.create_wip_entry
+                ):
                     invoice.action_wip_move_create()
 
                 if ps_invoice.invoice_properties.fixed_amount:

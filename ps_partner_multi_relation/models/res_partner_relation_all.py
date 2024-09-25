@@ -1,8 +1,6 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 from odoo import fields, models
 
-import odoo.addons.decimal_precision as dp
-
 
 class ResPartnerRelationAll(models.AbstractModel):
     """Abstract model to show each relation from two sides."""
@@ -11,7 +9,7 @@ class ResPartnerRelationAll(models.AbstractModel):
 
     distribution_key = fields.Float(
         string="Percentage Distribution Key",
-        digits=dp.get_precision("Product Unit of Measure"),
+        digits="Distribution key",
     )
     invoicing_property_id = fields.Many2one(
         comodel_name="project.invoicing.properties", string="Invoicing Property"

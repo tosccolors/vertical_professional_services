@@ -1,15 +1,13 @@
 from odoo import _, api, fields, models
 from odoo.exceptions import ValidationError
 
-import odoo.addons.decimal_precision as dp
-
 
 class ResPartnerRelation(models.Model):
     _inherit = "res.partner.relation"
 
     distribution_key = fields.Float(
         string="Percentage Distribution Key",
-        digits=dp.get_precision("Product Unit of Measure"),
+        digits="Distribution key",
     )
 
     invoicing_property_id = fields.Many2one(

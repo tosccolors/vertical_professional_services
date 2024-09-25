@@ -1,6 +1,6 @@
 # Copyright 2014-2023 The Open Source Company (www.tosc.nl).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-from odoo import fields, models
+from odoo import api, fields, models
 from odoo.tools import is_html_empty
 
 
@@ -8,6 +8,9 @@ class AccountMove(models.Model):
     _inherit = "account.move"
 
     invoice_description = fields.Html("Description")
+    ps_custom_layout = fields.Boolean("Add Custom Header/Footer")
+    ps_custom_header = fields.Text("Custom Header")
+    ps_custom_footer = fields.Text("Custom Footer")
 
     def group_by_analytic_acc(self, data_type, uom_hrs=False):
         self.ensure_one()
@@ -97,3 +100,15 @@ class AccountMove(models.Model):
             ]
         )
         return bank_accs
+
+    @api.model
+    def _get_first_invoice_fields(self, invoice):
+        result = super()._get_first_invoice_fields(invoice)
+        for field in (
+            "invoice_description",
+            "ps_custom_layout",
+            "ps_custom_header",
+            "ps_custom_footer",
+        ):
+            result[field] = invoice[field]
+        return result

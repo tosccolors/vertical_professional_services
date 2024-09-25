@@ -126,3 +126,102 @@ class TestMisc(TransactionCase):
         self.env["status.time.report"].with_user(
             self.env.ref("base.user_admin")
         ).search([]).read([])
+
+    def test_vehicle_driver(self):
+        """Test the constraints of vehicle driver records"""
+        vehicle1 = self.env.ref("fleet.vehicle_1")
+        vehicle1.fleet_vehicle_driver_ids.unlink()
+        vehicle2 = vehicle1.copy()
+        driver1 = self.env["res.partner"].create({"name": "driver 1"})
+
+        vehicle1.write(
+            {
+                "fleet_vehicle_driver_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "driver_id": driver1.id,
+                            "date_start": "2024-07-29",
+                        },
+                    )
+                ],
+            }
+        )
+        with self.assertRaisesRegex(
+            ValidationError, "open-ended"
+        ), self.env.cr.savepoint():
+            vehicle1.write(
+                {
+                    "fleet_vehicle_driver_ids": [
+                        (
+                            0,
+                            0,
+                            {
+                                "driver_id": driver1.id,
+                                "date_start": "2024-08-05",
+                            },
+                        )
+                    ],
+                }
+            )
+        with self.assertRaisesRegex(
+            ValidationError, "overlapping"
+        ), self.env.cr.savepoint():
+            vehicle1.write(
+                {
+                    "fleet_vehicle_driver_ids": [
+                        (
+                            0,
+                            0,
+                            {
+                                "driver_id": driver1.id,
+                                "date_start": "2024-08-05",
+                                "date_end": "2024-08-12",
+                            },
+                        )
+                    ],
+                }
+            )
+        with self.assertRaisesRegex(
+            ValidationError, "multiple"
+        ), self.env.cr.savepoint():
+            vehicle2.write(
+                {
+                    "fleet_vehicle_driver_ids": [
+                        (
+                            0,
+                            0,
+                            {
+                                "driver_id": driver1.id,
+                                "date_start": "2024-07-22",
+                                "date_end": "2024-08-05",
+                            },
+                        )
+                    ],
+                }
+            )
+        vehicle2.write(
+            {
+                "fleet_vehicle_driver_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "driver_id": driver1.id,
+                            "date_start": "2024-07-22",
+                            "date_end": "2024-07-29",
+                        },
+                    )
+                ],
+            }
+        )
+        with self.assertRaisesRegex(ValidationError, "Monday"):
+            vehicle2.fleet_vehicle_driver_ids.date_start = "2024-07-21"
+        self.assertEqual(
+            self.env["fleet.vehicle"].search([("driver_id", "=", driver1.id)]),
+            vehicle1,
+        )
+        vehicle1.write({"driver_id": False})
+        self.assertEqual(len(vehicle1.fleet_vehicle_driver_ids), 1)
+        self.assertFalse(vehicle1.driver_id)

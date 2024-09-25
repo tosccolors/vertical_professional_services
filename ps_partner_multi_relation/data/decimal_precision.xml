@@ -1,0 +1,6 @@
+<odoo noupdate="1">
+    <record forcecreate="True" id="precision" model="decimal.precision">
+        <field name="name">Distribution key</field>
+        <field name="digits">9</field>
+    </record>
+</odoo>
