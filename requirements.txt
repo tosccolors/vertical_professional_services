@@ -1,2 +1,2 @@
 phonenumbers
-pypdf
+pypdf>=3.1.0
