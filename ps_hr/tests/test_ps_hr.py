@@ -14,6 +14,7 @@ class TestPsHr(TransactionCase):
                     "street": "street",
                     "city": "city",
                     "zip": "zip",
+                    "klippa_user": "klippa_user",
                 }
             )
         )
