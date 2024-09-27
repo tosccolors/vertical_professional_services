@@ -16,6 +16,7 @@
     ],
     "data": [
         "data/date_range_type.xml",
+        "security/ps_planning.xml",
         "security/ir.model.access.csv",
         "views/project_project.xml",
         "views/ps_contracted_line.xml",

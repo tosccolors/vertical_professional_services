@@ -1,0 +1,77 @@
+<odoo noupdate="1">
+    <record id="category" model="ir.module.category">
+        <field name="name">Contracting &amp; Planning</field>
+    </record>
+    <record id="group_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="category" />
+    </record>
+    <record id="group_admin" model="res.groups">
+        <field name="name">Administrator</field>
+        <field name="implied_ids" eval="[(4, ref('group_user'))]" />
+        <field name="category_id" ref="category" />
+        <field name="users" eval="[(4, ref('base.user_admin'))]" />
+    </record>
+    <record id="rule_ps_contracted_line_user" model="ir.rule">
+        <field name="name">C&amp;P users can only edit their own records</field>
+        <field name="model_id" ref="model_ps_contracted_line" />
+        <field name="groups" eval="[(4, ref('group_user'))]" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+        <field name="perm_read" eval="False" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+    <record id="rule_ps_planning_line_user" model="ir.rule">
+        <field name="name">C&amp;P users can only edit their own records</field>
+        <field name="model_id" ref="model_ps_planning_line" />
+        <field name="groups" eval="[(4, ref('group_user'))]" />
+        <field name="domain_force">[('create_uid', '=', user.id)]</field>
+        <field name="perm_read" eval="False" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+    <record id="rule_ps_planning_billing_report_user" model="ir.rule">
+        <field
+            name="name"
+        >C&amp;P users can only see their projects' billing report</field>
+        <field name="model_id" ref="model_ps_planning_billing_report" />
+        <field name="groups" eval="[(4, ref('group_user'))]" />
+        <field name="domain_force">[('project_id.user_id', '=', user.id)]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+    <record id="rule_ps_contracted_line_admin" model="ir.rule">
+        <field name="name">C&amp;P admins edit all records</field>
+        <field name="model_id" ref="model_ps_contracted_line" />
+        <field name="groups" eval="[(4, ref('group_admin'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="False" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+    <record id="rule_ps_planning_line_admin" model="ir.rule">
+        <field name="name">C&amp;P admins can edit all records</field>
+        <field name="model_id" ref="model_ps_planning_line" />
+        <field name="groups" eval="[(4, ref('group_admin'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="False" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+    <record id="rule_ps_planning_billing_report_admin" model="ir.rule">
+        <field name="name">C&amp;P admins can see all projects' billing report</field>
+        <field name="model_id" ref="model_ps_planning_billing_report" />
+        <field name="groups" eval="[(4, ref('group_admin'))]" />
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_read" eval="True" />
+        <field name="perm_write" eval="True" />
+        <field name="perm_create" eval="True" />
+        <field name="perm_unlink" eval="True" />
+    </record>
+</odoo>
