@@ -15,9 +15,9 @@ class PsTimeLinePlanningReport(models.Model):
     task_id = fields.Many2one("project.task")
     employee_id = fields.Many2one("hr.employee")
     date = fields.Date()
-    hours_actual = fields.Float()
-    hours_planned = fields.Float()
-    hours_contracted = fields.Float()
+    days_actual = fields.Float()
+    days_planned = fields.Float()
+    days_contracted = fields.Float()
 
     def init(self):
         tools.drop_view_if_exists(self._cr, self._table)
@@ -30,9 +30,9 @@ class PsTimeLinePlanningReport(models.Model):
                 task_id,
                 employee_id,
                 date,
-                unit_amount as hours_actual,
-                0 as hours_planned,
-                0 as hours_contracted
+                unit_amount / 8 as days_actual,
+                0 as days_planned,
+                0 as days_contracted
             FROM ps_time_line
             UNION (
             WITH
@@ -58,9 +58,9 @@ class PsTimeLinePlanningReport(models.Model):
                 task_id,
                 employee_id,
                 work_days.month_day,
-                0 as hours_actual,
-                0 as hours_planned,
-                days * 8 / work_day_count.work_days as hours_contracted
+                0 as days_actual,
+                0 as days_planned,
+                days / work_day_count.work_days as days_contracted
             FROM ps_planning_line, work_days, work_day_count
             WHERE
             ps_planning_line.range_id=work_days.range_id
@@ -75,9 +75,9 @@ class PsTimeLinePlanningReport(models.Model):
                 task_id,
                 employee_id,
                 work_days.month_day,
-                0 as hours_actual,
-                days * 8 / work_day_count.work_days as hours_planned,
-                0 as hours_contracted
+                0 as days_actual,
+                days / work_day_count.work_days as days_planned,
+                0 as days_contracted
             FROM ps_planning_line, work_days, work_day_count
             WHERE
             ps_planning_line.range_id=work_days.range_id
