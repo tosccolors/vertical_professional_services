@@ -53,7 +53,7 @@
                 <field name="days_actual_mtd" />
                 <field name="days_actual_planned_mtd" />
                 <field name="days_actual_commercial_mtd" />
-                <field name="budget_utilization" />
+                <field name="budget_utilization" widget="percentage" />
                 <field name="actual_commercial_ytm" />
                 <field name="manager_name" />
             </tree>

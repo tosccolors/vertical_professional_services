@@ -111,11 +111,12 @@ class PsPlanningReportWizard(models.TransientModel):
             i += 1
         return {
             "type": "ir.actions.act_window",
-            "name": _("Project report"),
+            "name": _("PS Planning report"),
             "res_model": Line._name,
             "domain": [("wizard_id", "=", self.id)],
             "views": [(False, "list")],
             "context": {"search_default_my": 1},
+            "target": "main",
         }
 
 
@@ -132,15 +133,15 @@ class PsPlanningReportWizardLine(models.TransientModel):
     project_id = fields.Many2one("project.project")
     project_name = fields.Char()
     project_code = fields.Char()
-    days_commercial_full_month = fields.Float()
-    days_planned_full_month = fields.Float()
-    days_planned_mtd = fields.Float()
-    days_actual_mtd = fields.Float()
-    days_actual_planned_mtd = fields.Float()
-    days_actual_commercial_mtd = fields.Float()
-    budget_utilization = fields.Float()
-    actual_commercial_ytm = fields.Float()
-    manager_name = fields.Char()
+    days_commercial_full_month = fields.Integer("Full Month Commercial MD")
+    days_planned_full_month = fields.Integer("Full Month Planned MD")
+    days_planned_mtd = fields.Integer("MTD Planned MD")
+    days_actual_mtd = fields.Integer("MTD Actual MD")
+    days_actual_planned_mtd = fields.Integer("MTD Actual - Planned MD")
+    days_actual_commercial_mtd = fields.Integer("MTD Actual - Commercial MD")
+    budget_utilization = fields.Integer("KPI % MTD")
+    actual_commercial_ytm = fields.Integer("Actual Commercial YTM")
+    manager_name = fields.Char("Project Manager")
 
     @api.model
     def _fields_view_get(
