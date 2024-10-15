@@ -805,7 +805,7 @@
                 </div>
             </t>
         </template>
-        <template id="ps_account.report_invoice_ps_account">
+        <!--<template id="ps_account.report_invoice_ps_account">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
                     <t
@@ -816,6 +816,21 @@
                         t-call="ps_account.report_invoice_document_ps_account"
                         t-lang="lang"
                     />
+                </t>
+            </t>
+        </template>-->
+
+        <template id="account.report_invoice">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t
+                        t-set="lang"
+                        t-value="o.user_id.sudo().lang if o.move_type in ('in_invoice', 'in_refund') else o.partner_id.lang"
+                    />
+                    <t t-if="o._get_name_invoice_report() == 'ps_account.report_invoice_document_ps_account'"
+                        t-call="account.report_invoice_document_ps_account" t-lang="lang"/>
+                    <t t-else=""
+                        t-call="account.report_invoice_document" t-lang="lang"/>
                 </t>
             </t>
         </template>
