@@ -1,6 +1,8 @@
 # Copyright 2024 Hunki Enterprises BV
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl-3.0)
 
+import math
+
 from dateutil.relativedelta import SA, SU, relativedelta
 
 from odoo import _, api, fields, models, tools
@@ -41,7 +43,6 @@ class PsContractedLine(models.Model):
     range_id = fields.Many2one("date.range", copy=False)
     rate = fields.Monetary(currency_field="currency_id")
     value = fields.Monetary(currency_field="currency_id")
-    # TODO compute from project.partner_id? company?
     currency_id = fields.Many2one(
         "res.currency", default=lambda self: self.env.company.currency_id
     )
@@ -136,18 +137,25 @@ class PsContractedLine(models.Model):
             if this.task_id and not this.task_id & this.project_id.task_ids:
                 raise UserError(_("Select a task from the chosen project"))
 
+    def onchange(self, values, field_name, field_onchange):
+        """Avoid recomutation loop when setting value, which sets rate, recomputing value"""
+        result = super().onchange(values, field_name, field_onchange)
+        if field_name == "value":
+            result.get("value", {}).pop("value", False)
+        return result
+
     @api.onchange("days", "rate")
     def _onchange_days(self):
         if self.days and self.rate:
-            self.value = self.days * self.rate
+            self.value = math.ceil(self.days * self.rate)
         elif self.days and self.value:
-            self.rate = self.value / self.days
+            self.rate = math.ceil(self.value / self.days)
         elif self.rate and self.value:
-            self.days = self.value / self.rate
+            self.days = math.ceil(self.value / self.rate)
 
     @api.onchange("value")
     def _onchange_value(self):
-        self.rate = (self.value / self.days) if self.days else 0
+        self.rate = math.ceil(self.value / self.days) if self.days else 0
 
     @api.onchange("project_id")
     def _onchange_project_id(self):
