@@ -111,7 +111,7 @@ class PsPlanningReportWizard(models.TransientModel):
             i += 1
         return {
             "type": "ir.actions.act_window",
-            "name": _("PS Planning report"),
+            "name": _("Planning report"),
             "res_model": Line._name,
             "domain": [("wizard_id", "=", self.id)],
             "views": [(False, "list")],

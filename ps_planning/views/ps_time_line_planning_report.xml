@@ -34,7 +34,7 @@
         </field>
     </record>
     <record id="action_ps_time_line_planning_report" model="ir.actions.act_window">
-        <field name="name">PS Activity Analysis (Contracted / Planned / Actual)</field>
+        <field name="name">Activity Analysis (Contracted / Planned / Actual)</field>
         <field name="res_model">ps.time.line.planning.report</field>
         <field name="view_mode">pivot</field>
         <field name="context">{'search_default_my': 1}</field>

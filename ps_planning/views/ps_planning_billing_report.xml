@@ -64,7 +64,7 @@
         </field>
     </record>
     <record id="action_ps_planning_billing_report" model="ir.actions.act_window">
-        <field name="name">PS Billing report</field>
+        <field name="name">Billing report</field>
         <field name="res_model">ps.planning.billing.report</field>
         <field name="view_mode">tree,pivot</field>
         <field name="context">{'search_default_my': 1}</field>
