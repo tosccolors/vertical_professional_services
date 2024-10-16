@@ -9,6 +9,17 @@
                     string="My projects"
                     domain="[('project_id.user_id', '=', uid)]"
                 />
+                <separator />
+                <filter
+                    name="invoicing_time_material"
+                    string="Time &amp; Material Projects"
+                    domain="[('project_id.invoice_properties.actual_time_spent', '=', True)]"
+                />
+                <filter
+                    name="invoicing_fixed"
+                    string="Fixed Price Projects"
+                    domain="[('project_id.invoice_properties.fixed_amount', '=', True)]"
+                />
                 <group expand="0" string="Group By">
                     <filter
                         string="Project"
