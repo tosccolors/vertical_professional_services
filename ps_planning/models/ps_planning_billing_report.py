@@ -8,6 +8,7 @@ from odoo import fields, models, tools
 
 class PsPlanningBillingReport(models.Model):
     _name = "ps.planning.billing.report"
+    _inherit = "ps.planning.department.mixin"
     _description = "Billing report"
     _order = "project_id, range_id"
     _auto = False

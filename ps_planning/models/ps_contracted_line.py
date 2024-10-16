@@ -9,6 +9,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class PsContractedLine(models.Model):
     _name = "ps.contracted.line"
+    _inherit = "ps.planning.department.mixin"
     _description = "Contracted entry"
     _order = "project_id, task_id, product_id"
 

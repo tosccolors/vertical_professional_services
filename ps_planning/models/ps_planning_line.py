@@ -6,6 +6,7 @@ from odoo import fields, models
 
 class PsPlanningLine(models.Model):
     _name = "ps.planning.line"
+    _inherit = "ps.planning.department.mixin"
     _description = "Planning entry"
     _order = "project_id, task_id, employee_id, range_id"
 

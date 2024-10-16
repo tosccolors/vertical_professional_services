@@ -1,11 +1,8 @@
 # Copyright 2024 Hunki Enterprises BV
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl-3.0)
 
-import json
 
-from lxml import etree
-
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 
 
 class PsPlanningReportWizard(models.TransientModel):
@@ -125,6 +122,7 @@ class PsPlanningReportWizard(models.TransientModel):
 
 class PsPlanningReportWizardLine(models.TransientModel):
     _name = "ps.planning.report.wizard.line"
+    _inherit = "ps.planning.department.mixin"
     _description = "PS planning reporting wizard line"
     _rec_name = "project_name"
     _order = "sequence"
@@ -145,32 +143,3 @@ class PsPlanningReportWizardLine(models.TransientModel):
     budget_utilization = fields.Integer("KPI % MTD")
     actual_commercial_ytm = fields.Integer("Actual Commercial YTM")
     manager_name = fields.Char("Project Manager")
-
-    @api.model
-    def _fields_view_get(
-        self, view_id=None, view_type="form", toolbar=False, submenu=False
-    ):
-        result = super()._fields_view_get(
-            view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu
-        )
-        if view_type == "search":
-            arch = etree.fromstring(result["arch"])
-            for node in arch.xpath("//search"):
-                etree.SubElement(
-                    node,
-                    "separator",
-                )
-                for department in self.env["hr.department"].search([]):
-                    etree.SubElement(
-                        node,
-                        "filter",
-                        attrib={
-                            "string": department.name,
-                            "domain": json.dumps(
-                                [("department_id", "=", department.id)]
-                            ),
-                        },
-                    )
-
-            result["arch"] = etree.tostring(arch)
-        return result
