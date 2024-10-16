@@ -73,7 +73,6 @@ class PsPlanningReportWizard(models.TransientModel):
                         ]
                     ).mapped(lambda x: x.unit_amount / 8)
                 ),
-                "budget_utilization": 42,
                 "actual_commercial_ytm": sum(
                     TimeLine.search(
                         [
@@ -106,6 +105,10 @@ class PsPlanningReportWizard(models.TransientModel):
                 - vals["days_planned_full_month"] * mtd_fraction,
                 days_actual_commercial_mtd=vals["days_actual_mtd"]
                 - vals["days_commercial_full_month"] * mtd_fraction,
+                budget_utilization=vals["days_actual_mtd"]
+                / vals["days_commercial_full_month"]
+                if vals["days_commercial_full_month"]
+                else 1,
             )
             Line.sudo().create(vals)
             i += 1
