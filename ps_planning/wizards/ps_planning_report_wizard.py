@@ -3,6 +3,7 @@
 
 
 from odoo import _, fields, models
+from odoo.tools.misc import format_date
 
 
 class PsPlanningReportWizard(models.TransientModel):
@@ -111,7 +112,8 @@ class PsPlanningReportWizard(models.TransientModel):
             i += 1
         return {
             "type": "ir.actions.act_window",
-            "name": _("Planning report"),
+            "name": _("Planning report %s")
+            % format_date(self.env, self.reference_date),
             "res_model": Line._name,
             "domain": [("wizard_id", "=", self.id)],
             "views": [(False, "list")],
