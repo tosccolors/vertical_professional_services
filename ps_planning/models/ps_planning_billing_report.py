@@ -15,7 +15,7 @@ class PsPlanningBillingReport(models.Model):
     project_id = fields.Many2one("project.project")
     project_user_id = fields.Many2one("res.users")
     project_partner_id = fields.Many2one("res.partner")
-    range_id = fields.Many2one("date.range")
+    range_id = fields.Many2one("date.range", string="Period")
     contracted_days = fields.Float()
     contracted_value = fields.Float()
     planned_days = fields.Float()

@@ -15,7 +15,7 @@ class PsPlanningLine(models.Model):
         required=True,
     )
     state = fields.Selection([("draft", "Draft"), ("final", "Final")], default="draft")
-    range_id = fields.Many2one("date.range", required=True)
+    range_id = fields.Many2one("date.range", string="Period", required=True)
     task_id = fields.Many2one("project.task", required=True)
     product_id = fields.Many2one("product.product", required=True)
     employee_id = fields.Many2one("hr.employee")
