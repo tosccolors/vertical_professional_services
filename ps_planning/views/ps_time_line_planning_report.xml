@@ -16,6 +16,7 @@
                         context="{'group_by': 'project_id'}"
                     />
                 </group>
+                <filter name="date" date="date" string="Date" />
             </search>
         </field>
     </record>
@@ -23,9 +24,9 @@
         <field name="model">ps.time.line.planning.report</field>
         <field name="arch" type="xml">
             <pivot>
-                <field name="hours_actual" type="measure" />
-                <field name="hours_planned" type="measure" />
-                <field name="hours_contracted" type="measure" />
+                <field name="days_actual" type="measure" />
+                <field name="days_planned" type="measure" />
+                <field name="days_contracted" type="measure" />
                 <field name="project_id" type="row" />
                 <field name="employee_id" type="row" />
                 <field name="date" type="col" />
