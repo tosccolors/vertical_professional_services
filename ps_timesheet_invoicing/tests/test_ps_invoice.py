@@ -31,6 +31,13 @@ class TestPsInvoiceBase(TransactionCase):
 
 class TestPsInvoice(TestPsInvoiceBase):
     def _create_ps_invoice(self, generate=True):
+        self.partner_fpos = self.env["account.fiscal.position"].create(
+            {
+                "name": "automatically assigned",
+                "auto_apply": True,
+                "country_id": self.project.partner_id.country_id.id,
+            }
+        )
         self.ps_line += self.env.ref(
             "ps_timesheet_invoicing.time_line_demo_user_2023_12_18_mileage"
         )
@@ -40,6 +47,7 @@ class TestPsInvoice(TestPsInvoiceBase):
         """Test invocing time lines"""
         ps_invoice = self.ps_invoice
         self.assertTrue(ps_invoice)
+        self.assertEqual(ps_invoice.fiscal_position_id, self.partner_fpos)
         ps_invoice.generate_invoice()
         self.assertTrue(ps_invoice.expense_line_ids)
         self.assertTrue(
