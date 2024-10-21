@@ -343,6 +343,10 @@ class TimeLine(models.Model):
                 ic_fr = task_user.ic_fee_rate
             if project_rate:
                 return fr or 0.0
+            if not task_user and not project_rate:
+                employee = self.env["res.users"].browse(uid)._get_related_employees()
+                if employee:
+                    fr = employee.fee_rate
         return [fr, ic_fr]
 
     def merge_timelines(self):
