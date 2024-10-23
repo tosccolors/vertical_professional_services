@@ -32,8 +32,13 @@ class PsPlanningBillingReport(models.Model):
             """
             CREATE view %s as
                 WITH xmlids AS (
-                    SELECT res_id as product_uom_hour from ir_model_data
-                    WHERE module='uom' and name='product_uom_hour'
+                    SELECT (
+                        SELECT res_id from ir_model_data
+                        WHERE module='uom' and name='product_uom_hour'
+                    ) as product_uom_hour, (
+                        SELECT res_id from ir_model_data
+                        WHERE module='uom' and name='product_uom_unit'
+                    ) as product_uom_unit
                 )
                 SELECT
                 min(ps_planning_line_planned.id) as id,
@@ -70,9 +75,52 @@ class PsPlanningBillingReport(models.Model):
                     and date >= date_range.date_start
                     and date <= date_range.date_end
                 ) as actual_days,
-                0 as actual_value,
-                0 as billed_days,
-                0 as billed_value
+                (
+                    select sum(amount)
+                    from ps_time_line
+                    where
+                    product_uom_id=(select product_uom_hour from xmlids)
+                    and project_id=ps_contracted_line.project_id
+                    and date >= date_range.date_start
+                    and date <= date_range.date_end
+                ) as actual_value,
+                CASE
+                WHEN project_invoicing_properties.actual_time_spent THEN (
+                    select sum(quantity) / 8
+                    from account_move_line
+                    where
+                    analytic_account_id=project_project.analytic_account_id
+                    and product_uom_id=(select product_uom_hour from xmlids)
+                    and date >= date_range.date_start
+                    and date <= date_range.date_end
+                )
+                WHEN project_invoicing_properties.fixed_amount THEN (
+                    select sum(days)
+                    from ps_planning_line
+                    where line_type='contracted'
+                    and project_id=ps_contracted_line.project_id
+                    and range_id=ps_planning_line_planned.range_id
+                )
+                ELSE 0
+                END as billed_days,
+                (
+                    select sum(price_total)
+                    from account_move_line
+                    where
+                    analytic_account_id=project_project.analytic_account_id
+                    and product_uom_id=(
+                        CASE
+                        WHEN project_invoicing_properties.actual_time_spent THEN (
+                            select product_uom_hour from xmlids
+                        )
+                        WHEN project_invoicing_properties.fixed_amount THEN (
+                            select product_uom_unit from xmlids
+                        )
+                        END
+                    )
+                    and date >= date_range.date_start
+                    and date <= date_range.date_end
+                ) as billed_value
                 FROM
                 ps_contracted_line
                 JOIN
@@ -83,13 +131,22 @@ class PsPlanningBillingReport(models.Model):
                 project_project
                 ON ps_contracted_line.project_id=project_project.id
                 JOIN
+                account_analytic_account
+                ON project_project.analytic_account_id=account_analytic_account.id
+                JOIN
+                project_invoicing_properties
+                ON project_project.invoice_properties=project_invoicing_properties.id
+                JOIN
                 date_range
                 ON ps_planning_line_planned.range_id=date_range.id
                 GROUP BY
                 ps_contracted_line.project_id,
                 ps_planning_line_planned.range_id,
                 date_range.date_start,
-                date_range.date_end
+                date_range.date_end,
+                project_invoicing_properties.actual_time_spent,
+                project_invoicing_properties.fixed_amount,
+                project_project.analytic_account_id
         """,
             (AsIs(self._table),),
         )
