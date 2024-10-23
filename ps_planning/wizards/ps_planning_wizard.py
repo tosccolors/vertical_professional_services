@@ -195,9 +195,6 @@ class PsPlanningWizard(models.TransientModel):
 
     def action_commit_planning(self):
         for line in self.line_ids:
-            if not line.days:
-                line.planning_line_id.unlink()
-                continue
             if line.planning_line_id:
                 line.planning_line_id.write({"days": line.days, "state": line.state})
             else:
