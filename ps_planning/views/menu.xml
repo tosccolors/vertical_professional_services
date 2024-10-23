@@ -3,7 +3,7 @@
         id="planning_root"
         name="Contracting &amp; Planning"
         parent="project.menu_main_pm"
-        groups="ps_timesheet_invoicing.group_planning_forecasting"
+        groups="group_user"
         sequence="80"
     />
     <menuitem

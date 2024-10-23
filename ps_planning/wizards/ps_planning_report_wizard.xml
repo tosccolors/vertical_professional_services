@@ -4,7 +4,6 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="project_ids" widget="many2many_tags" />
                     <field name="reference_date" />
                 </group>
                 <footer>
@@ -16,6 +15,29 @@
                     />
                 </footer>
             </form>
+        </field>
+    </record>
+    <record id="view_ps_planning_report_wizard_line_search" model="ir.ui.view">
+        <field name="model">ps.planning.report.wizard.line</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="project_id" />
+                <filter
+                    name="my"
+                    string="My projects"
+                    domain="[('project_id.user_id', '=', uid)]"
+                />
+                <filter
+                    name="invoicing_time_material"
+                    string="Time &amp; Material Projects"
+                    domain="[('project_id.invoice_properties.actual_time_spent', '=', True)]"
+                />
+                <filter
+                    name="invoicing_fixed"
+                    string="Fixed Price Projects"
+                    domain="[('project_id.invoice_properties.fixed_amount', '=', True)]"
+                />
+            </search>
         </field>
     </record>
     <record id="view_ps_planning_report_wizard_line_tree" model="ir.ui.view">
@@ -31,7 +53,7 @@
                 <field name="days_actual_mtd" />
                 <field name="days_actual_planned_mtd" />
                 <field name="days_actual_commercial_mtd" />
-                <field name="budget_utilization" />
+                <field name="budget_utilization" widget="percentage" />
                 <field name="actual_commercial_ytm" />
                 <field name="manager_name" />
             </tree>

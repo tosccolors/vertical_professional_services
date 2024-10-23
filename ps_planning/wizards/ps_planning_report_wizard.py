@@ -1,7 +1,11 @@
 # Copyright 2024 Hunki Enterprises BV
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl-3.0)
 
-from odoo import _, fields, models
+import json
+
+from lxml import etree
+
+from odoo import _, api, fields, models
 
 
 class PsPlanningReportWizard(models.TransientModel):
@@ -9,12 +13,6 @@ class PsPlanningReportWizard(models.TransientModel):
     _description = "PS planning reporting wizard"
     _rec_name = "reference_date"
 
-    project_ids = fields.Many2many(
-        "project.project",
-        string="Projects",
-        required=True,
-        domain=[("ps_contracted_line_ids", "!=", False)],
-    )
     reference_date = fields.Date(default=fields.Date.context_today, required=True)
 
     def action_open_report(self):
@@ -36,11 +34,15 @@ class PsPlanningReportWizard(models.TransientModel):
         mtd_fraction = _get_work_days(
             self.reference_date.replace(day=1), self.reference_date
         ) / _get_work_days(month.date_start, month.date_end)
-        for project in self.project_ids:
+        for project in self.env["project.project"].search(
+            [("ps_contracted_line_ids", "!=", False)]
+        ):
             vals = {
                 "wizard_id": self.id,
                 "sequence": i,
                 "business_line": project.department_id.name,
+                "department_id": project.department_id.id,
+                "project_id": project.id,
                 "project_name": project.name,
                 "project_code": project.code,
                 "days_commercial_full_month": sum(
@@ -109,10 +111,12 @@ class PsPlanningReportWizard(models.TransientModel):
             i += 1
         return {
             "type": "ir.actions.act_window",
-            "name": _("Project report"),
+            "name": _("PS Planning report"),
             "res_model": Line._name,
             "domain": [("wizard_id", "=", self.id)],
             "views": [(False, "list")],
+            "context": {"search_default_my": 1},
+            "target": "main",
         }
 
 
@@ -125,14 +129,45 @@ class PsPlanningReportWizardLine(models.TransientModel):
     wizard_id = fields.Many2one("ps.planning.report.wizard", required=True)
     sequence = fields.Integer()
     business_line = fields.Char()
+    department_id = fields.Many2one("hr.department")
+    project_id = fields.Many2one("project.project")
     project_name = fields.Char()
     project_code = fields.Char()
-    days_commercial_full_month = fields.Float()
-    days_planned_full_month = fields.Float()
-    days_planned_mtd = fields.Float()
-    days_actual_mtd = fields.Float()
-    days_actual_planned_mtd = fields.Float()
-    days_actual_commercial_mtd = fields.Float()
-    budget_utilization = fields.Float()
-    actual_commercial_ytm = fields.Float()
-    manager_name = fields.Char()
+    days_commercial_full_month = fields.Integer("Full Month Commercial MD")
+    days_planned_full_month = fields.Integer("Full Month Planned MD")
+    days_planned_mtd = fields.Integer("MTD Planned MD")
+    days_actual_mtd = fields.Integer("MTD Actual MD")
+    days_actual_planned_mtd = fields.Integer("MTD Actual - Planned MD")
+    days_actual_commercial_mtd = fields.Integer("MTD Actual - Commercial MD")
+    budget_utilization = fields.Integer("KPI % MTD")
+    actual_commercial_ytm = fields.Integer("Actual Commercial YTM")
+    manager_name = fields.Char("Project Manager")
+
+    @api.model
+    def _fields_view_get(
+        self, view_id=None, view_type="form", toolbar=False, submenu=False
+    ):
+        result = super()._fields_view_get(
+            view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu
+        )
+        if view_type == "search":
+            arch = etree.fromstring(result["arch"])
+            for node in arch.xpath("//search"):
+                etree.SubElement(
+                    node,
+                    "separator",
+                )
+                for department in self.env["hr.department"].search([]):
+                    etree.SubElement(
+                        node,
+                        "filter",
+                        attrib={
+                            "string": department.name,
+                            "domain": json.dumps(
+                                [("department_id", "=", department.id)]
+                            ),
+                        },
+                    )
+
+            result["arch"] = etree.tostring(arch)
+        return result

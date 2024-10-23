@@ -4,6 +4,7 @@
         <field name="arch" type="xml">
             <tree editable="bottom">
                 <field name="project_id" options="{'no_create': true}" />
+                <field name="project_user_id" optional="hidden" />
                 <field name="task_id" options="{'no_create': true}" />
                 <field name="product_id" options="{'no_create': true}" />
                 <field name="employee_id" options="{'no_create': true}" />
