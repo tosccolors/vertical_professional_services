@@ -6,7 +6,7 @@
     "author": "The Open Source Company",
     "website": "http://www.tosc.nl",
     "category": "Human Resources",
-    "version": "14.0.1.0.0",
+    "version": "14.0.1.0.1",
     "license": "AGPL-3",
     "depends": [
         "account_payment_mode",
