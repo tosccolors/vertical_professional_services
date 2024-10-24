@@ -8,6 +8,7 @@ from odoo import _, fields, models, tools
 
 class PsTimeLinePlanningReport(models.Model):
     _name = "ps.time.line.planning.report"
+    _inherit = "ps.planning.department.mixin"
     _description = "Activity Analysis (Contracted / Planned / Actual)"
     _auto = False
 
