@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "PS Account",
-    "version": "16.0.1.0.0",
+    "version": "16.0.1.0.1",
     "category": "accounts",
     "author": "The Open Source Company",
     "website": "http://www.tosc.nl",
@@ -27,6 +27,7 @@
         "views/account_move.xml",
         "views/project_invoicing_properties.xml",
         "views/templates.xml",
+        "views/res_company_view.xml",
         "report/account_invoice_report.xml",
     ],
     "demo": [
