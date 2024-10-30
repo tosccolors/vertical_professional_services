@@ -41,7 +41,7 @@ class PsContractedLine(models.Model):
     date_to = fields.Date()
     days = fields.Float()
     range_id = fields.Many2one("date.range", copy=False)
-    rate = fields.Monetary(currency_field="currency_id")
+    rate = fields.Monetary(currency_field="currency_id", group_operator="avg")
     value = fields.Monetary(currency_field="currency_id")
     currency_id = fields.Many2one(
         "res.currency", default=lambda self: self.env.company.currency_id
@@ -161,10 +161,10 @@ class PsContractedLine(models.Model):
     def _onchange_project_id(self):
         self.task_id = False
 
+    @api.model_create_multi
     def create(self, vals):
         result = super().create(vals)
-        if "date_from" in vals or "date_to" in vals:
-            result._create_or_assign_date_range()
+        result._create_or_assign_date_range()
         return result
 
     def write(self, vals):
