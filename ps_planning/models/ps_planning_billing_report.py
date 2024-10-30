@@ -54,7 +54,10 @@ class PsPlanningBillingReport(models.Model):
                     and range_id=ps_planning_line_planned.range_id
                 ) as contracted_days,
                 (
-                    select sum(ps_planning_line.days * ps_contracted_line_inner.rate)
+                    select sum(ps_planning_line.days * (
+                        ps_contracted_line_inner.value /
+                        ps_contracted_line_inner.days
+                    ))
                     from ps_planning_line
                     join ps_contracted_line ps_contracted_line_inner
                     on ps_planning_line.contracted_line_id=ps_contracted_line_inner.id
@@ -104,7 +107,7 @@ class PsPlanningBillingReport(models.Model):
                 ELSE 0
                 END as billed_days,
                 (
-                    select sum(price_total)
+                    select sum(price_subtotal)
                     from account_move_line
                     where
                     analytic_account_id=project_project.analytic_account_id
