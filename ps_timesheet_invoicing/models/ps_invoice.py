@@ -580,6 +580,7 @@ class PSInvoice(models.Model):
                     "quantity": quantity,
                     "product_uom_id": uom.id,
                     "user_id": user.id,
+                    "operating_unit_id": user and user._get_operating_unit_id().id,
                 }
             )
         )
@@ -628,6 +629,7 @@ class PSInvoice(models.Model):
                     "quantity": 1,
                     "price_unit": -sum(self.expense_line_ids.mapped("amount")),
                     "ps_analytic_line_ids": [(6, 0, self.expense_line_ids.ids)],
+                    "operating_unit_id": self.operating_unit_id.id,
                 }
             ]
             if sum(self.expense_line_ids.mapped("amount"))
