@@ -1,7 +1,6 @@
 # Copyright 2024 Hunki Enterprises BV
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl-3.0)
 
-import math
 
 from dateutil.relativedelta import SA, SU, relativedelta
 
@@ -147,15 +146,15 @@ class PsContractedLine(models.Model):
     @api.onchange("days", "rate")
     def _onchange_days(self):
         if self.days and self.rate:
-            self.value = math.ceil(self.days * self.rate)
+            self.value = self.days * self.rate
         elif self.days and self.value:
-            self.rate = math.ceil(self.value / self.days)
+            self.rate = self.value / self.days
         elif self.rate and self.value:
-            self.days = math.ceil(self.value / self.rate)
+            self.days = self.value / self.rate
 
     @api.onchange("value")
     def _onchange_value(self):
-        self.rate = math.ceil(self.value / self.days) if self.days else 0
+        self.rate = (self.value / self.days) if self.days else 0
 
     @api.onchange("project_id")
     def _onchange_project_id(self):

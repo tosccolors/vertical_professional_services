@@ -11,9 +11,9 @@
                 <field name="project_user_id" optional="hidden" />
                 <field name="task_id" options="{'no_create': true}" />
                 <field name="product_id" options="{'no_create': true}" />
-                <field name="days" required="True" />
-                <field name="rate" required="True" />
-                <field name="value" required="True" />
+                <field name="days" required="True" digits="[16, 0]" />
+                <field name="rate" required="True" digits="[16, 0]" />
+                <field name="value" required="True" digits="[16, 0]" />
                 <field name="date_from" required="True" />
                 <field name="date_to" required="True" />
             </tree>
