@@ -11,7 +11,7 @@
                 <field name="project_user_id" optional="hidden" />
                 <field name="task_id" options="{'no_create': true}" />
                 <field name="product_id" options="{'no_create': true}" />
-                <field name="days" required="True" digits="[16, 0]" />
+                <field name="days" required="True" digits="[16, 1]" />
                 <field name="rate" required="True" digits="[16, 0]" />
                 <field name="value" required="True" digits="[16, 0]" />
                 <field name="date_from" required="True" />
