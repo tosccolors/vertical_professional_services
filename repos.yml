@@ -22,6 +22,11 @@ account-payment:
     oca: https://github.com/OCA/account-payment
   merges:
     - oca 14.0
+account-reconcile:
+  remotes:
+    oca: https://github.com/OCA/account-reconcile
+  merges:
+    - oca 14.0
 bank-payment:
   remotes:
     oca: https://github.com/OCA/bank-payment
