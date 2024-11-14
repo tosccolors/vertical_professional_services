@@ -1,7 +1,6 @@
 # Copyright 2024 Hunki Enterprises BV
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl-3.0)
 
-import math
 
 from dateutil.relativedelta import SA, SU, relativedelta
 
@@ -41,7 +40,7 @@ class PsContractedLine(models.Model):
     date_to = fields.Date()
     days = fields.Float()
     range_id = fields.Many2one("date.range", copy=False)
-    rate = fields.Monetary(currency_field="currency_id")
+    rate = fields.Monetary(currency_field="currency_id", group_operator="avg")
     value = fields.Monetary(currency_field="currency_id")
     currency_id = fields.Many2one(
         "res.currency", default=lambda self: self.env.company.currency_id
@@ -147,24 +146,24 @@ class PsContractedLine(models.Model):
     @api.onchange("days", "rate")
     def _onchange_days(self):
         if self.days and self.rate:
-            self.value = math.ceil(self.days * self.rate)
+            self.value = self.days * self.rate
         elif self.days and self.value:
-            self.rate = math.ceil(self.value / self.days)
+            self.rate = self.value / self.days
         elif self.rate and self.value:
-            self.days = math.ceil(self.value / self.rate)
+            self.days = self.value / self.rate
 
     @api.onchange("value")
     def _onchange_value(self):
-        self.rate = math.ceil(self.value / self.days) if self.days else 0
+        self.rate = (self.value / self.days) if self.days else 0
 
     @api.onchange("project_id")
     def _onchange_project_id(self):
         self.task_id = False
 
+    @api.model_create_multi
     def create(self, vals):
         result = super().create(vals)
-        if "date_from" in vals or "date_to" in vals:
-            result._create_or_assign_date_range()
+        result._create_or_assign_date_range()
         return result
 
     def write(self, vals):
