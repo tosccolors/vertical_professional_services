@@ -103,8 +103,9 @@ class PsPlanningReportWizard(models.TransientModel):
                 - vals["days_planned_full_month"] * mtd_fraction,
                 days_actual_commercial_mtd=vals["days_actual_mtd"]
                 - vals["days_commercial_full_month"] * mtd_fraction,
-                budget_utilization=vals["days_actual_mtd"]
-                / vals["days_commercial_full_month"]
+                budget_utilization=(
+                    vals["days_actual_mtd"] / vals["days_commercial_full_month"]
+                )
                 if vals["days_commercial_full_month"]
                 else 1,
             )
@@ -142,6 +143,6 @@ class PsPlanningReportWizardLine(models.TransientModel):
     days_actual_mtd = fields.Integer("MTD Actual MD")
     days_actual_planned_mtd = fields.Integer("MTD Actual - Planned MD")
     days_actual_commercial_mtd = fields.Integer("MTD Actual - Commercial MD")
-    budget_utilization = fields.Integer("KPI % MTD")
+    budget_utilization = fields.Float("KPI % MTD", digits=(16, 2))
     actual_commercial_ytm = fields.Integer("Actual Commercial YTM")
     manager_name = fields.Char("Project Manager")
