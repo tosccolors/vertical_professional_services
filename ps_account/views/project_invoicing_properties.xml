@@ -20,7 +20,10 @@
             </xpath>
             <group name="specs" position="inside">
                 <field name="specs_on_task_level" />
-                <field name="print_description_on_task_name" attrs="{'invisible':[('specs_on_task_level', '=', False)]}"/>
+                <field
+                    name="print_description_on_task_name"
+                    attrs="{'invisible':[('specs_on_task_level', '=', False)]}"
+                />
             </group>
         </field>
     </record>

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
     <data>
-
-
         <template id="report_invoice_specification_document_ps_account">
             <t
                 t-set="analytic_invoice_id"
@@ -97,9 +95,7 @@
                                                         style='border-top:none;'
                                                         width="20%"
                                                     >
-                                                        <span
-                                                            t-field="userLine.name"
-                                                        />
+                                                        <span t-field="userLine.name" />
                                                     </td>
                                                     <td
                                                         style='border-top:none;'
@@ -180,7 +176,7 @@
                             t-foreach="analytic_invoice_id[0]._get_user_per_day()"
                             t-as="proLines"
                         >
-                            <t t-set="inv_prop" t-value="proLines.invoice_properties"/>
+                            <t t-set="inv_prop" t-value="proLines.invoice_properties" />
                             <div width="50%">
                                 <strong>
                                     <span t-field="proLines.name" />
@@ -210,39 +206,24 @@
                                 </thead>
                                 <t t-foreach="proLines_value" t-as="aaLine">
                                     <tr>
-                                        <td
-                                            style='border-top:none;'
-                                            width="20%"
-                                        >
-                                            <span
-                                                t-field="aaLine.user_id.name"
-                                            />
+                                        <td style='border-top:none;' width="20%">
+                                            <span t-field="aaLine.user_id.name" />
                                         </td>
-                                        <td
-                                            style='border-top:none;'
-                                            width="10%"
-                                        >
-                                            <span
-                                                t-field="aaLine.unit_amount"
-                                            />
+                                        <td style='border-top:none;' width="10%">
+                                            <span t-field="aaLine.unit_amount" />
                                         </td>
-                                        <td
-                                            style='border-top:none;'
-                                            width="15%"
-                                        >
+                                        <td style='border-top:none;' width="15%">
                                             <span t-field="aaLine.date" />
                                         </td>
-                                        <td
-                                            style='border-top:none;'
-                                            width="40%"
-                                        >
-                                            <t t-if="inv_prop.specs_on_task_level and inv_prop.print_description_on_task_name">
+                                        <td style='border-top:none;' width="40%">
+                                            <t
+                                                t-if="inv_prop.specs_on_task_level and inv_prop.print_description_on_task_name"
+                                            >
                                                 <span t-field="aaLine.name" />
                                             </t>
                                             <t t-else="">
-                                                <span t-field="aaLine.task_id.name"/>
+                                                <span t-field="aaLine.task_id.name" />
                                             </t>
-
                                         </td>
                                     </tr>
                                 </t>
@@ -310,10 +291,7 @@
                                                     Quantity
                                                 </th>
                                             </thead>
-                                            <t
-                                                t-foreach="proLines_value"
-                                                t-as="line"
-                                            >
+                                            <t t-foreach="proLines_value" t-as="line">
                                                 <tr>
                                                     <td
                                                         style='border-top:none;'
@@ -349,9 +327,6 @@
                 </t>
             </t>
         </template>
-
-
-
         <template id="report_invoice_document_ps_account">
             <t t-call="ps_account.external_layout_ps">
                 <!--<t t-call="web.external_layout">-->
@@ -671,9 +646,18 @@
                         </table>
                     </div>
                     <div class="clearfix mb-4">
-                        <div id="total" class="row" style="padding-left:90px;padding-right:20px;page-break-inside:avoid;">
-                            <div t-attf-class="#{'col-5' if report_type != 'html' else 'col-sm-7 col-md-5'} ms-auto">
-                                <table class="table table-sm table-borderless" style="page-break-inside: avoid;">
+                        <div
+                            id="total"
+                            class="row"
+                            style="padding-left:90px;padding-right:20px;page-break-inside:avoid;"
+                        >
+                            <div
+                                t-attf-class="#{'col-5' if report_type != 'html' else 'col-sm-7 col-md-5'} ms-auto"
+                            >
+                                <table
+                                    class="table table-sm table-borderless"
+                                    style="page-break-inside: avoid;"
+                                >
                                     <tr class="border-black o_subtotal" style="">
                                         <td>
                                             <strong>Subtotal</strong>
@@ -812,26 +796,30 @@
                             </span>
                         </span>
                     </div>
-
-                    <div style="page-break-before:always;"/>
-                    <t t-call="ps_account.report_invoice_specification_document_ps_account"/>
+                    <div style="page-break-before:always;" />
+                    <t
+                        t-call="ps_account.report_invoice_specification_document_ps_account"
+                    />
                 </div>
             </t>
         </template>
-
-        <template id="report_invoice_document_ps" inherit_id="account.report_invoice_document">
+        <template
+            id="report_invoice_document_ps"
+            inherit_id="account.report_invoice_document"
+        >
             <xpath expr="//div[@class='mt-5']" position="after">
-                <div style="page-break-before:always;"/>
+                <div style="page-break-before:always;" />
                 <t
                     t-set="analytic_invoice_id"
                     t-value="o.invoice_line_ids.mapped('ps_invoice_id')"
                 />
-                <t t-if ="analytic_invoice_id">
-                    <t t-call="ps_account.report_invoice_specification_document_ps_account"/>
+                <t t-if="analytic_invoice_id">
+                    <t
+                        t-call="ps_account.report_invoice_specification_document_ps_account"
+                    />
                 </t>
             </xpath>
         </template>
-
         <!--<template id="ps_account.report_invoice_ps_account">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
@@ -846,7 +834,6 @@
                 </t>
             </t>
         </template>-->
-
         <template id="account.report_invoice">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
@@ -854,14 +841,19 @@
                         t-set="lang"
                         t-value="o.user_id.sudo().lang if o.move_type in ('in_invoice', 'in_refund') else o.partner_id.lang"
                     />
-                    <t t-if="o._get_name_invoice_report() == 'ps_account.report_invoice_document_ps_account'"
-                        t-call="ps_account.report_invoice_document_ps_account" t-lang="lang"/>
-                    <t t-else=""
-                        t-call="account.report_invoice_document" t-lang="lang"/>
+                    <t
+                        t-if="o._get_name_invoice_report() == 'ps_account.report_invoice_document_ps_account'"
+                        t-call="ps_account.report_invoice_document_ps_account"
+                        t-lang="lang"
+                    />
+                    <t
+                        t-else=""
+                        t-call="account.report_invoice_document"
+                        t-lang="lang"
+                    />
                 </t>
             </t>
         </template>
-
         <template id="account.report_invoice_with_payments">
             <t t-call="web.html_container">
                 <t t-foreach="docs" t-as="o">
@@ -869,11 +861,17 @@
                         t-set="lang"
                         t-value="o.user_id.sudo().lang if o.move_type in ('in_invoice', 'in_refund') else o.partner_id.lang"
                     />
-                    <t t-set="print_with_payments" t-value="True"/>
-                    <t t-if="o._get_name_invoice_report() == 'ps_account.report_invoice_document_ps_account'"
-                        t-call="ps_account.report_invoice_document_ps_account" t-lang="lang"/>
-                    <t t-else=""
-                        t-call="account.report_invoice_document" t-lang="lang"/>
+                    <t t-set="print_with_payments" t-value="True" />
+                    <t
+                        t-if="o._get_name_invoice_report() == 'ps_account.report_invoice_document_ps_account'"
+                        t-call="ps_account.report_invoice_document_ps_account"
+                        t-lang="lang"
+                    />
+                    <t
+                        t-else=""
+                        t-call="account.report_invoice_document"
+                        t-lang="lang"
+                    />
                 </t>
             </t>
         </template>

@@ -4,4 +4,3 @@ from . import account_move
 from . import project_invoicing_properties
 from . import ps_invoice
 from . import res_company
-

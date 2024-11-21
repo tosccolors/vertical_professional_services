@@ -8,7 +8,6 @@
                 docs.mapped('operating_unit_id').filtered('report_background_image1')[:1].report_background_image1
             </field>
         </record>-->
-
         <record id="account.account_invoices" model="ir.actions.report">
             <field name="report_name">account.report_invoice_with_payments</field>
             <field name="report_file">account.report_invoice_with_payments</field>
