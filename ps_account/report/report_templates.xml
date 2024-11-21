@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
 
-    <template id="external_layout_striped_advertising" inherit_id="web.external_layout_striped" >
+    <template id="external_layout_striped_ps" inherit_id="web.external_layout_striped" >
         <!-- support for custom header -->
         <li t-if="company.is_company_details_empty" position="replace">
         </li>
@@ -10,7 +10,7 @@
         </li>
     </template>
 
-    <template id="external_layout_boxed_advertising" inherit_id="web.external_layout_boxed" >
+    <template id="external_layout_boxed_ps" inherit_id="web.external_layout_boxed" >
         <!-- support for custom header -->
         <li t-if="company.is_company_details_empty" position="replace">
         </li>
@@ -19,7 +19,7 @@
         </li>
     </template>
 
-    <template id="external_layout_bold_advertising" inherit_id="web.external_layout_bold" >
+    <template id="external_layout_bold_ps" inherit_id="web.external_layout_bold" >
         <!-- support for custom header -->
         <li t-if="company.is_company_details_empty" position="replace">
         </li>
@@ -28,7 +28,7 @@
         </li>
     </template>
 
-    <template id="external_layout_standard_advertising" inherit_id="web.external_layout_standard" >
+    <template id="external_layout_standard_ps" inherit_id="web.external_layout_standard" >
         <!-- support for custom header -->
         <li t-if="company.is_company_details_empty" position="replace">
         </li>
