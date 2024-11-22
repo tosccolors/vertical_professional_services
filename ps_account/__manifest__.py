@@ -2,7 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 {
     "name": "PS Account",
-    "version": "16.0.1.0.3",
+    "version": "16.0.1.0.4",
     "category": "accounts",
     "author": "The Open Source Company",
     "website": "http://www.tosc.nl",
