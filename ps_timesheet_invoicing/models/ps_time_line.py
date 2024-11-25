@@ -59,7 +59,7 @@ class TimeLine(models.Model):
                     raise_not_found=True,
                 )
                 # line.partner_id = line.project_id._get_invoice_partner()
-                line.partner_id = line.project_id.patner_id
+                line.partner_id = line.project_id.partner_id
             else:
                 line.chargeable = False
                 line.correction_charge = 0.0
