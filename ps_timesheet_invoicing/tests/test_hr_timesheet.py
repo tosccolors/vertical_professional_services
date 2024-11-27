@@ -64,8 +64,12 @@ class TestHrTimesheet(TransactionCase):
                 day_line.unit_amount = 10
             sheet_form.end_mileage = 42
         self.assertEqual(sheet.employee_id, self.user.employee_id)
-        self.assertEqual(sheet.mapped("timesheet_ids.employee_id"), self.user.employee_id)
-        action = self.env["hr.timesheet.current.open"].with_user(self.user).open_timesheet()
+        self.assertEqual(
+            sheet.mapped("timesheet_ids.employee_id"), self.user.employee_id
+        )
+        action = (
+            self.env["hr.timesheet.current.open"].with_user(self.user).open_timesheet()
+        )
         self.assertEqual(action["res_id"], sheet.id)
         sheet.action_timesheet_confirm()
         with self.assertRaises(exceptions.UserError):

@@ -20,7 +20,7 @@ class TimelineUserTotal(models.Model):
         # get task-user out of first ptline
         for this in self:
             ptline = this.detail_ids[:1]
-            task_user |= task_user.search(
+            task_user = task_user.search(
                 [
                     ("id", "in", this.ps_invoice_id.task_user_ids.ids),
                     ("task_id", "=", this.task_id.id),

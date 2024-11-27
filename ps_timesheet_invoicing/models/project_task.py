@@ -17,6 +17,10 @@ class Task(models.Model):
             raise ValidationError(
                 _("You can have only one task with the standard as true per project!")
             )
+        if task.is_closed:
+            raise ValidationError(
+                _("You can not have closed task with the standard as true!")
+            )
 
     standard = fields.Boolean(string="Standard")
     task_user_ids = fields.One2many(

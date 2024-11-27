@@ -96,12 +96,19 @@ class AccountMove(models.Model):
         if analytic_invoice_id:
             project = analytic_invoice_id.project_id
         else:
-            account_analytic_id = self.invoice_line_ids.mapped("analytic_account_id")
-            if (
-                len(account_analytic_id) == 1
-                and len(account_analytic_id.project_ids) == 1
-            ):
-                project = account_analytic_id.project_ids
+            account_analytic_id = (
+                self.invoice_line_ids.mapped("analytic_distribution") or {}
+            ).keys()
+            if len(account_analytic_id) == 1:
+                if (
+                    len(
+                        self.env["account.analytic.account"]
+                        .browse(int(account_analytic_id[0]))
+                        .project_ids
+                    )
+                    == 1
+                ):
+                    project = account_analytic_id.project_ids
         return project
 
     def get_bank_details(self):
@@ -128,3 +135,10 @@ class AccountMove(models.Model):
         ):
             result[field] = invoice[field]
         return result
+
+    def _get_name_invoice_report(self):
+        self.ensure_one()
+        ps_invoice = self.invoice_line_ids.mapped("ps_invoice_id")
+        if not self.company_id.use_standard_layout and ps_invoice:
+            return "ps_account.report_invoice_document_ps_account"
+        return super()._get_name_invoice_report()

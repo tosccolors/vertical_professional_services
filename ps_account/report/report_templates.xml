@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template
+        id="external_layout_striped_ps"
+        inherit_id="report_qweb_operating_unit.external_layout_striped_ou"
+        priority="99"
+    >
+        <xpath expr="////div[contains(@t-attf-class, 'header')]" position="attributes">
+            <attribute name="t-if">
+                o and o.operating_unit_id and not
+                o.operating_unit_id.report_background_image1
+            </attribute>
+        </xpath>
+        <xpath
+            expr="//div[contains(@t-attf-class, 'o_background_footer')]"
+            position="attributes"
+        >
+            <attribute name="t-if">
+                o and o.operating_unit_id and not
+                o.operating_unit_id.report_background_image1
+            </attribute>
+        </xpath>
+        <xpath
+            expr="//li[@t-if='o.operating_unit_id.is_operating_unit_details_empty']"
+            position="replace"
+        >
+            <t t-if="not o.operating_unit_id.is_operating_unit_details_empty">
+                <li>
+                    <span t-field="o.operating_unit_id.report_header" />
+                </li>
+            </t>
+            <t t-if="o.operating_unit_id.is_operating_unit_details_empty">
+                <li>
+                    <t t-esc="company.company_details" />
+                </li>
+            </t>
+        </xpath>
+        <xpath
+            expr="//div[@t-field='o.operating_unit_id.report_footer']"
+            position="replace"
+        >
+            <t t-if="not company.report_footer">
+                <div t-field="o.operating_unit_id.report_footer" />
+            </t>
+            <t t-else="">
+                <div t-field="company.report_footer" />
+            </t>
+        </xpath>
+    </template>
+    <template
+        id="external_layout_boxed_ps"
+        inherit_id="report_qweb_operating_unit.external_layout_boxed_ou"
+        priority="99"
+    >
+        <xpath expr="////div[contains(@t-attf-class, 'header')]" position="attributes">
+            <attribute name="t-if">
+                o and o.operating_unit_id and not
+                o.operating_unit_id.report_background_image1
+            </attribute>
+        </xpath>
+        <xpath
+            expr="//div[contains(@t-attf-class, 'o_boxed_footer')]"
+            position="attributes"
+        >
+            <attribute name="t-if">
+                o and o.operating_unit_id and not
+                o.operating_unit_id.report_background_image1
+            </attribute>
+        </xpath>
+        <xpath
+            expr="//li[@t-if='o.operating_unit_id.is_operating_unit_details_empty']"
+            position="replace"
+        >
+            <t t-if="not o.operating_unit_id.is_operating_unit_details_empty">
+                <li>
+                    <span t-field="o.operating_unit_id.report_header" />
+                </li>
+            </t>
+            <t t-if="o.operating_unit_id.is_operating_unit_details_empty">
+                <li>
+                    <t t-esc="company.company_details" />
+                </li>
+            </t>
+        </xpath>
+        <xpath
+            expr="//div[@t-field='o.operating_unit_id.report_footer']"
+            position="replace"
+        >
+            <t t-if="not company.report_footer">
+                <div t-field="o.operating_unit_id.report_footer" />
+            </t>
+            <t t-else="">
+                <div t-field="company.report_footer" />
+            </t>
+        </xpath>
+    </template>
+    <template
+        id="external_layout_bold_ps"
+        inherit_id="report_qweb_operating_unit.external_layout_bold_ou"
+        priority="99"
+    >
+        <xpath expr="//div[@class='o_clean_header']" position="attributes">
+            <attribute name="t-if">
+                o and o.operating_unit_id and not
+                o.operating_unit_id.report_background_image1
+            </attribute>
+        </xpath>
+        <xpath
+            expr="//div[contains(@t-attf-class, 'o_clean_footer')]"
+            position="attributes"
+        >
+            <attribute name="t-if">
+                o and o.operating_unit_id and not
+                o.operating_unit_id.report_background_image1
+            </attribute>
+        </xpath>
+        <xpath
+            expr="//li[@t-if='o.operating_unit_id.is_operating_unit_details_empty']"
+            position="replace"
+        >
+            <t t-if="not o.operating_unit_id.is_operating_unit_details_empty">
+                <li>
+                    <span t-field="o.operating_unit_id.report_header" />
+                </li>
+            </t>
+            <t t-if="o.operating_unit_id.is_operating_unit_details_empty">
+                <li>
+                    <t t-esc="company.company_details" />
+                </li>
+            </t>
+        </xpath>
+        <xpath
+            expr="//div[@t-field='o.operating_unit_id.report_footer']"
+            position="replace"
+        >
+            <t t-if="not company.report_footer">
+                <div t-field="o.operating_unit_id.report_footer" />
+            </t>
+            <t t-else="">
+                <div t-field="company.report_footer" />
+            </t>
+        </xpath>
+    </template>
+    <template
+        id="external_layout_standard_ps"
+        inherit_id="report_qweb_operating_unit.external_layout_standard_ou"
+        priority="99"
+    >
+        <xpath expr="////div[contains(@t-attf-class, 'header')]" position="attributes">
+            <attribute name="t-if">
+                o and o.operating_unit_id and not
+                o.operating_unit_id.report_background_image1
+            </attribute>
+        </xpath>
+        <xpath
+            expr="//div[contains(@t-attf-class, 'o_standard_footer')]"
+            position="attributes"
+        >
+            <attribute name="t-if">
+                o and o.operating_unit_id and not
+                o.operating_unit_id.report_background_image1
+            </attribute>
+        </xpath>
+        <xpath
+            expr="//li[@t-if='o.operating_unit_id.is_operating_unit_details_empty']"
+            position="replace"
+        >
+            <t t-if="not o.operating_unit_id.is_operating_unit_details_empty">
+                <li>
+                    <span t-field="o.operating_unit_id.report_header" />
+                </li>
+            </t>
+            <t t-if="o.operating_unit_id.is_operating_unit_details_empty">
+                <li>
+                    <t t-esc="company.company_details" />
+                </li>
+            </t>
+        </xpath>
+        <xpath
+            expr="//div[@t-field='o.operating_unit_id.report_footer']"
+            position="replace"
+        >
+            <t t-if="not company.report_footer">
+                <div t-field="o.operating_unit_id.report_footer" />
+            </t>
+            <t t-else="">
+                <div t-field="company.report_footer" />
+            </t>
+        </xpath>
+    </template>
+</odoo>

@@ -58,7 +58,8 @@ class TimeLine(models.Model):
                     or self.env.ref("account_fiscal_month.date_range_fiscal_month"),
                     raise_not_found=True,
                 )
-                line.partner_id = line.project_id._get_invoice_partner()
+                # line.partner_id = line.project_id._get_invoice_partner()
+                line.partner_id = line.project_id.partner_id
             else:
                 line.chargeable = False
                 line.correction_charge = 0.0
@@ -343,6 +344,10 @@ class TimeLine(models.Model):
                 ic_fr = task_user.ic_fee_rate
             if project_rate:
                 return fr or 0.0
+            if not task_user and not project_rate:
+                employee = self.env["res.users"].browse(uid)._get_related_employees()
+                if employee:
+                    fr = employee.fee_rate
         return [fr, ic_fr]
 
     def merge_timelines(self):
