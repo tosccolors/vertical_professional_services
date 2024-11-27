@@ -1,0 +1,527 @@
+.o_form_view .o_form_field_x2many_2d_matrix_ps_planning .table-responsive {
+    max-height: none;
+}
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    > div,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    > div,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    > div,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th
+    > div,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th
+    + th
+    > div,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th
+    + th
+    + th
+    > div,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th
+    + th
+    + th
+    + th
+    > div {
+    width: 5em;
+}
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th
+    + th
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td {
+    position: sticky;
+    z-index: 2;
+    left: 0em;
+}
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td {
+    left: 5em;
+}
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td {
+    left: 10em;
+}
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td {
+    left: 15em;
+}
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td {
+    left: 20em;
+}
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td {
+    left: 25em;
+}
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > thead
+    > tr
+    > th:first-child
+    + th
+    + th
+    + th
+    + th
+    + th
+    + th
+    + th,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tfoot
+    > tr
+    > td:first-child
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td
+    + td {
+    left: 30em;
+}
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr
+    > td {
+    background: white;
+}
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr.table-active
+    > td,
+.o_form_view
+    .o_form_field_x2many_2d_matrix_ps_planning
+    .o_x2many_2d_matrix.o_list_view
+    > tbody
+    > tr.table-active
+    > td.row-total {
+    background-color: lightgray;
+}
+
+.o_form_view .o_form_field_x2many_2d_matrix_ps_planning input[type="text"]:disabled {
+    border: none;
+}
+
+.o_form_view .o_form_field_x2many_2d_matrix_ps_planning input[type="checkbox"] {
+    margin-right: 0.3em;
+}

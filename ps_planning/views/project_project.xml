@@ -1,0 +1,22 @@
+<odoo>
+    <record id="edit_project" model="ir.ui.view">
+        <field name="inherit_id" ref="project.edit_project" />
+        <field name="model">project.project</field>
+        <field name="arch" type="xml">
+            <div class="oe_button_box" position="inside">
+                <button
+                    class="oe_stat_button"
+                    type="object"
+                    name="open_ps_contracted_lines"
+                    icon="fa-file"
+                >
+                    <field
+                        string="Contracted"
+                        name="ps_contracted_line_count"
+                        widget="statinfo"
+                    />
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>

@@ -22,6 +22,8 @@ jobs:
           cd _docker
           mkdir -p  odoo/local-src odoo/external-src data songs
           cp -r ../ps* odoo/local-src
+          # TODO: remove when this one is migrated
+          rm -rf odoo/local-src/ps_planning
           cd odoo/external-src
           gitaggregate -c ../../../repos.yml
           cd ../..
