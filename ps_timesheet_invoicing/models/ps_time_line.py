@@ -294,7 +294,7 @@ class TimeLine(models.Model):
     )
     date_of_last_wip = fields.Date("Date Of Last WIP")
     date_of_next_reconfirmation = fields.Date("Date Of Next Reconfirmation")
-    tag_ids = fields.Boolean("field not used")
+    tag_ids = fields.Many2many(relation="ps_time_line_tag_rel")
     task_user_id = fields.Many2one(
         "task.user", string="Task User Fee Rate", compute=_compute_time_line, store=True
     )
