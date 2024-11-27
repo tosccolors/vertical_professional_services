@@ -67,9 +67,7 @@ class TimeLineStatus(models.TransientModel):
             ptl_lines.invalidate_recordset()
             if status == "delayed" and self.wip:
                 notupdatestate = {line.id: line.state for line in ptl_lines}
-                self.with_delay(
-                    eta=datetime.now(), description="WIP Posting"
-                ).prepare_account_move(ptl_ids, notupdatestate)
+                self.prepare_account_move(ptl_ids, notupdatestate)
             if status == "invoiceable":
                 self.with_context(active_ids=entries.ids).prepare_ps_invoice()
         return True
