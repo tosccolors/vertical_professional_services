@@ -131,6 +131,7 @@ class TimeLineStatus(models.TransientModel):
                         data.update({"project_id": project_id, "link_project": True})
                     invoice = ps_invoice.create(data)
                     invoice.invoice_id._onchange_partner_id()
+                    invoice.invoice_id._compute_fiscal_position_id()
 
         context = self.env.context.copy()
         entries_ids = context.get("active_ids", [])
