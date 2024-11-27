@@ -15,9 +15,14 @@ class TestPsExpense(TransactionCase):
         )
         self.assertTrue(project)
         project.analytic_account_id.operating_unit_ids = b2c_ou
-        with Form(
-            self.env["hr.expense"].with_user(self.env.ref("base.user_demo"))
-        ) as expense_form:
+        user = self.env.ref("base.user_demo")
+        user.employee_id.bank_account_id = self.env["res.partner.bank"].create(
+            {
+                "partner_id": user.partner_id.id,
+                "acc_number": "dummy",
+            }
+        )
+        with Form(self.env["hr.expense"].with_user(user)) as expense_form:
             expense_form.product_id = product
             self.assertEqual(expense_form.operating_unit_id, main_ou)
             expense_form.analytic_distribution = {
