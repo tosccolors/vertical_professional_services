@@ -9,8 +9,8 @@ class ProjectInvoicingProperties(models.Model):
 
     invoice_mileage = fields.Boolean("Invoice Mileage")
     group_invoice = fields.Boolean(
-        "Group Invoices By Project",
-        help="Enabling this creates one invoice per project, in addition to per partner,"
+        "Combined invoice",
+        help="Disabling this creates one invoice per project, in addition to per partner,"
         "period and operating unit",
     )
     group_by_fee_rate = fields.Boolean(
