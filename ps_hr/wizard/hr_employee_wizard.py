@@ -70,6 +70,8 @@ class HREmployeeWizard(models.TransientModel):
 
     leave_hours = fields.Float(string="Leave Hours")
 
+    klippa_user = fields.Boolean(string="Employee uses Klippa")
+
     @api.depends("parent_department_id", "default_operating_unit_id")
     def _compute_department_id_domain(self):
         for this in self:
@@ -197,6 +199,7 @@ class HREmployeeWizard(models.TransientModel):
             "category_ids": [(6, 0, self.category_ids.ids)],
             "external": self.external,
             "parent_id": self.parent_id.id,
+            "klippa_user": self.klippa_user,
         }
         return self.env["hr.employee"].create(employee)
 

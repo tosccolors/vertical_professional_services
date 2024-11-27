@@ -24,16 +24,14 @@
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.edit_project" />
         <field name="arch" type="xml">
-            <xpath expr="//button[last()]" position="after">
-                <div class="oe_button_box" name="button_box">
-                    <button
-                        name="action_view_invoice"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-pencil-square-o"
-                        string="Invoices"
-                    />
-                </div>
+            <xpath expr="//div[@name='button_box']//button[last()]" position="after">
+                <button
+                    name="action_view_invoice"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil-square-o"
+                    string="Invoices"
+                />
             </xpath>
         </field>
     </record>

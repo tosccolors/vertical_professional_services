@@ -1,0 +1,90 @@
+<odoo>
+    <record id="view_ps_planning_billing_report_tree" model="ir.ui.view">
+        <field name="model">ps.planning.billing.report</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="project_id" options="{'no_create': true}" />
+                <field name="range_id" options="{'no_create': true}" />
+                <field name="contracted_days" sum="Sum" />
+                <field name="contracted_value" sum="Sum" />
+                <field name="planned_days" sum="Sum" />
+                <field name="planned_value" sum="Sum" />
+                <field name="actual_days" sum="Sum" />
+                <field name="actual_value" sum="Sum" />
+                <field name="billed_days" sum="Sum" />
+                <field name="billed_value" sum="Sum" />
+            </tree>
+        </field>
+    </record>
+    <record id="view_ps_planning_billing_report_search" model="ir.ui.view">
+        <field name="model">ps.planning.billing.report</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="project_id" />
+                <field
+                    name="range_id"
+                    domain="[('type_id', '=', %(account_fiscal_month.date_range_fiscal_month)s)]"
+                />
+                <filter
+                    name="my"
+                    string="My projects"
+                    domain="[('project_id.user_id', '=', uid)]"
+                />
+                <separator />
+                <filter
+                    name="invoicing_time_material"
+                    string="Time &amp; Material Projects"
+                    domain="[('project_id.invoice_properties.actual_time_spent', '=', True)]"
+                />
+                <filter
+                    name="invoicing_fixed"
+                    string="Fixed Price Projects"
+                    domain="[('project_id.invoice_properties.fixed_amount', '=', True)]"
+                />
+                <searchpanel>
+                    <field name="range_id" icon="fa-filter" limit="0" />
+                </searchpanel>
+                <group expand="0" string="Group By">
+                    <filter
+                        string="Project"
+                        name="group_project"
+                        context="{'group_by': 'project_id'}"
+                    />
+                    <filter
+                        string="Project manager"
+                        name="group_project_user"
+                        context="{'group_by': 'project_user_id'}"
+                    />
+                    <filter
+                        string="Customer"
+                        name="group_project_partner"
+                        context="{'group_by': 'project_partner_id'}"
+                    />
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="view_ps_planning_billing_report_pivot" model="ir.ui.view">
+        <field name="model">ps.planning.billing.report</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="contracted_days" type="measure" />
+                <field name="contracted_value" type="measure" />
+                <field name="planned_days" type="measure" />
+                <field name="planned_value" type="measure" />
+                <field name="actual_days" type="measure" />
+                <field name="actual_value" type="measure" />
+                <field name="billed_days" type="measure" />
+                <field name="billed_value" type="measure" />
+                <field name="project_id" type="row" />
+                <field name="range_id" type="col" />
+            </pivot>
+        </field>
+    </record>
+    <record id="action_ps_planning_billing_report" model="ir.actions.act_window">
+        <field name="name">Billing report</field>
+        <field name="res_model">ps.planning.billing.report</field>
+        <field name="view_mode">tree,pivot</field>
+        <field name="context">{'search_default_my': 1}</field>
+    </record>
+</odoo>
