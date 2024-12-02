@@ -1,0 +1,97 @@
+<odoo>
+    <record id="view_ps_planning_wizard_form" model="ir.ui.view">
+        <field name="model">ps.planning.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="available_task_ids" invisible="True" />
+                <field name="available_product_ids" invisible="True" />
+                <field name="available_period_ids" invisible="True" />
+                <group attrs="{'invisible': [('line_ids', '!=', [])]}">
+                    <field
+                        name="project_id"
+                        domain="[('ps_contracted_line_ids', '!=', False)]"
+                        options="{'no_create': true}"
+                    />
+                    <field
+                        name="period_id"
+                        domain="[('id', 'in', available_period_ids)]"
+                        options="{'no_create': true}"
+                    />
+                </group>
+                <group
+                    name="add_line"
+                    class="oe-edit-only"
+                    attrs="{'invisible': [('line_ids', '=', [])]}"
+                    col="7"
+                >
+                    <field
+                        name="add_line_task_id"
+                        domain="[('id', 'in', available_task_ids)]"
+                        options="{'no_create': true}"
+                    />
+                    <field
+                        name="add_line_product_id"
+                        domain="[('id', 'in', available_product_ids)]"
+                        options="{'no_create': true}"
+                    />
+                    <field name="add_line_employee_id" options="{'no_create': true}" />
+                    <button
+                        type="object"
+                        name="action_add_line"
+                        class="btn btn-primary"
+                    >
+                        Add line
+                    </button>
+                </group>
+                <field
+                    name="line_ids"
+                    widget="x2many_2d_matrix_ps_planning"
+                    field_x_axis="range_id"
+                    field_y_axis="y_axis"
+                    field_value="days"
+                    field_label_y_axis="y_axis_display"
+                    field_att_disabled="disabled"
+                    attrs="{'invisible': [('line_ids', '=', [])]}"
+                >
+                    <tree>
+                        <field name="range_id" />
+                        <field name="y_axis" />
+                        <field name="days" />
+                        <field name="y_axis_display" />
+                        <field name="product_id" />
+                        <field name="task_id" />
+                        <field name="line_type" />
+                        <field name="state" />
+                        <field name="employee_id" />
+                        <field name="contracted_days" />
+                        <field name="daily_rate" />
+                        <field name="disabled" />
+                    </tree>
+                </field>
+                <footer invisible="context.get('hide_footer')">
+                    <button
+                        type="object"
+                        name="action_start_planning"
+                        string="Start planning"
+                        attrs="{'invisible': [('line_ids', '!=', [])]}"
+                        class="btn btn-primary"
+                    />
+                </footer>
+                <button
+                    type="object"
+                    name="action_commit_planning"
+                    string="Commit planning"
+                    attrs="{'invisible': [('line_ids', '=', [])]}"
+                    class="btn btn-primary"
+                />
+            </form>
+        </field>
+    </record>
+    <record id="action_ps_planning_wizard" model="ir.actions.act_window">
+        <field name="name">Planning Entry</field>
+        <field name="res_model">ps.planning.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_ps_planning_wizard_form" />
+        <field name="target">inline</field>
+    </record>
+</odoo>

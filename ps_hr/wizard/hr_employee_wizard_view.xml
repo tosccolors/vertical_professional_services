@@ -23,6 +23,7 @@
                             <field name="mobile" />
                             <field name="acc_number" />
                             <field name="bank_name_id" />
+                            <field name="klippa_user" />
                             <field name="lang" />
                         </group>
                         <group cols="4">

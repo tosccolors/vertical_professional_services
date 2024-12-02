@@ -1,0 +1,8 @@
+<odoo>
+    <record id="planning_product1" model="product.product">
+        <field name="name">Planning product 1</field>
+    </record>
+    <record id="planning_product2" model="product.product">
+        <field name="name">Planning product 2</field>
+    </record>
+</odoo>
