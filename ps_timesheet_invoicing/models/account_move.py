@@ -211,19 +211,32 @@ class AccountMove(models.Model):
 
     def button_draft(self):
         res = super().button_draft()
-        wip_moves = self.mapped("wip_move_id")
 
-        # First, set the invoices as cancelled and detach the move ids
-        self.write({"wip_move_id": False})
-        # second, invalidate the move(s)
+        wip_moves = self.mapped("wip_move_id")
+        if wip_moves:
+            wip_moves += self.search([("reversed_entry_id", "in", wip_moves.ids)])
+            wip_moves.button_draft()
+
+        return res
+
+    def button_cancel(self):
+        result = super().button_cancel()
+
+        wip_moves = self.mapped("wip_move_id")
         if wip_moves:
             wip_moves += self.search([("reversed_entry_id", "in", wip_moves.ids)])
             wip_moves.button_cancel()
-            # delete the move this invoice was pointing to
-            # Note that the corresponding move_lines and move_reconciles
-            # will be automatically deleted too
+
+        return result
+
+    def unlink(self):
+        wip_moves = self.mapped("wip_move_id")
+        self.write({"wip_move_id": False})
+        if wip_moves:
+            wip_moves += self.search([("reversed_entry_id", "in", wip_moves.ids)])
             wip_moves.with_context(force_delete=True).unlink()
-        return res
+
+        return super().unlink()
 
     def wip_move_create(self, wip_journal, name, ar_account_id, ref=None):
         self.ensure_one()

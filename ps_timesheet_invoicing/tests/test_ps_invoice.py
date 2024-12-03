@@ -67,6 +67,7 @@ class TestPsInvoice(TestPsInvoiceBase):
         self.assertEqual(ps_invoice.state, "invoiced")
         self.assertEqual(set(self.ps_line.mapped("state")), {"invoiced"})
         self.assertTrue(ps_invoice.invoice_id.wip_move_id)
+        self.assertTrue(ps_invoice.invoice_id.wip_move_id.reversal_move_id)
         return ps_invoice
 
     def test_02_delete_invoice(self):
@@ -82,8 +83,20 @@ class TestPsInvoice(TestPsInvoiceBase):
             ps_invoice.user_total_ids.detail_ids + ps_invoice.mileage_line_ids,
             self.ps_line,
         )
+        wip_move = ps_invoice.invoice_id.wip_move_id
+        wip_reversal = ps_invoice.invoice_id.wip_move_id.reversal_move_id
+        invoice = ps_invoice.invoice_id
         ps_invoice.unlink()
         self.assertEqual(set(self.ps_line.mapped("state")), {"invoiceable"})
+        invoice.button_draft()
+        self.assertEqual(wip_move.state, "draft")
+        self.assertEqual(wip_reversal.state, "draft")
+        invoice.button_cancel()
+        self.assertEqual(wip_move.state, "cancel")
+        self.assertEqual(wip_reversal.state, "cancel")
+        invoice.unlink()
+        self.assertFalse(wip_move.exists())
+        self.assertFalse(wip_reversal.exists())
 
     def test_03_amend_invoice(self):
         ps_line1, mileage_line = self.ps_line
