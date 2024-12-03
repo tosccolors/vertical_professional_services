@@ -58,8 +58,9 @@ class TimeLine(models.Model):
                     or self.env.ref("account_fiscal_month.date_range_fiscal_month"),
                     raise_not_found=True,
                 )
-                # line.partner_id = line.project_id._get_invoice_partner()
-                line.partner_id = line.project_id.partner_id
+                line.partner_id = (
+                    line.project_id._get_invoice_partner().commercial_partner_id
+                )
             else:
                 line.chargeable = False
                 line.correction_charge = 0.0
@@ -294,7 +295,7 @@ class TimeLine(models.Model):
     )
     date_of_last_wip = fields.Date("Date Of Last WIP")
     date_of_next_reconfirmation = fields.Date("Date Of Next Reconfirmation")
-    tag_ids = fields.Boolean("field not used")
+    tag_ids = fields.Many2many(relation="ps_time_line_tag_rel")
     task_user_id = fields.Many2one(
         "task.user", string="Task User Fee Rate", compute=_compute_time_line, store=True
     )

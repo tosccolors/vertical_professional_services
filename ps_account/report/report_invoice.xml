@@ -313,7 +313,7 @@
                                                         width="29%"
                                                     >
                                                         <span
-                                                            t-esc="line_value['unit_amount']"
+                                                            t-esc="o.value_conversion(line_value['unit_amount'])"
                                                         />
                                                     </td>
                                                 </tr>
