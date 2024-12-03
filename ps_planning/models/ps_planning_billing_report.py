@@ -90,12 +90,12 @@ class PsPlanningBillingReport(models.Model):
                 CASE
                 WHEN project_invoicing_properties.actual_time_spent THEN (
                     select sum(quantity) / 8
-                    from account_move_line
+                    from account_move_line aml
+                    join ps_invoice psi on aml.ps_invoice_id=psi.id
                     where
-                    analytic_account_id=project_project.analytic_account_id
-                    and product_uom_id=(select product_uom_hour from xmlids)
-                    and date >= date_range.date_start
-                    and date <= date_range.date_end
+                    aml.analytic_account_id=project_project.analytic_account_id
+                    and aml.product_uom_id=(select product_uom_hour from xmlids)
+                    and psi.period_id=ps_planning_line_planned.range_id
                 )
                 WHEN project_invoicing_properties.fixed_amount THEN (
                     select sum(days)
@@ -107,11 +107,12 @@ class PsPlanningBillingReport(models.Model):
                 ELSE 0
                 END as billed_days,
                 (
-                    select sum(price_subtotal)
-                    from account_move_line
+                    select sum(aml.price_total)
+                    from account_move_line aml
+                    join ps_invoice psi on aml.ps_invoice_id=psi.id
                     where
-                    analytic_account_id=project_project.analytic_account_id
-                    and product_uom_id=(
+                    aml.analytic_account_id=project_project.analytic_account_id
+                    and aml.product_uom_id=(
                         CASE
                         WHEN project_invoicing_properties.actual_time_spent THEN (
                             select product_uom_hour from xmlids
@@ -121,8 +122,7 @@ class PsPlanningBillingReport(models.Model):
                         )
                         END
                     )
-                    and date >= date_range.date_start
-                    and date <= date_range.date_end
+                    and psi.period_id=ps_planning_line_planned.range_id
                 ) as billed_value
                 FROM
                 ps_contracted_line
