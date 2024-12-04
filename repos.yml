@@ -45,6 +45,7 @@ edi:
     oca: https://github.com/OCA/edi
   merges:
     - oca 16.0
+    - oca refs/pull/1091/head
 hr:
   remotes:
     oca: https://github.com/OCA/hr

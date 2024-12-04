@@ -16,8 +16,7 @@
         "ps_timesheet_invoicing",
         "report_qweb_pdf_watermark",
         "ps_calendar",
-        # TODO: probably replace with yet-to-be-migrated account_edi_simple_pdf
-        "account_edi",
+        "account_edi_simple_pdf",
         "account_move_tier_validation",
         "account_invoice_merge",
     ],
