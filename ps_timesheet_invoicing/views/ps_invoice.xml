@@ -132,6 +132,7 @@
                                 <field
                                     name="analytic_distribution"
                                     groups="analytic.group_analytic_accounting"
+                                    widget="analytic_distribution"
                                 />
                                 <field name="user_id" groups="base.group_no_one" />
                                 <field name="quantity" />

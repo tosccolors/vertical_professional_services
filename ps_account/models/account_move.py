@@ -1,7 +1,9 @@
 # Copyright 2014-2023 The Open Source Company (www.tosc.nl).
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+from collections import OrderedDict
+
 from odoo import api, fields, models
-from odoo.tools import is_html_empty
+from odoo.tools import frozendict, is_html_empty
 
 
 class AccountMove(models.Model):
@@ -68,6 +70,35 @@ class AccountMove(models.Model):
                         )
                         result.setdefault(analytic_account, []).append(line)
         return result
+
+    def group_by_project_product_unit_price(self):
+        """
+        Return synthesized account.move.line records implementing grouping required for
+        ps invoices
+        """
+        grouped = OrderedDict()
+
+        def key_func(line):
+            return (
+                frozendict(line.analytic_distribution),
+                line.product_id,
+                line.price_unit,
+            )
+
+        for line in self.mapped("invoice_line_ids").sorted(key=key_func):
+            key = key_func(line)
+            if key not in grouped:
+                grouped[key] = line.new(line._cache)
+                grouped[key]["name"] = "%s%s" % (
+                    line.ps_invoice_id.project_id.name
+                    and (line.ps_invoice_id.project_id.name + " - ")
+                    or "",
+                    line.product_id.name,
+                )
+            else:
+                grouped[key].quantity += line.quantity
+
+        return grouped.values()
 
     def parse_invoice_description(self):
         res = not is_html_empty(self.invoice_description)

@@ -1,6 +1,5 @@
 from odoo import exceptions
 from odoo.tests.common import Form, TransactionCase
-from odoo.tools.misc import mute_logger
 
 from odoo.addons.ps_timesheet_invoicing.hooks import _init_fleet_vehicle_driver
 
@@ -167,8 +166,7 @@ class TestHrTimesheet(TransactionCase):
             wizard_form.description = "hello world"
 
         move_max = self.env["account.move"].search([], limit=1, order="id desc")
-        with mute_logger("odoo.addons.queue_job.delay"):
-            wizard.with_context(queue_job__no_delay=True).ps_invoice_lines()
+        wizard.ps_invoice_lines()
 
         self.assertEqual(self.ps_line.state, "delayed")
         reversed_move, move = self.env["account.move"].search(

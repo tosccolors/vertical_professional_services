@@ -31,7 +31,6 @@
         "web_domain_field",
         # TODO: migrate
         # "invoice_line_revenue_distribution_operating_unit",
-        "queue_job",
     ],
     "data": [
         "data/account_analytic_tag.xml",

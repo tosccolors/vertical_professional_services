@@ -313,7 +313,7 @@
                                                         width="29%"
                                                     >
                                                         <span
-                                                            t-esc="line_value['unit_amount']"
+                                                            t-esc="o.value_conversion(line_value['unit_amount'])"
                                                         />
                                                     </td>
                                                 </tr>
@@ -818,6 +818,13 @@
                         t-call="ps_account.report_invoice_specification_document_ps_account"
                     />
                 </t>
+            </xpath>
+            <xpath expr="//t[@t-set='lines']" position="after">
+                <t
+                    t-if="o.invoice_line_ids.mapped('ps_invoice_id')"
+                    t-set="lines"
+                    t-value="o.group_by_project_product_unit_price()"
+                />
             </xpath>
         </template>
         <!--<template id="ps_account.report_invoice_ps_account">
