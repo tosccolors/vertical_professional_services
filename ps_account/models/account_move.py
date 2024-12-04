@@ -173,3 +173,11 @@ class AccountMove(models.Model):
         if not self.company_id.use_standard_layout and ps_invoice:
             return "ps_account.report_invoice_document_ps_account"
         return super()._get_name_invoice_report()
+
+    def _simple_pdf_create_invoice_from_attachment(self, attachment):
+        """Fill supplier_invoice_number from ref"""
+        self = self.with_context(default_supplier_invoice_number="dummy")
+        result = super()._simple_pdf_create_invoice_from_attachment(attachment)
+        result.supplier_invoice_number = result.ref
+        result.ref = False
+        return result

@@ -1,3 +1,5 @@
 astor
+dateparser
 phonenumbers
 pypdf<5.0
+regex
