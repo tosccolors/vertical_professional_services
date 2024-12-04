@@ -13,6 +13,7 @@
                 <field name="unit_amount" sum="Quantity" optional="show" />
                 <field name="product_uom_id" optional="show" />
                 <field name="partner_id" optional="hide" />
+                <field name="user_id" />
                 <field
                     name="company_id"
                     groups="base.group_multi_company"
@@ -172,6 +173,11 @@
                         string="Date"
                         name="group_date"
                         context="{'group_by': 'date'}"
+                    />
+                    <filter
+                        string="Status"
+                        name="group_status"
+                        context="{'group_by': 'state'}"
                     />
                 </group>
                 <searchpanel>
