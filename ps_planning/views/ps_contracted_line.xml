@@ -37,6 +37,12 @@
                 />
                 <separator />
                 <filter
+                    name="with_value"
+                    string="With value"
+                    domain="[('value', '!=', False), ('value', '!=', 0)]"
+                />
+                <separator />
+                <filter
                     name="invoicing_time_material"
                     string="Time &amp; Material Projects"
                     domain="[('project_id.invoice_properties.actual_time_spent', '=', True)]"
