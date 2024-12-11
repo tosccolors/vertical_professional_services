@@ -88,6 +88,8 @@
         <field name="name">Contract Overview</field>
         <field name="res_model">ps.contracted.line</field>
         <field name="view_mode">tree,pivot</field>
-        <field name="context">{'search_default_my': 1}</field>
+        <field name="context">
+            {'search_default_my': 1, 'search_default_with_value': 1}
+        </field>
     </record>
 </odoo>
