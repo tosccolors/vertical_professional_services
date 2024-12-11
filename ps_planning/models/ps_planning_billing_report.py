@@ -64,6 +64,7 @@ class PsPlanningBillingReport(models.Model):
                     where ps_planning_line.line_type='contracted'
                     and ps_planning_line.project_id=ps_contracted_line.project_id
                     and ps_planning_line.range_id=ps_planning_line_planned.range_id
+                    and ps_contracted_line_inner.days <> 0
                 ) as contracted_value,
                 sum(ps_planning_line_planned.days) as planned_days,
                 sum(
