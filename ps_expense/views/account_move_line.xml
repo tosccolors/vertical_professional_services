@@ -1,0 +1,33 @@
+<odoo>
+    <record id="view_move_line_tree" model="ir.ui.view">
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree" />
+        <field name="arch" type="xml">
+            <tree position="inside">
+                <field name="customer_expense_charged" optional="hide" />
+            </tree>
+        </field>
+    </record>
+    <record id="view_move_line_form" model="ir.ui.view">
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_form" />
+        <field name="arch" type="xml">
+            <field name="blocked" position="after">
+                <field name="customer_expense_charged" />
+            </field>
+        </field>
+    </record>
+    <record id="view_account_move_line_filter" model="ir.ui.view">
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_account_move_line_filter" />
+        <field name="arch" type="xml">
+            <filter name="misc_filter" position="after">
+                <filter
+                    name="ps_expense_uncharged"
+                    string="Uncharged Expenses"
+                    domain="[('expense_id', '!=', False), ('customer_expense_charged', '=', False)]"
+                />
+            </filter>
+        </field>
+    </record>
+</odoo>
