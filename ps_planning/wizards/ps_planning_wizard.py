@@ -127,8 +127,8 @@ class PsPlanningWizard(models.TransientModel):
             dict(
                 {
                     "wizard_id": self.id,
-                    "y_axis": "%10d-%10d-1-%s"
-                    % (task.id, product.id, employee.display_name),
+                    "y_axis": "%s-%s-1-%s"
+                    % (task.display_name, product.display_name, employee.display_name),
                     "y_axis_display": "",
                     "range_id": month.id,
                     "task_id": task.id,
@@ -168,7 +168,7 @@ class PsPlanningWizard(models.TransientModel):
                     task,
                     product,
                     self.env["hr.employee"],
-                    y_axis="%10d-%10d-0" % (task.id, product.id),
+                    y_axis="%s-%s-0" % (task.display_name, product.display_name),
                     days=contracted_days_by_month[date_range]
                     if not planning_line
                     else planning_line.days,
