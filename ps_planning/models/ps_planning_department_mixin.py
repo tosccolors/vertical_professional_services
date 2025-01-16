@@ -26,12 +26,34 @@ class PsPlanningDepartmentMixin(models.AbstractModel):
                     node,
                     "separator",
                 )
-                for department in self.env["hr.department"].search([]):
+                departments = (
+                    self.env["hr.department"]
+                    .search([])
+                    .filtered(
+                        lambda x: self.env["project.project"].search_count(
+                            [
+                                ("department_id", "=", x.id),
+                            ]
+                        )
+                    )
+                )
+                for department in departments:
                     etree.SubElement(
                         node,
                         "filter",
                         attrib={
-                            "string": department.name,
+                            "string": department.name
+                            if not (
+                                departments.filtered(
+                                    lambda x: x.id != department.id
+                                    and x.name == department.name
+                                )
+                            )
+                            else "%s (%s)"
+                            % (
+                                department.name,
+                                department.parent_id.name or department.company_id.name,
+                            ),
                             "domain": json.dumps(
                                 [("project_id.department_id", "=", department.id)]
                             ),
