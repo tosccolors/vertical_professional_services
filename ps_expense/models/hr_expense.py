@@ -26,9 +26,10 @@ class HrExpense(models.Model):
 
     def _create_sheet_from_expenses(self):
         """Allow creating expense sheet from expenses without product"""
+        self = self.with_context(
+            default_operating_unit_id=self.mapped("operating_unit_id")[:1].id
+        )
         result = super()._create_sheet_from_expenses()
-        if not result.operating_unit_id:
-            result.operating_unit_id = self.mapped("operating_unit_id")[:1]
         return result
 
     def action_view_sheet(self):
