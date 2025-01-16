@@ -7,6 +7,8 @@ class TestPsKlippa(TransactionCase):
         demo_expenses = self.env.ref("ps_klippa.expense_demo1") + self.env.ref(
             "ps_klippa.expense_demo2"
         )
+        demo_ou = self.env.ref("operating_unit.b2c_operating_unit")
+        self.env.ref("base.user_demo").default_operating_unit_id = demo_ou
         demo_expenses_other = self.env.ref("ps_klippa.expense_demo3")
         chs_expense = self.env.ref("ps_klippa.expense_chs")
         all_expenses = demo_expenses + demo_expenses_other + chs_expense
@@ -20,6 +22,7 @@ class TestPsKlippa(TransactionCase):
         self.assertEqual(len(sheets), 3)
         self.assertEqual(demo_expenses[0].name, demo_expenses[1].sheet_id.name)
         self.assertEqual(set(sheets.mapped("state")), {"submit"})
+        self.assertIn(demo_ou, sheets.operating_unit_id)
         new_expenses = sum(
             (expense.copy() for expense in demo_expenses), self.env["hr.expense"]
         )

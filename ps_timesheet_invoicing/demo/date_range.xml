@@ -6,8 +6,8 @@
             name="create"
             eval="[{
                 'type_id': ref('ps_date_range_week.date_range_calender_week'),
-                'date_start': datetime.now().date() + relativedelta(years=-1, month=1, day=1),
-                'date_end': datetime.now().date() + relativedelta(month=12, day=31),
+                'date_start': '2023-01-01',
+                'date_end': '2024-12-31',
                 'unit_of_time': '2',
                 'duration_count': 1,
                 'count': 104,
@@ -21,8 +21,8 @@
             name="create"
             eval="[{
                 'type_id': ref('account_fiscal_month.date_range_fiscal_month'),
-                'date_start': datetime.now().date() + relativedelta(years=-1, month=1, day=1),
-                'date_end': datetime.now().date() + relativedelta(month=12, day=31),
+                'date_start': '2023-01-01',
+                'date_end': '2024-12-31',
                 'unit_of_time': '1',
                 'duration_count': 1,
                 'count': 24,
@@ -36,8 +36,8 @@
             name="create"
             eval="[{
                 'type_id': ref('ps_timesheet_invoicing.date_range_quarter'),
-                'date_start': datetime.now().date() + relativedelta(years=-1, month=1, day=1),
-                'date_end': datetime.now().date() + relativedelta(month=12, day=31),
+                'date_start': '2023-01-01',
+                'date_end': '2024-12-31',
                 'unit_of_time': '1',
                 'duration_count': 3,
                 'count': 8,
