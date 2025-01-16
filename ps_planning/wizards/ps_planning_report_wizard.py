@@ -31,7 +31,10 @@ class PsPlanningReportWizard(models.TransientModel):
         _get_work_days = ContractedLine._get_work_days_dates
         mtd_fraction = _get_work_days(
             self.reference_date.replace(day=1), self.reference_date
-        ) / _get_work_days(month.date_start, month.date_end)
+        ) / _get_work_days(
+            month.date_start or self.reference_date.replace(day=1),
+            month.date_end or self.reference_date,
+        )
         for project in self.env["project.project"].search(
             [("ps_contracted_line_ids", "!=", False)]
         ):
@@ -75,8 +78,14 @@ class PsPlanningReportWizard(models.TransientModel):
                     TimeLine.search(
                         [
                             ("task_id.project_id", "=", project.id),
-                            ("date", ">=", month.date_start.replace(month=1, day=1)),
-                            ("date", "<", month.date_start),
+                            (
+                                "date",
+                                ">=",
+                                (month.date_start or self.reference_date).replace(
+                                    month=1, day=1
+                                ),
+                            ),
+                            ("date", "<", month.date_start or self.reference_date),
                             ("product_uom_id", "=", uom_hours.id),
                         ]
                     ).mapped(lambda x: x.unit_amount / 8)
@@ -87,9 +96,15 @@ class PsPlanningReportWizard(models.TransientModel):
                             (
                                 "range_id.date_start",
                                 ">=",
-                                month.date_start.replace(month=1, day=1),
+                                (month.date_start or self.reference_date).replace(
+                                    month=1, day=1
+                                ),
                             ),
-                            ("range_id.date_end", "<", month.date_start),
+                            (
+                                "range_id.date_end",
+                                "<",
+                                month.date_start or self.reference_date,
+                            ),
                             ("task_id.project_id", "=", project.id),
                             ("line_type", "=", "contracted"),
                         ]

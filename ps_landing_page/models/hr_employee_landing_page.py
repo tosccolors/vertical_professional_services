@@ -23,7 +23,10 @@ class HrEmployeeLandingPage(models.TransientModel):
             AND type_id = (SELECT id FROM date_range_type WHERE calender_week = true)
             LIMIT 1"""
         )
-        current_week_id = self.env.cr.fetchone()[0]
+        try:
+            current_week_id = self.env.cr.fetchone()[0]
+        except TypeError:
+            current_week_id = 0
 
         next_week_id = self.get_upcoming_week()
         if current_week_id == next_week_id.id or current_week_id < next_week_id.id:
